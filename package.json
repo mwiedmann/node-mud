@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "client": "yarn workspace dng-client",
+    "server": "yarn workspace dng-server"
+  }
+}

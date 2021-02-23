@@ -1,0 +1,12 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "eslint.validate": ["typescript"],
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
+}
