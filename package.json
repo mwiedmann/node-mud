@@ -5,7 +5,8 @@
     "server"
   ],
   "scripts": {
-    "client": "yarn workspace dng-client",
-    "server": "yarn workspace dng-server"
+    "client": "yarn workspace dng-client start",
+    "server": "yarn workspace dng-server start",
+    "lint": "eslint --ext .ts client server"
   }
 }

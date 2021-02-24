@@ -12,5 +12,5 @@ const cleanup = (): void => {}
 export const fns = {
   init,
   update,
-  cleanup,
+  cleanup
 }

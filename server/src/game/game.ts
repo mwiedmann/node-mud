@@ -5,7 +5,7 @@ import { Level } from './level'
 export class Game<T> {
   constructor() {
     const level = new Level<T>()
-    
+
     // Just create a random map for now
     const map = createEmptyMap()
     addRandomWalls(map, 500)
@@ -13,7 +13,7 @@ export class Game<T> {
 
     level.setMap(map) // This will also create the map search graph
 
-    for (let i=0; i<200; i++) {
+    for (let i = 0; i < 200; i++) {
       const creature = new Creature('Orc', 2, 10, this.getNextId(), 'monster')
       const startingLocation = level.getRandomLocation()
       creature.x = startingLocation.x
@@ -31,11 +31,11 @@ export class Game<T> {
   players = new Map<T, Player<T>>()
   levels = new Map<number, Level<T>>()
 
-  getNextId() {
+  getNextId(): number {
     return this.nextId++
   }
 
-  update() {
+  update(): void {
     this.tick++
     this.levels.forEach((l) => {
       l.creatures.forEach((c) => {
@@ -47,15 +47,25 @@ export class Game<T> {
     })
   }
 
+  getFirstLevel(): Level<T> {
+    const level = this.levels.get(1)
+
+    if (!level) {
+      throw new Error('Game does not have level 1')
+    }
+
+    return level
+  }
+
   login(name: string, connection: T): Player<T> {
-    const level = this.levels.get(1)!
+    const level = this.getFirstLevel()
     const player = new Player(name, 1, 10, this.getNextId(), connection)
-    
+
     const startingLocation = level.getRandomLocation()
     player.x = startingLocation.x
     player.y = startingLocation.y
     player.setDestination(startingLocation.x, startingLocation.y)
-    
+
     this.players.set(connection, player)
     level.players.set(player.id, player)
 

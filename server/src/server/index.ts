@@ -5,7 +5,7 @@ import { tickSettings } from './tick'
 
 let game: Game<WebSocket>
 
-export const startServer = () => {
+export const startServer = (): void => {
   game = createGame()
 
   const wss = new WebSocket.Server({ port: 3001 })
@@ -44,9 +44,9 @@ export const startServer = () => {
 
 const updateGame = () => {
   try {
-    let disconnectedPlayers: Player<WebSocket>[] = []
+    const disconnectedPlayers: Player<WebSocket>[] = []
     game.update()
-    game.levels.forEach(l => {
+    game.levels.forEach((l) => {
       l.players.forEach((p) => {
         // Check if the player is still connected
         if (p.connection.readyState === WebSocket.CLOSED) {
@@ -58,7 +58,7 @@ const updateGame = () => {
           p.connection.send(state)
         }
 
-        l.creatures.forEach(c => {
+        l.creatures.forEach((c) => {
           const state = c.getState()
           if (state) {
             p.connection.send(state)
@@ -68,11 +68,11 @@ const updateGame = () => {
     })
 
     // Logout any disconnected players
-    disconnectedPlayers.forEach(p => {
+    disconnectedPlayers.forEach((p) => {
       console.log('Logging out disconnected player', p.id)
       game.logout(p.connection)
     })
-  } catch(ex) {
+  } catch (ex) {
     console.log(ex)
   }
 }

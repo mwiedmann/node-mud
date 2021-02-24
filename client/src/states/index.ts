@@ -7,5 +7,5 @@ export type States = 'init' | 'title' | 'gameStart'
 export const stateFunctions = {
   init,
   title,
-  gameStart,
+  gameStart
 }

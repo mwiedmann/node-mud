@@ -14,7 +14,7 @@ export let controls: {
 
 export enum SquareType {
   Empty = 0,
-  Wall = 1,
+  Wall = 1
 }
 
 export const gameState: {
@@ -57,7 +57,7 @@ function sceneCreate(this: Phaser.Scene) {
     spell: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL),
     quit: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS),
-    zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS),
+    zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS)
   }
 }
 
@@ -87,27 +87,27 @@ export const startGame = (): void => {
     height: gameSettings.fieldHeight,
     scale: {
       mode: Phaser.Scale.ScaleModes.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
+      autoCenter: Phaser.Scale.CENTER_BOTH
     },
     physics: {
       default: 'matter',
       matter: {
-        enableSleeping: false,
+        enableSleeping: false
         // debug: true,
         // gravity: {
         //   y: 1,
         //   x: 0,
         // },
-      },
+      }
     },
     scene: {
       preload: scenePreload,
       create: sceneCreate,
-      update: sceneUpdate,
+      update: sceneUpdate
     },
     input: {
-      gamepad: true,
+      gamepad: true
     },
-    parent: 'root',
+    parent: 'root'
   })
 }

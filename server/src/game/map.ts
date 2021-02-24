@@ -3,7 +3,7 @@ export enum SquareType {
   Wall = 1
 }
 
-export const createEmptyMap = () => {
+export const createEmptyMap = (): SquareType[][] => {
   const map: SquareType[][] = new Array(100)
   for (let y = 0; y < 100; y++) {
     map[y] = new Array(178).fill(SquareType.Empty)
@@ -12,7 +12,7 @@ export const createEmptyMap = () => {
   return map
 }
 
-export const addRandomWalls = (map: SquareType[][], wallCount: number) => {
+export const addRandomWalls = (map: SquareType[][], wallCount: number): void => {
   for (let i = 0; i < wallCount; i++) {
     const x = Math.floor(Math.random() * map[0].length)
     const y = Math.floor(Math.random() * map.length)

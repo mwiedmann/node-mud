@@ -25,13 +25,13 @@ class GameSettings {
   }
 
   screenPosFromMap(pos: number) {
-    return (pos * gameSettings.cellSize) + gameSettings.halfCell
+    return pos * gameSettings.cellSize + gameSettings.halfCell
   }
 
   changeZoom(amount: number) {
     let newZoom = this.gameCameraZoom + amount
 
-    newZoom = Math.max(.5, newZoom)
+    newZoom = Math.max(0.5, newZoom)
     newZoom = Math.min(3, newZoom)
 
     this.gameCameraZoom = newZoom

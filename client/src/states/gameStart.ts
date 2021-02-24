@@ -5,7 +5,7 @@ import { controls, gameState, sceneUpdate, SquareType } from '../init'
 
 let mapTiles: Phaser.GameObjects.Image[] = []
 let guy: Phaser.GameObjects.Image
-let pointerCallback: Function
+let pointerCallback: (p: Phaser.Input.Pointer) => void
 
 const init = (scene: Phaser.Scene): void => {
   connectionManager.openConnection()
@@ -14,13 +14,22 @@ const init = (scene: Phaser.Scene): void => {
   guy = scene.add.image(gameState.player.x * gameSettings.cellSize, gameState.player.y * gameSettings.cellSize, 'guy')
 
   // Set the camera to follow the guy (with some lerping, a deadzone, and bounds)
-  scene.cameras.main.startFollow(guy, true, .1, .1)
-  scene.cameras.main.setDeadzone(gameSettings.cellSize * 10, gameSettings.cellSize * 10);
+  scene.cameras.main.startFollow(guy, true, 0.1, 0.1)
+  scene.cameras.main.setDeadzone(gameSettings.cellSize * 10, gameSettings.cellSize * 10)
   scene.cameras.main.setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
 
-  let pointerCallback = (p: Phaser.Input.Pointer) => {
+  const pointerCallback = (p: Phaser.Input.Pointer) => {
     console.log(p)
     connectionManager.setDestination(gameSettings.cellFromScreenPos(p.worldX), gameSettings.cellFromScreenPos(p.worldY))
+  }
+
+  switch (scene.scale.displayScale.x) {
+    case 1:
+      console.log(1)
+      break
+    case 1:
+      console.log(2)
+      break
   }
 
   scene.input.on('pointerup', pointerCallback)
@@ -56,15 +65,15 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
   }
 
   if (controls.zoomIn.isDown) {
-    gameSettings.changeZoom(.01)
+    gameSettings.changeZoom(0.01)
     scene.cameras.main.setZoom(gameSettings.gameCameraZoom)
   } else if (controls.zoomOut.isDown) {
-    gameSettings.changeZoom(-.01)
+    gameSettings.changeZoom(-0.01)
     scene.cameras.main.setZoom(gameSettings.gameCameraZoom)
   }
 
   // Check monsterss
-  gameState.monsters.forEach(m => {
+  gameState.monsters.forEach((m) => {
     if (!m.sprite) {
       m.sprite = scene.add.image(m.x * gameSettings.cellSize, m.y * gameSettings.cellSize, 'monster')
       console.log('Creating new monster sprite', m.id)
@@ -77,13 +86,13 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 const cleanup = (scene: Phaser.Scene): void => {
   mapTiles.forEach((m) => m.destroy())
   mapTiles = []
-  
+
   guy.destroy()
 
   scene.input.removeListener('pointerup', pointerCallback)
 }
 
-const drawMap = (scene: Phaser.Scene) => {
+const drawMap = (scene: Phaser.Scene): void => {
   console.log('drawMap')
 
   mapTiles.forEach((m) => m.destroy())
@@ -102,5 +111,5 @@ export const fns = {
   init,
   update,
   cleanup,
-  drawMap,
+  drawMap
 }

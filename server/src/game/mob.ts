@@ -1,8 +1,13 @@
-import { throws } from "assert"
-import { Level } from "./level"
+import { Level } from './level'
 
 abstract class MOB {
-  constructor(public name: string, public team: number, public health: number, public id: number, public mobType: string) {}
+  constructor(
+    public name: string,
+    public team: number,
+    public health: number,
+    public id: number,
+    public mobType: string
+  ) {}
   x = 0
   y = 0
   destinationX = 0
@@ -62,18 +67,14 @@ abstract class MOB {
       }
 
       // Set the next x/y from the path
-      this.x = this.moveGraph.length > 0
-        ? this.moveGraph[0][0]
-        : this.x
+      this.x = this.moveGraph.length > 0 ? this.moveGraph[0][0] : this.x
 
-      this.y = this.moveGraph.length > 0
-        ? this.moveGraph[0][1]
-        : this.y
+      this.y = this.moveGraph.length > 0 ? this.moveGraph[0][1] : this.y
 
       // Remove the move just made
       this.moveGraph.shift()
 
-      this.actionPoints-= this.actionPointCostPerMove
+      this.actionPoints -= this.actionPointCostPerMove
       this.lastMoveTick = tick
     }
   }
@@ -90,7 +91,7 @@ abstract class MOB {
       type: this.mobType,
       data: { id: this.id, x: this.x, y: this.y, ap: this.actionPoints }
     })
-    
+
     if (this.lastState !== state) {
       this.lastState = state
       return state
@@ -103,7 +104,7 @@ abstract class MOB {
 export class Creature extends MOB {
   moveRange = 3
 
-  moveTowardsDestination(tick: number, level: Level<unknown>) {
+  moveTowardsDestination(tick: number, level: Level<unknown>): void {
     if (this.destinationX === this.x || this.destinationY === this.y) {
       const nextLocation = level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
       this.setDestination(nextLocation.x, nextLocation.y)

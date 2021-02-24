@@ -39,25 +39,25 @@ class ConnectionManager {
 
     this.connection.onopen = () => {
       console.log('Connection Opened!')
-  
+
       this.connection.send(JSON.stringify({ type: 'login', name: 'Joe Blow' }))
     }
-  
+
     this.connection.onerror = (error) => {
       console.error(`WebSocket error: ${error}`)
     }
-  
+
     this.connection.onmessage = (e) => {
       const message: BaseMessage = JSON.parse(e.data)
-  
+
       // console.log('Got message', message)
-  
+
       switch (message.type) {
         case 'map':
           gameState.map = message.data
           gameState.mapUpdate = true
           break
-  
+
         case 'player':
           gameState.player.x = message.data.x
           gameState.player.y = message.data.y
@@ -65,7 +65,7 @@ class ConnectionManager {
 
         case 'monster':
           let monster = gameState.monsters.get(message.data.id)
-          
+
           if (!monster) {
             monster = { ...message.data }
             gameState.monsters.set(monster.id, monster)
@@ -76,7 +76,7 @@ class ConnectionManager {
           break
       }
     }
-  
+
     this.connection.onclose = (e) => {
       console.log('Conection closed')
     }
@@ -88,7 +88,7 @@ class ConnectionManager {
   }
 
   setDestination(x: number, y: number) {
-    this.connection.send(JSON.stringify({ type:'setDestination', x, y }))
+    this.connection.send(JSON.stringify({ type: 'setDestination', x, y }))
   }
 }
 
