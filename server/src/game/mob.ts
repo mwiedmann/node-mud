@@ -1,11 +1,11 @@
-import { MonsterType } from './monsters'
+import { MOBType } from './monsters'
 import { Level } from './level'
 import { distance } from './util'
 import { rollDice } from './combat'
 
 abstract class MOB {
   constructor(
-    public type: MonsterType,
+    public type: MOBType,
     public team: number,
     public health: number,
     public id: number,
@@ -22,6 +22,9 @@ abstract class MOB {
   actionPointsGainedPerTick = 1
   actionPointCostPerMove = 1
   actionPointsCostPerAction = 5
+
+  mode: 'hunt' | 'move' = 'hunt'
+  huntRange = 4
 
   ticksPerMove = 1
   ticksPerAction = 5
@@ -106,26 +109,32 @@ abstract class MOB {
       // See if we need to calculate the move graph
       if (this.moveGraph.length === 0) {
         // Use the A* Algorithm to find a path
-        this.moveGraph = level.graph.findPath({ x: this.x, y: this.y }, { x: this.destinationX, y: this.destinationY })
+        this.moveGraph = level.findPath({ x: this.x, y: this.y }, { x: this.destinationX, y: this.destinationY })
       }
 
-      // Set the next x/y from the path
-      this.x = this.moveGraph.length > 0 ? this.moveGraph[0][0] : this.x
+      const moveToX = this.moveGraph.length > 0 ? this.moveGraph[0][0] : this.x
+      const moveToY = this.moveGraph.length > 0 ? this.moveGraph[0][1] : this.y
 
-      this.y = this.moveGraph.length > 0 ? this.moveGraph[0][1] : this.y
+      // Only move if the location is open
+      if (!level.locationContainsMob(moveToX, moveToY)) {
+        // Set the next x/y from the path
+        this.x = this.moveGraph.length > 0 ? this.moveGraph[0][0] : this.x
 
-      // Remove the move just made
-      this.moveGraph.shift()
+        this.y = this.moveGraph.length > 0 ? this.moveGraph[0][1] : this.y
 
-      this.actionPoints -= this.actionPointCostPerMove
-      this.lastMoveTick = tick
+        // Remove the move just made
+        this.moveGraph.shift()
+
+        this.actionPoints -= this.actionPointCostPerMove
+        this.lastMoveTick = tick
+      }
     }
   }
 
   takeAction(tick: number, level: Level<unknown>) {
     if (this.actionPoints >= this.actionPointsCostPerAction) {
       const mobToAttack =
-        this.type === 'player' ? level.adjecentMonster(this.x, this.y) : level.adjecentPlayer(this.x, this.y)
+        this.type === 'player' ? level.monsterInRange(this.x, this.y, 1) : level.playerInRange(this.x, this.y, 1)
 
       if (mobToAttack) {
         const attackResult = this.meleeAttackRoll()
@@ -167,27 +176,35 @@ abstract class MOB {
 }
 
 export class Monster extends MOB {
+  constructor(type: MOBType, team: number, health: number, id: number, name?: string) {
+    super(type, team, health, id, name)
+
+    this.huntRange = 10
+  }
   moveRange = 10
 
   moveTowardsDestination(tick: number, level: Level<unknown>): void {
-    if (this.destinationX === this.x || this.destinationY === this.y) {
-      const player = level.players.values().next().value
+    // If it's time to move, see if there are any close players
+    if (tick - this.lastMoveTick >= this.ticksPerMove && this.actionPoints >= this.actionPointCostPerMove) {
+      // Look for a close player
+      const player = level.playerInRange(this.x, this.y, this.huntRange)
 
-      // If the player is in range, move towards them
-      const nextLocation =
-        player && distance(this.x, this.y, player.x, player.y) <= this.moveRange
-          ? { x: player.x, y: player.y }
-          : level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
+      if (player) {
+        this.setDestination(player.x, player.y)
+      }
+    }
+
+    // If already at the desired spot, pick a new spot
+    if (this.destinationX === this.x && this.destinationY === this.y) {
+      const nextLocation = level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
 
       this.setDestination(nextLocation.x, nextLocation.y)
 
-      this.moveGraph = level.graph.findPath({ x: this.x, y: this.y }, { x: this.destinationX, y: this.destinationY })
+      this.moveGraph = level.findPath({ x: this.x, y: this.y }, { x: this.destinationX, y: this.destinationY })
 
       // Check if not reachable
       if (this.moveGraph.length === 0) {
-        this.destinationX = this.x
-        this.destinationY = this.y
-        this.moveGraph = []
+        this.setDestination(this.x, this.y)
       }
     }
 
@@ -198,5 +215,23 @@ export class Monster extends MOB {
 export class Player<T> extends MOB {
   constructor(name: string, team: number, health: number, id: number, public connection: T) {
     super('player', team, health, id, name)
+  }
+
+  moveTowardsDestination(tick: number, level: Level<unknown>): void {
+    if (
+      this.mode === 'hunt' &&
+      tick - this.lastMoveTick >= this.ticksPerMove &&
+      this.actionPoints >= this.actionPointCostPerMove
+    ) {
+      // If the player is hunting, look for close monsters
+      const monster = level.monsterInRange(this.x, this.y, this.huntRange)
+
+      if (monster) {
+        // console.log('Player has taret', monster.x, monster.y, 'Current spot', this.x, this.y)
+        this.setDestination(monster.x, monster.y)
+      }
+    }
+
+    super.moveTowardsDestination(tick, level)
   }
 }

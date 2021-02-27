@@ -5,14 +5,18 @@ class GameSettings {
     this.fieldHeight = this.cellCountY * this.cellSize
     this.fieldWidthMid = this.fieldWidth / 2
     this.fieldHeightMid = this.fieldHeight / 2
+    this.screenWidthMid = this.screenWidth / 2
+    this.screenHeightMid = this.screenHeight / 2
   }
 
-  cellCountX = 178
+  cellCountX = 200
   cellCountY = 100
   cellSize = 32
   screenWidth = 1920
   screenHeight = 1080
-  gameCameraZoom = 2
+  screenWidthMid: number
+  screenHeightMid: number
+  gameCameraZoom = 1
 
   halfCell: number
   fieldWidth: number

@@ -1,4 +1,4 @@
-import { addRandomWalls, createEmptyMap } from './map'
+import { addRandomWalls, createEmptyMap, randomDungeon, randomMonsters } from './map'
 import { Player } from './mob'
 import { Level } from './level'
 import { nextId } from './id'
@@ -9,24 +9,16 @@ export class Game<T> {
     const level = new Level<T>()
 
     // Just create a random map for now
-    const map = createEmptyMap()
-    addRandomWalls(map, 500)
-    map[0][0] = 0 // Clear starting spot
+    // const map = createEmptyMap()
+    // addRandomWalls(map, 500)
+    // map[0][0] = 0 // Clear starting spot
 
+    const map = randomDungeon()
     level.setMap(map) // This will also create the map search graph
 
-    for (let i = 0; i < 10; i++) {
-      const monster = i < 60 ? monsterFactory('orc') : i < 90 ? monsterFactory('ogre') : monsterFactory('dragon')
-
-      // This helps stagger the movements of all the monsters
-      monster.lastMoveTick = Math.floor(Math.random() * monster.ticksPerMove) + 1
-      const startingLocation = level.getRandomLocation()
-      monster.x = startingLocation.x
-      monster.y = startingLocation.y
-      monster.setDestination(startingLocation.x, startingLocation.y)
-
-      level.monsters.set(monster.id, monster)
-    }
+    randomMonsters('orc', 50, level)
+    randomMonsters('ogre', 10, level)
+    randomMonsters('dragon', 1, level)
 
     this.levels.set(1, level)
   }
@@ -59,9 +51,9 @@ export class Game<T> {
 
   login(name: string, connection: T): Player<T> {
     const level = this.getFirstLevel()
-    const player = new Player(name, 1, 50, nextId(), connection)
+    const player = new Player(name, 1, 500, nextId(), connection)
 
-    const startingLocation = level.getRandomLocation()
+    const startingLocation = level.findOpenLocation()
     player.x = startingLocation.x
     player.y = startingLocation.y
     player.setDestination(startingLocation.x, startingLocation.y)

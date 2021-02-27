@@ -87,23 +87,23 @@ export function sceneUpdate(this: Phaser.Scene, time: number, delta: number): vo
 export const startGame = (): void => {
   new Phaser.Game({
     type: Phaser.AUTO,
-    width: gameSettings.fieldWidth,
-    height: gameSettings.fieldHeight,
+    width: gameSettings.screenWidth, // gameSettings.fieldWidth,
+    height: gameSettings.screenHeight, // gameSettings.fieldHeight,
     scale: {
       mode: Phaser.Scale.ScaleModes.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    physics: {
-      default: 'matter',
-      matter: {
-        enableSleeping: false
-        // debug: true,
-        // gravity: {
-        //   y: 1,
-        //   x: 0,
-        // },
-      }
-    },
+    // physics: {
+    //   default: 'matter',
+    //   matter: {
+    //     enableSleeping: false
+    //     // debug: true,
+    //     // gravity: {
+    //     //   y: 1,
+    //     //   x: 0,
+    //     // },
+    //   }
+    // },
     scene: {
       preload: scenePreload,
       create: sceneCreate,

@@ -5,7 +5,7 @@ import { controls, gameState } from '../init'
 let titleScreen: Phaser.GameObjects.Image
 
 const init = (scene: Phaser.Scene): void => {
-  titleScreen = scene.add.image(gameSettings.fieldWidthMid, gameSettings.fieldHeightMid, 'title')
+  titleScreen = scene.add.image(gameSettings.screenWidthMid, gameSettings.screenHeightMid, 'title')
 }
 
 const update = (scene: Phaser.Scene, time: number, delta: number): void => {

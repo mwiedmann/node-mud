@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "astar-typescript": "1.2.5",
+    "random-dungeon-generator": "1.0.32",
     "ts-node": "9.1.1",
     "ws": "7.4.3"
   },
