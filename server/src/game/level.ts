@@ -1,11 +1,11 @@
 import { AStarFinder } from 'astar-typescript'
 import { SquareType } from './map'
-import { Creature, Player } from './mob'
+import { Monster, Player } from './mob'
 
 export class Level<T> {
   map: SquareType[][] = []
   players: Map<number, Player<T>> = new Map()
-  creatures: Map<number, Creature> = new Map()
+  monsters: Map<number, Monster> = new Map()
   graph!: AStarFinder
 
   setMap(map: SquareType[][]): void {
@@ -33,5 +33,29 @@ export class Level<T> {
       x: xMin + Math.floor(Math.random() * (xMax + 1 - xMin)),
       y: yMin + Math.floor(Math.random() * (yMax + 1 - yMin))
     }
+  }
+
+  adjecentMonster(x: number, y: number): Monster | undefined {
+    const iterator = this.monsters[Symbol.iterator]()
+
+    for (const m of iterator) {
+      if (!m[1].dead && Math.abs(m[1].x - x) <= 1 && Math.abs(m[1].y - y) <= 1) {
+        return m[1]
+      }
+    }
+
+    return undefined
+  }
+
+  adjecentPlayer(x: number, y: number): Player<unknown> | undefined {
+    const iterator = this.players[Symbol.iterator]()
+
+    for (const p of iterator) {
+      if (!p[1].dead && Math.abs(p[1].x - x) <= 1 && Math.abs(p[1].y - y) <= 1) {
+        return p[1]
+      }
+    }
+
+    return undefined
   }
 }

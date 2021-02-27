@@ -22,8 +22,10 @@ type MonsterMessage = {
   type: 'monster'
   data: {
     id: number
+    subType: string
     x: number
     y: number
+    dead: boolean
   }
 }
 
@@ -50,7 +52,7 @@ class ConnectionManager {
     this.connection.onmessage = (e) => {
       const message: BaseMessage = JSON.parse(e.data)
 
-      // console.log('Got message', message)
+      console.log('Got message', message)
 
       switch (message.type) {
         case 'map':
@@ -72,6 +74,7 @@ class ConnectionManager {
           } else {
             monster.x = message.data.x
             monster.y = message.data.y
+            monster.dead = message.data.dead
           }
           break
       }

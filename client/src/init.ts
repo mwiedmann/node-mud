@@ -37,7 +37,11 @@ function scenePreload(this: Phaser.Scene) {
 
   this.load.image('wall', 'images/wall.png')
   this.load.image('guy', 'images/guy.png')
-  this.load.image('monster', 'images/monster.png')
+
+  // Monsters
+  this.load.image('orc', 'images/monsters/orc.png')
+  this.load.image('ogre', 'images/monsters/ogre.png')
+  this.load.image('dragon', 'images/monsters/dragon.png')
 
   // Sprites
   // this.load.spritesheet('guy-run', 'images/guy-run-55x59.png', { frameWidth: 55, frameHeight: 59 })

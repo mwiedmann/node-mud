@@ -1,24 +1,30 @@
+import { MonsterType } from './monsters'
 import { Level } from './level'
+import { distance } from './util'
+import { rollDice } from './combat'
 
 abstract class MOB {
   constructor(
-    public name: string,
+    public type: MonsterType,
     public team: number,
     public health: number,
     public id: number,
-    public mobType: string
+    public name?: string
   ) {}
   x = 0
   y = 0
   destinationX = 0
   destinationY = 0
+  dead = false
 
   maxAtionPoints = 100
   actionPoints = 100
   actionPointsGainedPerTick = 1
   actionPointCostPerMove = 1
+  actionPointsCostPerAction = 5
 
   ticksPerMove = 1
+  ticksPerAction = 5
 
   lastMoveTick = 0
 
@@ -26,13 +32,50 @@ abstract class MOB {
 
   moveGraph: number[][] = []
 
+  attacks = {
+    meleeHitBonus: 2,
+    meleeDamageDie: 'd4',
+    meleeDamageBonus: 1,
+    rangedHitBonus: 1,
+    rangedDamageDie: undefined,
+    rangedDamageBoonus: undefined
+  }
+
+  defence = {
+    melee: 10,
+    ranaged: 10,
+    magic: 10
+  }
+
+  meleeAttackRoll() {
+    return rollDice('d20', 1, this.attacks.meleeHitBonus)
+  }
+
+  meleeDamageRoll() {
+    return rollDice('d4', 1, this.attacks.meleeDamageBonus)
+  }
+
+  takeDamage(dmg: number) {
+    this.health -= dmg
+
+    if (this.health <= 0) {
+      this.dead = true
+      console.log(this.name, 'is dead!!!')
+    }
+  }
+
   update(tick: number, level: Level<unknown>) {
+    if (this.dead) {
+      return
+    }
+
     this.actionPoints += this.actionPointsGainedPerTick
 
     if (this.actionPoints > this.maxAtionPoints) {
       this.actionPoints = this.maxAtionPoints
     }
 
+    this.takeAction(tick, level)
     this.moveTowardsDestination(tick, level)
   }
 
@@ -79,6 +122,28 @@ abstract class MOB {
     }
   }
 
+  takeAction(tick: number, level: Level<unknown>) {
+    if (this.actionPoints >= this.actionPointsCostPerAction) {
+      const mobToAttack =
+        this.type === 'player' ? level.adjecentMonster(this.x, this.y) : level.adjecentPlayer(this.x, this.y)
+
+      if (mobToAttack) {
+        const attackResult = this.meleeAttackRoll()
+
+        if (attackResult.total >= mobToAttack.defence.melee) {
+          const dmgRoll = this.meleeDamageRoll()
+          console.log(this.name, 'hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
+
+          mobToAttack.takeDamage(dmgRoll.total)
+        } else {
+          console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
+        }
+
+        this.actionPoints -= this.actionPointsCostPerAction
+      }
+    }
+  }
+
   setDestination(x: number, y: number) {
     this.destinationX = x
     this.destinationY = y
@@ -88,8 +153,8 @@ abstract class MOB {
 
   getState() {
     const state = JSON.stringify({
-      type: this.mobType,
-      data: { id: this.id, x: this.x, y: this.y, ap: this.actionPoints }
+      type: this.type === 'player' ? 'player' : 'monster',
+      data: { subType: this.type, id: this.id, x: this.x, y: this.y, ap: this.actionPoints, dead: this.dead }
     })
 
     if (this.lastState !== state) {
@@ -101,12 +166,19 @@ abstract class MOB {
   }
 }
 
-export class Creature extends MOB {
-  moveRange = 3
+export class Monster extends MOB {
+  moveRange = 10
 
   moveTowardsDestination(tick: number, level: Level<unknown>): void {
     if (this.destinationX === this.x || this.destinationY === this.y) {
-      const nextLocation = level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
+      const player = level.players.values().next().value
+
+      // If the player is in range, move towards them
+      const nextLocation =
+        player && distance(this.x, this.y, player.x, player.y) <= this.moveRange
+          ? { x: player.x, y: player.y }
+          : level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
+
       this.setDestination(nextLocation.x, nextLocation.y)
 
       this.moveGraph = level.graph.findPath({ x: this.x, y: this.y }, { x: this.destinationX, y: this.destinationY })
@@ -125,6 +197,6 @@ export class Creature extends MOB {
 
 export class Player<T> extends MOB {
   constructor(name: string, team: number, health: number, id: number, public connection: T) {
-    super(name, team, health, id, 'player')
+    super('player', team, health, id, name)
   }
 }

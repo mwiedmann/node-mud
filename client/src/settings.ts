@@ -12,7 +12,7 @@ class GameSettings {
   cellSize = 32
   screenWidth = 1920
   screenHeight = 1080
-  gameCameraZoom = 1.25
+  gameCameraZoom = 2
 
   halfCell: number
   fieldWidth: number

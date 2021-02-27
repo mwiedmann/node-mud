@@ -16,27 +16,29 @@ export const startServer = (): void => {
 
   wss.on('connection', (ws) => {
     ws.on('message', (message) => {
-      console.log(`Received message => ${message}`)
+      try {
+        if (typeof message === 'string') {
+          const obj: MessageBase = JSON.parse(message)
 
-      if (typeof message === 'string') {
-        const obj: MessageBase = JSON.parse(message)
+          switch (obj.type) {
+            case 'login':
+              loginPlayer(ws, obj)
+              break
 
-        switch (obj.type) {
-          case 'login':
-            loginPlayer(ws, obj)
-            break
+            case 'logout':
+              logoutPlayer(ws)
+              break
 
-          case 'logout':
-            logoutPlayer(ws)
-            break
+            case 'setDestination':
+              setDestination(ws, obj)
+              break
 
-          case 'setDestination':
-            setDestination(ws, obj)
-            break
-
-          default:
-            console.error('Invalid message type')
+            default:
+              console.error('Invalid message type')
+          }
         }
+      } catch (ex) {
+        console.log(ex)
       }
     })
   })
@@ -58,7 +60,7 @@ const updateGame = () => {
           p.connection.send(state)
         }
 
-        l.creatures.forEach((c) => {
+        l.monsters.forEach((c) => {
           const state = c.getState()
           if (state) {
             p.connection.send(state)

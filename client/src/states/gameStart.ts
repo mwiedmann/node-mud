@@ -19,17 +19,7 @@ const init = (scene: Phaser.Scene): void => {
   scene.cameras.main.setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
 
   const pointerCallback = (p: Phaser.Input.Pointer) => {
-    console.log(p)
     connectionManager.setDestination(gameSettings.cellFromScreenPos(p.worldX), gameSettings.cellFromScreenPos(p.worldY))
-  }
-
-  switch (scene.scale.displayScale.x) {
-    case 1:
-      console.log(1)
-      break
-    case 1:
-      console.log(2)
-      break
   }
 
   scene.input.on('pointerup', pointerCallback)
@@ -74,9 +64,17 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
   // Check monsterss
   gameState.monsters.forEach((m) => {
+    // If the monster is dead, destroy any sprite
+    // We could remove from the list, but we might want to leave a body behind
+    if (m.dead) {
+      if (m.sprite) {
+        m.sprite.destroy()
+      }
+      return
+    }
+
     if (!m.sprite) {
-      m.sprite = scene.add.image(m.x * gameSettings.cellSize, m.y * gameSettings.cellSize, 'monster')
-      console.log('Creating new monster sprite', m.id)
+      m.sprite = scene.add.image(m.x * gameSettings.cellSize, m.y * gameSettings.cellSize, m.subType)
     }
 
     m.sprite.setPosition(gameSettings.screenPosFromMap(m.x), gameSettings.screenPosFromMap(m.y))

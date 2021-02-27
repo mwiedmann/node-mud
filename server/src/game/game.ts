@@ -1,6 +1,8 @@
 import { addRandomWalls, createEmptyMap } from './map'
-import { Creature, Player } from './mob'
+import { Player } from './mob'
 import { Level } from './level'
+import { nextId } from './id'
+import { monsterFactory } from './monsters'
 
 export class Game<T> {
   constructor() {
@@ -13,32 +15,30 @@ export class Game<T> {
 
     level.setMap(map) // This will also create the map search graph
 
-    for (let i = 0; i < 200; i++) {
-      const creature = new Creature('Orc', 2, 10, this.getNextId(), 'monster')
-      const startingLocation = level.getRandomLocation()
-      creature.x = startingLocation.x
-      creature.y = startingLocation.y
-      creature.setDestination(startingLocation.x, startingLocation.y)
+    for (let i = 0; i < 10; i++) {
+      const monster = i < 60 ? monsterFactory('orc') : i < 90 ? monsterFactory('ogre') : monsterFactory('dragon')
 
-      level.creatures.set(creature.id, creature)
+      // This helps stagger the movements of all the monsters
+      monster.lastMoveTick = Math.floor(Math.random() * monster.ticksPerMove) + 1
+      const startingLocation = level.getRandomLocation()
+      monster.x = startingLocation.x
+      monster.y = startingLocation.y
+      monster.setDestination(startingLocation.x, startingLocation.y)
+
+      level.monsters.set(monster.id, monster)
     }
 
     this.levels.set(1, level)
   }
 
-  nextId = 1
   tick = 1
   players = new Map<T, Player<T>>()
   levels = new Map<number, Level<T>>()
 
-  getNextId(): number {
-    return this.nextId++
-  }
-
   update(): void {
     this.tick++
     this.levels.forEach((l) => {
-      l.creatures.forEach((c) => {
+      l.monsters.forEach((c) => {
         c.update(this.tick, l)
       })
       l.players.forEach((p) => {
@@ -59,7 +59,7 @@ export class Game<T> {
 
   login(name: string, connection: T): Player<T> {
     const level = this.getFirstLevel()
-    const player = new Player(name, 1, 10, this.getNextId(), connection)
+    const player = new Player(name, 1, 50, nextId(), connection)
 
     const startingLocation = level.getRandomLocation()
     player.x = startingLocation.x
