@@ -15,6 +15,7 @@ type PlayerMessage = {
   data: {
     x: number
     y: number
+    activityLog: string[]
   }
 }
 
@@ -26,6 +27,7 @@ type MonsterMessage = {
     x: number
     y: number
     dead: boolean
+    activityLog: string[]
   }
 }
 
@@ -63,6 +65,7 @@ class ConnectionManager {
         case 'player':
           gameState.player.x = message.data.x
           gameState.player.y = message.data.y
+          gameState.player.activityLog = message.data.activityLog
           break
 
         case 'monster':
@@ -75,6 +78,7 @@ class ConnectionManager {
             monster.x = message.data.x
             monster.y = message.data.y
             monster.dead = message.data.dead
+            monster.activityLog = message.data.activityLog
           }
           break
       }

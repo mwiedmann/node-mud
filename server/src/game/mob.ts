@@ -50,6 +50,12 @@ abstract class MOB {
     magic: 10
   }
 
+  activityLog: string[] = []
+
+  addActivity(activity: string) {
+    this.activityLog.push(activity)
+  }
+
   meleeAttackRoll() {
     return rollDice('d20', 1, this.attacks.meleeHitBonus)
   }
@@ -61,7 +67,10 @@ abstract class MOB {
   takeDamage(dmg: number) {
     this.health -= dmg
 
+    this.addActivity(`${dmg} damage`)
+
     if (this.health <= 0) {
+      this.addActivity('DEAD')
       this.dead = true
       console.log(this.name, 'is dead!!!')
     }
@@ -163,8 +172,19 @@ abstract class MOB {
   getState() {
     const state = JSON.stringify({
       type: this.type === 'player' ? 'player' : 'monster',
-      data: { subType: this.type, id: this.id, x: this.x, y: this.y, ap: this.actionPoints, dead: this.dead }
+      data: {
+        subType: this.type,
+        id: this.id,
+        x: this.x,
+        y: this.y,
+        ap: this.actionPoints,
+        dead: this.dead,
+        activityLog: this.activityLog
+      }
     })
+
+    // Reset the log after the state is gathered
+    this.activityLog = []
 
     if (this.lastState !== state) {
       this.lastState = state

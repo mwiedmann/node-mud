@@ -6,6 +6,12 @@ import { controls, gameState, sceneUpdate, SquareType } from '../init'
 let mapTiles: Phaser.GameObjects.Image[] = []
 let guy: Phaser.GameObjects.Image
 let pointerCallback: (p: Phaser.Input.Pointer) => void
+let floatingObjects: {
+  timeStart: number
+  text: Phaser.GameObjects.Text
+  delete?: boolean
+  direction: number
+}[] = []
 
 const init = (scene: Phaser.Scene): void => {
   connectionManager.openConnection()
@@ -32,6 +38,25 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
   }
 
   guy.setPosition(gameSettings.screenPosFromMap(gameState.player.x), gameSettings.screenPosFromMap(gameState.player.y))
+
+  // Create floating text for any player activity
+  if (gameState.player.activityLog.length > 0) {
+    let offSet = 0
+    gameState.player.activityLog.forEach((a) => {
+      floatingObjects.push({
+        timeStart: time,
+        direction: 1,
+        text: scene.add.text(
+          gameSettings.screenPosFromMap(gameState.player.x),
+          gameSettings.screenPosFromMap(gameState.player.y) + (gameSettings.cellSize + offSet),
+          a,
+          { color: '#FF0000', align: 'center' }
+        )
+      })
+      offSet += 16
+    })
+    gameState.player.activityLog = []
+  }
 
   if (controls.cursors.left.isDown) {
     scene.cameras.main.x -= 1
@@ -77,8 +102,38 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       m.sprite = scene.add.image(m.x * gameSettings.cellSize, m.y * gameSettings.cellSize, m.subType)
     }
 
+    if (m.activityLog.length > 0) {
+      // TODO: Calc the offset and y pos from cellSize?
+      let offSet = 0
+      m.activityLog.forEach((a) => {
+        floatingObjects.push({
+          timeStart: time,
+          direction: -1,
+          text: scene.add.text(
+            gameSettings.screenPosFromMap(m.x),
+            gameSettings.screenPosFromMap(m.y) - (gameSettings.cellSize + offSet),
+            a,
+            { color: '#00FF00', align: 'center' }
+          )
+        })
+        offSet += 16
+      })
+      m.activityLog = []
+    }
+
     m.sprite.setPosition(gameSettings.screenPosFromMap(m.x), gameSettings.screenPosFromMap(m.y))
   })
+
+  // Move any floating text and destroy after a while
+  floatingObjects.forEach((l) => {
+    l.text.y += 15 * l.direction * (delta / 100)
+    if (time - l.timeStart >= 1000) {
+      l.text.destroy()
+      l.delete = true
+    }
+  })
+
+  floatingObjects = floatingObjects.filter((f) => !f.delete)
 }
 
 const cleanup = (scene: Phaser.Scene): void => {

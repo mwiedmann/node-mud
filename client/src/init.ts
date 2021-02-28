@@ -27,7 +27,7 @@ export const gameState: {
   phase: 'init',
   map: [[SquareType.Empty]],
   mapUpdate: true,
-  player: { x: 0, y: 0 },
+  player: { x: 0, y: 0, activityLog: [] },
   monsters: new Map()
 }
 

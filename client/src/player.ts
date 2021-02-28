@@ -1,6 +1,7 @@
 export type Player = {
   x: number
   y: number
+  activityLog: string[]
 }
 
 export type Monster = {
@@ -9,5 +10,6 @@ export type Monster = {
   x: number
   y: number
   dead: boolean
+  activityLog: string[]
   sprite?: Phaser.GameObjects.Image
 }
