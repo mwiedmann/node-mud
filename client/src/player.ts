@@ -1,4 +1,5 @@
 export type Player = {
+  loggedIn: boolean
   x: number
   y: number
   lastX: number

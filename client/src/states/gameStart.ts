@@ -17,13 +17,13 @@ let floatingObjects: {
 }[] = []
 
 const init = (scene: Phaser.Scene): void => {
-  connectionManager.openConnection()
+  connectionManager.openConnection(scene)
   scene.cameras.main.setZoom(gameSettings.gameCameraZoom)
 
-  guy = scene.add.image(gameState.player.x * gameSettings.cellSize, gameState.player.y * gameSettings.cellSize, 'guy')
+  guy = scene.add.image(0, 0, 'guy')
 
   // Set the camera to follow the guy (with some lerping, a deadzone, and bounds)
-  scene.cameras.main.startFollow(guy, true, 0.1, 0.1)
+  scene.cameras.main.startFollow(guy, true, 0.03, 0.03)
   scene.cameras.main.setDeadzone(gameSettings.cellSize * 5, gameSettings.cellSize * 5)
   scene.cameras.main.setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
 
@@ -37,6 +37,11 @@ const init = (scene: Phaser.Scene): void => {
 // const isTileVisible = (startX: number, startY: number, endX: number, endY: number, )
 
 const update = (scene: Phaser.Scene, time: number, delta: number): void => {
+  // Don't process the game until the player login is complete
+  if (!gameState.player.loggedIn) {
+    return
+  }
+
   if (gameState.mapUpdate) {
     gameState.mapUpdate = false
     drawMap(scene)

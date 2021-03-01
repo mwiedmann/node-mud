@@ -25,8 +25,8 @@ export class Level<T> {
       grid: {
         matrix: map
       },
-      diagonalAllowed: false,
-      heuristic: 'Chebyshev'
+      diagonalAllowed: true
+      // heuristic: 'Chebyshev'
     })
   }
 

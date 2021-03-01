@@ -1,22 +1,17 @@
 import { MOBType } from './monsters'
 import { Level } from './level'
-import { distance } from './util'
-import { rollDice } from './combat'
+import { Dice, rollDice } from './combat'
+import { MOBSkills, PlayerProfession, PlayerRace } from './players'
 
-abstract class MOB {
-  constructor(
-    public type: MOBType,
-    public team: number,
-    public health: number,
-    public id: number,
-    public name?: string
-  ) {}
+abstract class MOB implements MOBSkills {
+  constructor(public type: MOBType, public team: number, public id: number, public name?: string) {}
   x = 0
   y = 0
   destinationX = 0
   destinationY = 0
   dead = false
 
+  health = 10
   maxAtionPoints = 100
   actionPoints = 100
   actionPointsGainedPerTick = 1
@@ -26,29 +21,25 @@ abstract class MOB {
   mode: 'hunt' | 'move' = 'hunt'
   huntRange = 4
 
-  ticksPerMove = 1
+  ticksPerMove = 3
   ticksPerAction = 5
 
   lastMoveTick = 0
+  lastActionTick = 0
 
   lastState = ''
 
   moveGraph: number[][] = []
 
-  attacks = {
-    meleeHitBonus: 2,
-    meleeDamageDie: 'd4',
-    meleeDamageBonus: 1,
-    rangedHitBonus: 1,
-    rangedDamageDie: undefined,
-    rangedDamageBoonus: undefined
-  }
+  meleeHitBonus = 0
+  meleeDamageDie: Dice = 'd4'
+  meleeDamageBonus = 0
+  rangedHitBonus = 0
+  rangedDamageDie: Dice = 'd4'
+  rangedDamageBonus = 0
 
-  defence = {
-    melee: 10,
-    ranaged: 10,
-    magic: 10
-  }
+  physicalDefense = 10
+  magicDefense = 10
 
   activityLog: string[] = []
 
@@ -57,11 +48,11 @@ abstract class MOB {
   }
 
   meleeAttackRoll() {
-    return rollDice('d20', 1, this.attacks.meleeHitBonus)
+    return rollDice('d20', 1, this.meleeHitBonus)
   }
 
   meleeDamageRoll() {
-    return rollDice('d4', 1, this.attacks.meleeDamageBonus)
+    return rollDice('d4', 1, this.meleeDamageBonus)
   }
 
   takeDamage(dmg: number) {
@@ -141,14 +132,14 @@ abstract class MOB {
   }
 
   takeAction(tick: number, level: Level<unknown>) {
-    if (this.actionPoints >= this.actionPointsCostPerAction) {
+    if (tick - this.lastActionTick >= this.ticksPerAction && this.actionPoints >= this.actionPointsCostPerAction) {
       const mobToAttack =
         this.type === 'player' ? level.monsterInRange(this.x, this.y, 1) : level.playerInRange(this.x, this.y, 1)
 
       if (mobToAttack) {
         const attackResult = this.meleeAttackRoll()
 
-        if (attackResult.total >= mobToAttack.defence.melee) {
+        if (attackResult.total >= mobToAttack.physicalDefense) {
           const dmgRoll = this.meleeDamageRoll()
           console.log(this.name, 'hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 
@@ -158,6 +149,7 @@ abstract class MOB {
         }
 
         this.actionPoints -= this.actionPointsCostPerAction
+        this.lastActionTick = tick
       }
     }
   }
@@ -196,8 +188,8 @@ abstract class MOB {
 }
 
 export class Monster extends MOB {
-  constructor(type: MOBType, team: number, health: number, id: number, name?: string) {
-    super(type, team, health, id, name)
+  constructor(type: MOBType, team: number, id: number, name?: string) {
+    super(type, team, id, name)
 
     this.huntRange = 5
   }
@@ -233,8 +225,15 @@ export class Monster extends MOB {
 }
 
 export class Player<T> extends MOB {
-  constructor(name: string, team: number, health: number, id: number, public connection: T) {
-    super('player', team, health, id, name)
+  constructor(
+    name: string,
+    public race: PlayerRace,
+    public profession: PlayerProfession,
+    team: number,
+    id: number,
+    public connection: T
+  ) {
+    super('player', team, id, name)
     this.huntRange = 2
   }
 

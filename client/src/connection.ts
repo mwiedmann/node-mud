@@ -1,4 +1,6 @@
 import { gameState, SquareType } from './init'
+import * as Phaser from 'phaser'
+import { gameSettings } from './settings'
 
 type MapMessage = {
   type: 'map'
@@ -36,7 +38,7 @@ type BaseMessage = WelcomeMessage | MapMessage | PlayerMessage | MonsterMessage
 class ConnectionManager {
   connection!: WebSocket
 
-  openConnection() {
+  openConnection(scene: Phaser.Scene) {
     console.log('Opening connection')
 
     this.connection = new WebSocket('ws://localhost:3001')
@@ -66,6 +68,16 @@ class ConnectionManager {
           gameState.player.x = message.data.x
           gameState.player.y = message.data.y
           gameState.player.activityLog = message.data.activityLog
+
+          // This is the first update for the player on this level
+          // Snap the camera
+          if (!gameState.player.loggedIn || gameState.player.lastX === -1) {
+            gameState.player.loggedIn = true
+            scene.cameras.main.centerOn(
+              gameSettings.screenPosFromMap(gameState.player.x),
+              gameSettings.screenPosFromMap(gameState.player.y)
+            )
+          }
           break
 
         case 'monster':

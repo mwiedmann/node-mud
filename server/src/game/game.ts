@@ -1,8 +1,7 @@
-import { addRandomWalls, createEmptyMap, randomDungeon, randomMonsters } from './map'
+import { randomDungeon, randomMonsters } from './map'
 import { Player } from './mob'
 import { Level } from './level'
-import { nextId } from './id'
-import { monsterFactory } from './monsters'
+import { playerFactory } from './players'
 
 export class Game<T> {
   constructor() {
@@ -51,7 +50,7 @@ export class Game<T> {
 
   login(name: string, connection: T): Player<T> {
     const level = this.getFirstLevel()
-    const player = new Player(name, 1, 500, nextId(), connection)
+    const player = playerFactory('dwarf', 'warrior', name, 1, connection)
 
     const startingLocation = level.findOpenLocation()
     player.x = startingLocation.x
