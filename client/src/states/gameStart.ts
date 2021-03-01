@@ -2,8 +2,18 @@ import * as Phaser from 'phaser'
 import { connectionManager } from '../connection'
 import { gameSettings } from '../settings'
 import { controls, gameState, sceneUpdate, SquareType } from '../init'
+import { setMapTilesSight } from '../mapTiles'
 
-let mapTiles: Phaser.GameObjects.Image[] = []
+const mapTiles: Map<
+  string,
+  {
+    x: number
+    y: number
+    seen: boolean
+    sprite: Phaser.GameObjects.Image
+  }
+> = new Map()
+
 let guy: Phaser.GameObjects.Image
 let pointerCallback: (p: Phaser.Input.Pointer) => void
 let floatingObjects: {
@@ -21,7 +31,7 @@ const init = (scene: Phaser.Scene): void => {
 
   // Set the camera to follow the guy (with some lerping, a deadzone, and bounds)
   scene.cameras.main.startFollow(guy, true, 0.1, 0.1)
-  scene.cameras.main.setDeadzone(gameSettings.cellSize * 10, gameSettings.cellSize * 10)
+  scene.cameras.main.setDeadzone(gameSettings.cellSize * 5, gameSettings.cellSize * 5)
   scene.cameras.main.setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
 
   const pointerCallback = (p: Phaser.Input.Pointer) => {
@@ -31,13 +41,27 @@ const init = (scene: Phaser.Scene): void => {
   scene.input.on('pointerup', pointerCallback)
 }
 
+// const isTileVisible = (startX: number, startY: number, endX: number, endY: number, )
+
 const update = (scene: Phaser.Scene, time: number, delta: number): void => {
   if (gameState.mapUpdate) {
     gameState.mapUpdate = false
     drawMap(scene)
   }
 
-  guy.setPosition(gameSettings.screenPosFromMap(gameState.player.x), gameSettings.screenPosFromMap(gameState.player.y))
+  // If the player has moved, update their sprite and calculate all the visible spaces
+  if (gameState.player.x !== gameState.player.lastX || gameState.player.y !== gameState.player.lastY) {
+    guy.setPosition(
+      gameSettings.screenPosFromMap(gameState.player.x),
+      gameSettings.screenPosFromMap(gameState.player.y)
+    )
+    gameState.player.lastX = gameState.player.x
+    gameState.player.lastY = gameState.player.y
+
+    // Calculate visible spaces
+    const visibleRange = 15
+    setMapTilesSight(mapTiles, visibleRange, gameState.player.x, gameState.player.y)
+  }
 
   // Create floating text for any player activity
   if (gameState.player.activityLog.length > 0) {
@@ -137,8 +161,8 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 }
 
 const cleanup = (scene: Phaser.Scene): void => {
-  mapTiles.forEach((m) => m.destroy())
-  mapTiles = []
+  mapTiles.forEach((m) => m.sprite.destroy())
+  mapTiles.clear()
 
   guy.destroy()
 
@@ -148,13 +172,18 @@ const cleanup = (scene: Phaser.Scene): void => {
 const drawMap = (scene: Phaser.Scene): void => {
   console.log('drawMap')
 
-  mapTiles.forEach((m) => m.destroy())
-  mapTiles = []
+  mapTiles.forEach((m) => m.sprite.destroy())
+  mapTiles.clear()
 
   for (let y = 0; y < gameState.map.length; y++) {
     for (let x = 0; x < gameState.map[y].length; x++) {
       if (gameState.map[y][x] === SquareType.Wall) {
-        mapTiles.push(scene.add.image(gameSettings.screenPosFromMap(x), gameSettings.screenPosFromMap(y), 'wall'))
+        mapTiles.set(`${x},${y}`, {
+          x,
+          y,
+          seen: false, // TODO: If redrawing map, need to keep previous "seen" value
+          sprite: scene.add.image(gameSettings.screenPosFromMap(x), gameSettings.screenPosFromMap(y), 'wall')
+        })
       }
     }
   }

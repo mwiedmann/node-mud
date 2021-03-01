@@ -1,6 +1,8 @@
 export type Player = {
   x: number
   y: number
+  lastX: number
+  lastY: number
   activityLog: string[]
 }
 
