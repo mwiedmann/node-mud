@@ -2,17 +2,10 @@ import * as Phaser from 'phaser'
 import { connectionManager } from '../connection'
 import { gameSettings } from '../settings'
 import { controls, gameState, sceneUpdate, SquareType } from '../init'
-import { setMapTilesSight } from '../mapTiles'
+import { checkGhostStatus, inRange, MapTiles, setMapTilesSight, tileIsBlocked } from '../mapTiles'
+import { defaultMaxListeners } from 'ws'
 
-const mapTiles: Map<
-  string,
-  {
-    x: number
-    y: number
-    seen: boolean
-    sprite: Phaser.GameObjects.Image
-  }
-> = new Map()
+const mapTiles: MapTiles = new Map()
 
 let guy: Phaser.GameObjects.Image
 let pointerCallback: (p: Phaser.Input.Pointer) => void
@@ -49,8 +42,10 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
     drawMap(scene)
   }
 
+  let playerMoved = false
   // If the player has moved, update their sprite and calculate all the visible spaces
   if (gameState.player.x !== gameState.player.lastX || gameState.player.y !== gameState.player.lastY) {
+    playerMoved = true
     guy.setPosition(
       gameSettings.screenPosFromMap(gameState.player.x),
       gameSettings.screenPosFromMap(gameState.player.y)
@@ -59,8 +54,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
     gameState.player.lastY = gameState.player.y
 
     // Calculate visible spaces
-    const visibleRange = 15
-    setMapTilesSight(mapTiles, visibleRange, gameState.player.x, gameState.player.y)
+    setMapTilesSight(mapTiles, gameState.player.visibleRange, gameState.player.x, gameState.player.y)
   }
 
   // Create floating text for any player activity
@@ -124,6 +118,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
     if (!m.sprite) {
       m.sprite = scene.add.image(m.x * gameSettings.cellSize, m.y * gameSettings.cellSize, m.subType)
+      m.sprite.setVisible(false)
     }
 
     if (m.activityLog.length > 0) {
@@ -145,7 +140,42 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       m.activityLog = []
     }
 
-    m.sprite.setPosition(gameSettings.screenPosFromMap(m.x), gameSettings.screenPosFromMap(m.y))
+    // If the monster or player moved, then recalc the visibility of the monster
+    if (m.x !== m.lastX || m.y !== m.lastY || playerMoved) {
+      m.lastX = m.x
+      m.lastY = m.y
+
+      const isInRange = inRange(gameState.player.visibleRange, gameState.player.x, gameState.player.y, m.x, m.y)
+
+      // If the monster is in range, dim it but don't change it's visibility
+      // If the monster was visible, the player will continue to see it in it's last known position as a reminder (ghost)
+      if (!isInRange) {
+        m.sprite.alpha = 0.5
+
+        // The monster is out of range so check the status of it's last known location (ghost)
+        checkGhostStatus(mapTiles, m, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
+      } else {
+        // The monster is in range so lets check if sight is blocked by a wall
+        const sightToMonsterBlocked = tileIsBlocked(mapTiles, gameState.player.x, gameState.player.y, m.x, m.y)
+
+        // If the monster is blocked, dim it and the player may still be able to see it if they saw it before (since it will be visible)
+        if (sightToMonsterBlocked) {
+          m.sprite.alpha = 0.5
+
+          // Since the monster is blocked the player may still be seeing it's ghost
+          checkGhostStatus(mapTiles, m, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
+        } else {
+          // The monster is in range and sight is not blocked
+          // Show it and set alpha to full visibility
+          m.sprite.setVisible(true)
+          m.sprite.alpha = 1
+          m.sprite.setPosition(gameSettings.screenPosFromMap(m.x), gameSettings.screenPosFromMap(m.y))
+          m.ghostX = m.x
+          m.ghostY = m.y
+          m.seen = true
+        }
+      }
+    }
   })
 
   // Move any floating text and destroy after a while

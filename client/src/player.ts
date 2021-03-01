@@ -3,6 +3,7 @@ export type Player = {
   y: number
   lastX: number
   lastY: number
+  visibleRange: number
   activityLog: string[]
 }
 
@@ -11,6 +12,11 @@ export type Monster = {
   id: number
   x: number
   y: number
+  lastX: number
+  lastY: number
+  seen: boolean
+  ghostX: number
+  ghostY: number
   dead: boolean
   activityLog: string[]
   sprite?: Phaser.GameObjects.Image

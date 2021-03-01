@@ -1,3 +1,5 @@
+import { Monster } from './player'
+
 export type MapTiles = Map<
   string,
   {
@@ -8,10 +10,13 @@ export type MapTiles = Map<
   }
 >
 
+export const inRange = (visibleRange: number, startX: number, startY: number, endX: number, endY: number): boolean =>
+  Math.abs(endX - startX) <= visibleRange && Math.abs(endY - startY) <= visibleRange
+
 export const setMapTilesSight = (mapTiles: MapTiles, visibleRange: number, startX: number, startY: number): void => {
   // Calculate visible spaces
   mapTiles.forEach((m) => {
-    const isInRange = Math.abs(m.x - startX) <= visibleRange && Math.abs(m.y - startY) <= visibleRange
+    const isInRange = inRange(visibleRange, startX, startY, m.x, m.y)
     let isBlocked = false
 
     // Is this tile in range?
@@ -31,7 +36,13 @@ export const setMapTilesSight = (mapTiles: MapTiles, visibleRange: number, start
   })
 }
 
-const tileIsBlocked = (mapTiles: MapTiles, startX: number, startY: number, endX: number, endY: number): boolean => {
+export const tileIsBlocked = (
+  mapTiles: MapTiles,
+  startX: number,
+  startY: number,
+  endX: number,
+  endY: number
+): boolean => {
   let isBlocked = false
   // Can the player see this tile?
   const playerLinesToTile = [
@@ -78,4 +89,27 @@ const tileIsBlocked = (mapTiles: MapTiles, startX: number, startY: number, endX:
   }
 
   return isBlocked
+}
+
+export const checkGhostStatus = (
+  mapTiles: MapTiles,
+  monster: Monster,
+  playerX: number,
+  playerY: number,
+  visibleRange: number
+): void => {
+  if (monster.seen) {
+    const ghostInRange = inRange(visibleRange, playerX, playerY, monster.ghostX, monster.ghostY)
+    if (ghostInRange) {
+      const sightToGhostBlocked = tileIsBlocked(mapTiles, playerX, playerY, monster.ghostX, monster.ghostY)
+
+      if (!sightToGhostBlocked) {
+        // The ghost is in range and not blocked so it will disappear since the real monster is not here
+        monster.seen = false
+        if (monster.sprite) {
+          monster.sprite.setVisible(false)
+        }
+      }
+    }
+  }
 }

@@ -72,7 +72,7 @@ class ConnectionManager {
           let monster = gameState.monsters.get(message.data.id)
 
           if (!monster) {
-            monster = { ...message.data }
+            monster = { ...message.data, lastX: -1, lastY: -1, seen: false, ghostX: -1, ghostY: -1 }
             gameState.monsters.set(monster.id, monster)
           } else {
             monster.x = message.data.x

@@ -199,7 +199,7 @@ export class Monster extends MOB {
   constructor(type: MOBType, team: number, health: number, id: number, name?: string) {
     super(type, team, health, id, name)
 
-    this.huntRange = 10
+    this.huntRange = 5
   }
   moveRange = 10
 
@@ -235,6 +235,7 @@ export class Monster extends MOB {
 export class Player<T> extends MOB {
   constructor(name: string, team: number, health: number, id: number, public connection: T) {
     super('player', team, health, id, name)
+    this.huntRange = 2
   }
 
   moveTowardsDestination(tick: number, level: Level<unknown>): void {
