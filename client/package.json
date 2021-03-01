@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "main": "src/main.ts",
   "dependencies": {
-    "phaser": "3.50.1",
+    "phaser": "3.52.0",
     "ws": "7.4.1"
   },
   "devDependencies": {

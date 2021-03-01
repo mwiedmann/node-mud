@@ -56,7 +56,7 @@ class ConnectionManager {
     this.connection.onmessage = (e) => {
       const message: BaseMessage = JSON.parse(e.data)
 
-      console.log('Got message', message)
+      // console.log('Got message', message)
 
       switch (message.type) {
         case 'map':

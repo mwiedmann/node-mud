@@ -1,9 +1,10 @@
 import { AStarFinder } from 'astar-typescript'
-import { findOpenSpace, SquareType } from './map'
+import { createMapWithMonsters, findOpenSpace, SquareType } from './map'
 import { Monster, Player } from './mob'
 
 export class Level<T> {
-  map: SquareType[][] = []
+  walls: SquareType[][] = []
+  wallsAndMobs: SquareType[][] = []
   players: Map<number, Player<T>> = new Map()
   monsters: Map<number, Monster> = new Map()
   private graph!: AStarFinder
@@ -19,11 +20,17 @@ export class Level<T> {
     return path
   }
 
-  setMap(map: SquareType[][]): void {
-    this.map = map
+  setWalls(map: SquareType[][]): void {
+    this.walls = map
+    this.updateGraph()
+  }
+
+  updateGraph(): void {
+    this.wallsAndMobs = createMapWithMonsters(this.walls, this.monsters)
+
     this.graph = new AStarFinder({
       grid: {
-        matrix: map
+        matrix: this.wallsAndMobs
       },
       diagonalAllowed: true
       // heuristic: 'Chebyshev'
@@ -31,14 +38,14 @@ export class Level<T> {
   }
 
   getRandomLocation({ range, x, y }: { range?: number; x?: number; y?: number } = {}): { x: number; y: number } {
-    x = x ?? Math.floor(this.map[0].length / 2)
-    y = y ?? Math.floor(this.map.length / 2)
+    x = x ?? Math.floor(this.wallsAndMobs[0].length / 2)
+    y = y ?? Math.floor(this.wallsAndMobs.length / 2)
     range = range ?? 999999
 
     const xMin = Math.max(x - range, 0)
     const yMin = Math.max(y - range, 0)
-    const xMax = Math.min(x + range, this.map[0].length - 1)
-    const yMax = Math.min(y + range, this.map.length - 1)
+    const xMax = Math.min(x + range, this.wallsAndMobs[0].length - 1)
+    const yMax = Math.min(y + range, this.wallsAndMobs.length - 1)
 
     return {
       x: xMin + Math.floor(Math.random() * (xMax + 1 - xMin)),

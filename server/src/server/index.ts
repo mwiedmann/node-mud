@@ -2,6 +2,7 @@ import WebSocket from 'ws'
 import { createGame, Game } from '../game'
 import { Player } from '../game/mob'
 import { tickSettings } from './tick'
+import { performance } from 'perf_hooks'
 
 let game: Game<WebSocket>
 
@@ -46,6 +47,8 @@ export const startServer = (): void => {
 
 const updateGame = () => {
   try {
+    const perfStart = performance.now()
+
     const disconnectedPlayers: Player<WebSocket>[] = []
     game.update()
     game.levels.forEach((l) => {
@@ -74,6 +77,15 @@ const updateGame = () => {
       console.log('Logging out disconnected player', p.id)
       game.logout(p.connection)
     })
+
+    // Check the performance
+    // We strive for tickSettings.timePerTick ms per loop (currently 100 or 10 per a second)
+    // Anything less than this and the game will not lag
+    // A few spikes here and there are ok
+    // We warn for over 80 for now so we can keep an eye on it
+    if (performance.now() - perfStart > 80) {
+      console.warn(`Slow performance. Update loop took ${performance.now() - perfStart} ms.`)
+    }
   } catch (ex) {
     console.log(ex)
   }
@@ -109,7 +121,7 @@ const loginPlayer = (ws: WebSocket, { name }: MessageLogin) => {
   ws.send(
     JSON.stringify({
       type: 'map',
-      data: game.levels.get(1)?.map
+      data: game.levels.get(1)?.walls
     })
   )
 }

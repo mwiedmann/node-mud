@@ -2,11 +2,13 @@
 // @ts-ignore
 import { NewDungeon } from 'random-dungeon-generator'
 import { Level } from './level'
+import { Monster } from './mob'
 import { monsterFactory, MonsterType } from './monsters'
 
 export enum SquareType {
   Empty = 0,
-  Wall = 1
+  Wall = 1,
+  Monster = 2
 }
 
 const mapWidth = 200
@@ -19,6 +21,30 @@ export const createEmptyMap = (): SquareType[][] => {
   }
 
   return map
+}
+
+export const createMapWithMonsters = (wallMap: SquareType[][], monsters: Map<number, Monster>): SquareType[][] => {
+  // First create a map with the monster locations
+  const monsterMap = createEmptyMap()
+  const monIterator = monsters[Symbol.iterator]()
+  for (const m of monIterator) {
+    const monster = m[1]
+    if (!monster.dead) {
+      monsterMap[monster.y][monster.x] = SquareType.Monster
+      break
+    }
+  }
+
+  const combinedMap: SquareType[][] = new Array(mapHeight)
+  // Create a new map that combines the monster map and wall maps
+  for (let y = 0; y < mapHeight; y++) {
+    combinedMap[y] = new Array(mapWidth).fill(SquareType.Empty)
+    for (let x = 0; x < mapWidth; x++) {
+      combinedMap[y][x] = wallMap[y][x] > 0 ? wallMap[y][x] : monsterMap[y][x]
+    }
+  }
+
+  return combinedMap
 }
 
 export const addRandomWalls = (map: SquareType[][], wallCount: number): void => {
@@ -61,6 +87,10 @@ export const randomMonsters = (type: MonsterType, count: number, level: Level<un
 
     monster.x = location.x
     monster.y = location.y
+    if (monster.tetherRange !== undefined) {
+      monster.tetherX = location.x
+      monster.tetherY = location.y
+    }
     monster.setDestination(location.x, location.y)
 
     level.monsters.set(monster.id, monster)
@@ -76,6 +106,6 @@ export const findOpenSpace = (level: Level<unknown>): { x: number; y: number } =
     if (attempts > 500) {
       throw new Error(`Could not find an empty location after ${attempts} attempts.`)
     }
-  } while (level.map[location.y][location.x] > 0 || level.locationContainsMob(location.y, location.x))
+  } while (level.wallsAndMobs[location.y][location.x] > 0)
   return location
 }

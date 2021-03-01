@@ -23,19 +23,23 @@ const baseMonsterScores: MOBSkills = {
   rangedDamageBonus: 0,
 
   physicalDefense: 10,
-  magicDefense: 10
+  magicDefense: 10,
+
+  tetherRange: undefined
 }
 
 const monsterSettings: { [K in MonsterType]: Partial<MOBSkills> } = {
   orc: {
     health: 3,
     ticksPerMove: 6,
-    physicalDefense: 5
+    physicalDefense: 5,
+    tetherRange: 2
   },
   ogre: {
     health: 8,
     ticksPerMove: 7,
-    physicalDefense: 10
+    physicalDefense: 10,
+    tetherRange: 10
   },
   dragon: {
     health: 25,

@@ -13,11 +13,16 @@ export class Game<T> {
     // map[0][0] = 0 // Clear starting spot
 
     const map = randomDungeon()
-    level.setMap(map) // This will also create the map search graph
+    level.setWalls(map) // This will also create the map search graph
 
-    randomMonsters('orc', 50, level)
+    // randomMonsters('orc', 2, level)
+
+    randomMonsters('orc', 100, level)
     randomMonsters('ogre', 10, level)
     randomMonsters('dragon', 1, level)
+
+    // Need to reupdate the graph after adding monsters
+    level.updateGraph()
 
     this.levels.set(1, level)
   }
@@ -35,6 +40,9 @@ export class Game<T> {
       l.players.forEach((p) => {
         p.update(this.tick, l)
       })
+
+      // TODO: This is expensive. Only do it if a monster has moved.
+      l.updateGraph()
     })
   }
 

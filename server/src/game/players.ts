@@ -24,6 +24,8 @@ export type MOBSkills = {
 
   physicalDefense: number
   magicDefense: number
+
+  tetherRange?: number
 }
 
 type MOBSKillsKeys = keyof MOBSkills
@@ -121,6 +123,8 @@ export const playerFactory = <T>(
     p[k as MOBSKillsKeys] = professionStartingValues[k as MOBSKillsKeys]
   })
 
-  console.log(player)
+  // TODO: Remove. Just for testing
+  player.health = 1000
+
   return player
 }

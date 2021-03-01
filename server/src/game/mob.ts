@@ -9,6 +9,10 @@ abstract class MOB implements MOBSkills {
   y = 0
   destinationX = 0
   destinationY = 0
+  tetherX = 0
+  tetherY = 0
+  tetherRange?: number
+
   dead = false
 
   health = 10
@@ -84,14 +88,14 @@ abstract class MOB implements MOBSkills {
 
   checkDestinationBounds(level: Level<unknown>) {
     // Make sure the requested cell is in bounds
-    if (this.destinationX >= level.map[0].length) {
-      this.destinationX = level.map[0].length - 1
+    if (this.destinationX >= level.wallsAndMobs[0].length) {
+      this.destinationX = level.wallsAndMobs[0].length - 1
     }
     if (this.destinationX < 0) {
       this.destinationX = 0
     }
-    if (this.destinationY >= level.map.length) {
-      this.destinationY = level.map.length - 1
+    if (this.destinationY >= level.wallsAndMobs.length) {
+      this.destinationY = level.wallsAndMobs.length - 1
     }
     if (this.destinationY < 0) {
       this.destinationY = 0
@@ -127,6 +131,13 @@ abstract class MOB implements MOBSkills {
 
         this.actionPoints -= this.actionPointCostPerMove
         this.lastMoveTick = tick
+      } else {
+        // The next step in the path is blocked
+        // Let's just clear it so it will be recalculated
+        // Most likely another MOB moved in the way
+        this.moveGraph = []
+        this.destinationX = this.x
+        this.destinationY = this.y
       }
     }
   }
@@ -208,7 +219,14 @@ export class Monster extends MOB {
 
     // If already at the desired spot, pick a new spot
     if (this.destinationX === this.x && this.destinationY === this.y) {
-      const nextLocation = level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
+      // Check if the monster is tethered to a spot
+      // This will force them to return to this spot when it walks out of range
+      const nextLocation =
+        this.tetherRange !== undefined
+          ? Math.abs(this.x - this.tetherX) > this.tetherRange || Math.abs(this.y - this.tetherY) > this.tetherRange
+            ? { x: this.tetherX, y: this.tetherY }
+            : level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
+          : level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
 
       this.setDestination(nextLocation.x, nextLocation.y)
 

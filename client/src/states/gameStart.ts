@@ -117,6 +117,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
     if (m.dead) {
       if (m.sprite) {
         m.sprite.destroy()
+        m.sprite = undefined
       }
       return
     }
