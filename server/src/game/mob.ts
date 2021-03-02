@@ -15,6 +15,7 @@ abstract class MOB implements MOBSkills {
   tetherX = 0
   tetherY = 0
   tetherRange?: number
+  abstract moveRange: number
 
   dead = false
 
@@ -122,7 +123,11 @@ abstract class MOB implements MOBSkills {
       if (this.moveGraph.length === 0) {
         notes.notes.push('Finding path')
         // Use the A* Algorithm to find a path
-        this.moveGraph = level.findPath({ x: this.x, y: this.y }, { x: this.destinationX, y: this.destinationY })
+        this.moveGraph = level.findPath(
+          { x: this.x, y: this.y },
+          { x: this.destinationX, y: this.destinationY },
+          this.moveRange
+        )
       }
 
       const moveToX = this.moveGraph.length > 0 ? this.moveGraph[0][0] : this.x
@@ -256,7 +261,11 @@ export class Monster extends MOB {
       // Need to prevent unreachable locations here because findPath will scan a large portion of the dungeon to get there
       // TODO: Can A* abort after a certain number of squares?
       this.setDestination(nextLocation.x, nextLocation.y)
-      this.moveGraph = level.findPath({ x: this.x, y: this.y }, { x: this.destinationX, y: this.destinationY })
+      this.moveGraph = level.findPath(
+        { x: this.x, y: this.y },
+        { x: this.destinationX, y: this.destinationY },
+        this.moveRange
+      )
 
       // Check if not reachable
       if (this.moveGraph.length === 0) {
@@ -281,6 +290,8 @@ export class Player<T> extends MOB {
     super('player', team, id, name)
     this.huntRange = 1
   }
+
+  moveRange = 20
 
   moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
     const notes: MOBUpdateNotes = { notes: [], moved: undefined }

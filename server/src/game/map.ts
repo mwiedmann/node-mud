@@ -21,7 +21,7 @@ export type Moved = {
   toY: number
 }
 
-export const printMap = (map: SquareType[][]): string => {
+export const getPrintableMap = (map: SquareType[][]): string => {
   return map.reduce((prev, next) => {
     return prev + next.join('') + '\n'
   }, '')

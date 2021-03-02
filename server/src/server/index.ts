@@ -94,7 +94,7 @@ const updateGame = () => {
         `Slow performance`,
         `Total: ${Math.floor(performance.now() - perfStart)} ms`,
         `update(): ${Math.floor(updatePerfTotal)} ms`,
-        updatePerfList.map((u) => `${u.notes.notes.join(' : ')} | ${Math.floor(u.time)} ms`)
+        updatePerfList.filter((u) => u.time > 2).map((u) => `${u.notes.notes.join(' : ')} | ${Math.floor(u.time)} ms`)
       )
     }
   } catch (ex) {

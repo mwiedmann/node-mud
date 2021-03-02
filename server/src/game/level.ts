@@ -1,5 +1,5 @@
 import { AStarFinder } from 'astar-typescript'
-import { createMapWithMonsters, findOpenSpace, Moved, SquareType } from './map'
+import { createMapWithMonsters, findOpenSpace, Moved, getPrintableMap, SquareType } from './map'
 import { Monster, Player } from './mob'
 
 export class Level<T> {
@@ -7,36 +7,74 @@ export class Level<T> {
   wallsAndMobs: SquareType[][] = []
   players: Map<number, Player<T>> = new Map()
   monsters: Map<number, Monster> = new Map()
-  private graph!: AStarFinder
 
-  findPath(start: { x: number; y: number }, end: { x: number; y: number }): number[][] {
+  private createMapWithRangeBlockers(
+    start: { x: number; y: number },
+    end: { x: number; y: number },
+    range: number
+  ): AStarFinder {
+    // To limit how far A* ends up searching, we create a "barrier" around startx/y at a distance of "range"
+    // This prevents scenarios where a monster tries to move "just a few squares" to the other side of a wall but the search
+    // path ends up winding all around the maze. This is really expensive and not needed so we are limiting the scope of the search.
+    const minX = Math.max(start.x - (range + 1), 0)
+    const maxX = Math.min(start.x + (range + 1), this.wallsAndMobs[0].length - 1)
+    const minY = Math.max(start.y - (range + 1), 0)
+    const maxY = Math.min(start.y + (range + 1), this.wallsAndMobs.length - 1)
+
+    // Add fake walls by adding a number to form the barrier
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        if (x === minX || x === maxX || y === minY || y === maxY) {
+          this.wallsAndMobs[y][x] += 100
+        }
+      }
+    }
+
+    // Create the search graph
+    const graph = new AStarFinder({
+      grid: {
+        matrix: this.wallsAndMobs
+      },
+      diagonalAllowed: true,
+      includeStartNode: false
+      // includeEndNode: false
+      // heuristic: 'Chebyshev'
+    })
+
+    // Remove fake walls by removing the barrier number. This will restore the original value
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        if (x === minX || x === maxX || y === minY || y === maxY) {
+          this.wallsAndMobs[y][x] -= 100
+        }
+      }
+    }
+
+    return graph
+  }
+
+  findPath(start: { x: number; y: number }, end: { x: number; y: number }, range: number): number[][] {
+    const graph = this.createMapWithRangeBlockers(start, end, range)
+
     // Get the start and end nodes and set them to walkable
     // We want to ignore those blocking spaces
-    const startNode = this.graph.getGrid().getGridNodes()[start.y][start.x]
-    const endNode = this.graph.getGrid().getGridNodes()[end.y][end.x]
-    const startWalkable = startNode.getIsWalkable()
-    const endWalkable = endNode.getIsWalkable()
+    const startNode = graph.getGrid().getGridNodes()[start.y][start.x]
+    const endNode = graph.getGrid().getGridNodes()[end.y][end.x]
+
     startNode.setIsWalkable(true)
     endNode.setIsWalkable(true)
 
-    const path = this.graph.findPath(start, end)
-
-    // Put the nodes back as they were
-    startNode.setIsWalkable(startWalkable)
-    endNode.setIsWalkable(endWalkable)
+    const path = graph.findPath(start, end)
 
     return path
   }
 
   moveMonster(moveData: Moved): void {
-    this.graph.getGrid().getGridNodes()[moveData.fromY][moveData.fromX].setIsWalkable(true)
-    this.graph.getGrid().getGridNodes()[moveData.toY][moveData.toX].setIsWalkable(false)
     this.wallsAndMobs[moveData.fromY][moveData.fromX] = this.walls[moveData.fromY][moveData.fromX] // In case there was something there rather than force to Empty
     this.wallsAndMobs[moveData.toY][moveData.toX] = SquareType.Monster
   }
 
   removeMonster(x: number, y: number): void {
-    this.graph.getGrid().getGridNodes()[y][x].setIsWalkable(true)
     this.wallsAndMobs[y][x] = this.walls[y][x]
   }
 
@@ -47,16 +85,6 @@ export class Level<T> {
 
   updateGraph(): void {
     this.wallsAndMobs = createMapWithMonsters(this.walls, this.monsters)
-
-    this.graph = new AStarFinder({
-      grid: {
-        matrix: this.wallsAndMobs
-      },
-      diagonalAllowed: true,
-      includeStartNode: false
-      // includeEndNode: false
-      // heuristic: 'Chebyshev'
-    })
   }
 
   getRandomLocation({ range, x, y }: { range?: number; x?: number; y?: number } = {}): { x: number; y: number } {
