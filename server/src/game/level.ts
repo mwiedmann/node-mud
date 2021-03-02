@@ -1,5 +1,5 @@
 import { AStarFinder } from 'astar-typescript'
-import { createMapWithMonsters, findOpenSpace, SquareType } from './map'
+import { createMapWithMonsters, findOpenSpace, Moved, SquareType } from './map'
 import { Monster, Player } from './mob'
 
 export class Level<T> {
@@ -26,6 +26,18 @@ export class Level<T> {
     endNode.setIsWalkable(endWalkable)
 
     return path
+  }
+
+  moveMonster(moveData: Moved): void {
+    this.graph.getGrid().getGridNodes()[moveData.fromY][moveData.fromX].setIsWalkable(true)
+    this.graph.getGrid().getGridNodes()[moveData.toY][moveData.toX].setIsWalkable(false)
+    this.wallsAndMobs[moveData.fromY][moveData.fromX] = this.walls[moveData.fromY][moveData.fromX] // In case there was something there rather than force to Empty
+    this.wallsAndMobs[moveData.toY][moveData.toX] = SquareType.Monster
+  }
+
+  removeMonster(x: number, y: number): void {
+    this.graph.getGrid().getGridNodes()[y][x].setIsWalkable(true)
+    this.wallsAndMobs[y][x] = this.walls[y][x]
   }
 
   setWalls(map: SquareType[][]): void {

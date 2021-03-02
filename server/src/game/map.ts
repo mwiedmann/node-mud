@@ -14,6 +14,13 @@ export enum SquareType {
 const mapWidth = 200
 const mapHeight = 100
 
+export type Moved = {
+  fromX: number
+  fromY: number
+  toX: number
+  toY: number
+}
+
 export const printMap = (map: SquareType[][]): string => {
   return map.reduce((prev, next) => {
     return prev + next.join('') + '\n'

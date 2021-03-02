@@ -2,6 +2,7 @@ import { MOBType } from './monsters'
 import { Level } from './level'
 import { Dice, rollDice } from './combat'
 import { MOBSkills, PlayerProfession, PlayerRace } from './players'
+import { Moved } from './map'
 
 abstract class MOB implements MOBSkills {
   constructor(public type: MOBType, public team: number, public id: number, public name?: string) {}
@@ -71,9 +72,9 @@ abstract class MOB implements MOBSkills {
     }
   }
 
-  update(tick: number, level: Level<unknown>): boolean {
+  update(tick: number, level: Level<unknown>): Moved | undefined {
     if (this.dead) {
-      return false
+      return undefined
     }
 
     this.actionPoints += this.actionPointsGainedPerTick
@@ -102,7 +103,7 @@ abstract class MOB implements MOBSkills {
     }
   }
 
-  moveTowardsDestination(tick: number, level: Level<unknown>): boolean {
+  moveTowardsDestination(tick: number, level: Level<unknown>): Moved | undefined {
     const startX = this.x
     const startY = this.y
 
@@ -145,6 +146,8 @@ abstract class MOB implements MOBSkills {
 
     // Return if the MOB actually moved
     return startX !== this.x || startY !== this.y
+      ? { fromX: startX, fromY: startY, toX: this.x, toY: this.y }
+      : undefined
   }
 
   takeAction(tick: number, level: Level<unknown>) {
@@ -160,6 +163,10 @@ abstract class MOB implements MOBSkills {
           console.log(this.name, 'hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 
           mobToAttack.takeDamage(dmgRoll.total)
+
+          if (mobToAttack.dead) {
+            level.removeMonster(mobToAttack.x, mobToAttack.y)
+          }
         } else {
           console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
         }
@@ -211,7 +218,7 @@ export class Monster extends MOB {
   }
   moveRange = 10
 
-  moveTowardsDestination(tick: number, level: Level<unknown>): boolean {
+  moveTowardsDestination(tick: number, level: Level<unknown>): Moved | undefined {
     // If it's time to move, see if there are any close players
     if (tick - this.lastMoveTick >= this.ticksPerMove && this.actionPoints >= this.actionPointCostPerMove) {
       // Look for a close player
@@ -260,7 +267,7 @@ export class Player<T> extends MOB {
     this.huntRange = 1
   }
 
-  moveTowardsDestination(tick: number, level: Level<unknown>): boolean {
+  moveTowardsDestination(tick: number, level: Level<unknown>): Moved | undefined {
     if (
       this.mode === 'hunt' &&
       tick - this.lastMoveTick >= this.ticksPerMove &&

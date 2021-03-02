@@ -34,21 +34,15 @@ export class Game<T> {
   update(): void {
     this.tick++
     this.levels.forEach((l) => {
-      let atLeastOneMonsterMoved = false
       l.monsters.forEach((c) => {
         const monsterMoved = c.update(this.tick, l)
         if (monsterMoved) {
-          atLeastOneMonsterMoved = true
+          l.moveMonster(monsterMoved)
         }
       })
       l.players.forEach((p) => {
         p.update(this.tick, l)
       })
-
-      // TODO: This is expensive. Only do it if a monster has moved.
-      if (atLeastOneMonsterMoved) {
-        l.updateGraph()
-      }
     })
   }
 
