@@ -18,9 +18,9 @@ export class Game<T> {
 
     // randomMonsters('orc', 1, level)
 
-    randomMonsters('orc', 50, level)
-    randomMonsters('ogre', 10, level)
-    randomMonsters('dragon', 1, level)
+    randomMonsters('orc', 100, level)
+    randomMonsters('ogre', 50, level)
+    randomMonsters('dragon', 2, level)
 
     // Need to reupdate the graph after adding monsters
     level.updateGraph()

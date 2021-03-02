@@ -99,10 +99,7 @@ export const randomMonsters = (type: MonsterType, count: number, level: Level<un
 
     monster.x = location.x
     monster.y = location.y
-    if (monster.tetherRange !== undefined) {
-      monster.tetherX = location.x
-      monster.tetherY = location.y
-    }
+
     monster.setDestination(location.x, location.y)
 
     level.monsters.set(monster.id, monster)

@@ -33,13 +33,11 @@ const monsterSettings: { [K in MonsterType]: Partial<MOBSkills> } = {
     health: 3,
     ticksPerMove: 6,
     physicalDefense: 5
-    // tetherRange: 2
   },
   ogre: {
     health: 8,
     ticksPerMove: 7,
     physicalDefense: 10
-    // tetherRange: 10
   },
   dragon: {
     health: 25,

@@ -3,6 +3,7 @@ import { Level } from './level'
 import { Dice, rollDice } from './combat'
 import { MOBSkills, PlayerProfession, PlayerRace } from './players'
 import { Moved } from './map'
+import { inRange } from './util'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
@@ -12,10 +13,7 @@ abstract class MOB implements MOBSkills {
   y = 0
   destinationX = 0
   destinationY = 0
-  tetherX = 0
-  tetherY = 0
-  tetherRange?: number
-  abstract moveRange: number
+  abstract moveSearchLimit: number
 
   dead = false
 
@@ -76,11 +74,11 @@ abstract class MOB implements MOBSkills {
   }
 
   update(tick: number, level: Level<unknown>): MOBUpdateNotes {
-    const notes: MOBUpdateNotes = { notes: [], moved: undefined }
-
     if (this.dead) {
       return { notes: ['dead'], moved: undefined }
     }
+
+    const notes: MOBUpdateNotes = { notes: [], moved: undefined }
 
     this.actionPoints += this.actionPointsGainedPerTick
 
@@ -126,7 +124,7 @@ abstract class MOB implements MOBSkills {
         this.moveGraph = level.findPath(
           { x: this.x, y: this.y },
           { x: this.destinationX, y: this.destinationY },
-          this.moveRange
+          this.moveSearchLimit
         )
       }
 
@@ -229,6 +227,20 @@ export class Monster extends MOB {
     this.huntRange = 5
   }
   moveRange = 5
+  moveSearchLimit = 10
+  playerRangeToActivate = 30
+
+  update(tick: number, level: Level<unknown>): MOBUpdateNotes {
+    if (this.dead) {
+      return { notes: ['dead'], moved: undefined }
+    }
+
+    if (!level.playerInRange(this.x, this.y, this.playerRangeToActivate)) {
+      return { notes: ['skipped'], moved: undefined }
+    }
+
+    return super.update(tick, level)
+  }
 
   moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
     const notes: MOBUpdateNotes = { notes: [], moved: undefined }
@@ -251,12 +263,7 @@ export class Monster extends MOB {
 
       // Check if the monster is tethered to a spot
       // This will force them to return to this spot when it walks out of range
-      const nextLocation =
-        this.tetherRange !== undefined
-          ? Math.abs(this.x - this.tetherX) > this.tetherRange || Math.abs(this.y - this.tetherY) > this.tetherRange
-            ? { x: this.tetherX, y: this.tetherY }
-            : level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
-          : level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
+      const nextLocation = level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
 
       // Need to prevent unreachable locations here because findPath will scan a large portion of the dungeon to get there
       // TODO: Can A* abort after a certain number of squares?
@@ -264,7 +271,7 @@ export class Monster extends MOB {
       this.moveGraph = level.findPath(
         { x: this.x, y: this.y },
         { x: this.destinationX, y: this.destinationY },
-        this.moveRange
+        this.moveSearchLimit
       )
 
       // Check if not reachable
@@ -291,7 +298,7 @@ export class Player<T> extends MOB {
     this.huntRange = 1
   }
 
-  moveRange = 20
+  moveSearchLimit = 20
 
   moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
     const notes: MOBUpdateNotes = { notes: [], moved: undefined }
