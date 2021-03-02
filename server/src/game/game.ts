@@ -1,7 +1,8 @@
 import { randomDungeon, randomMonsters } from './map'
-import { Player } from './mob'
+import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './level'
 import { playerFactory } from './players'
+import { performance } from 'perf_hooks'
 
 export class Game<T> {
   constructor() {
@@ -31,19 +32,28 @@ export class Game<T> {
   players = new Map<T, Player<T>>()
   levels = new Map<number, Level<T>>()
 
-  update(): void {
+  update(): { notes: MOBUpdateNotes; time: number }[] {
+    const perfList: { notes: MOBUpdateNotes; time: number }[] = []
+
     this.tick++
     this.levels.forEach((l) => {
       l.monsters.forEach((c) => {
-        const monsterMoved = c.update(this.tick, l)
-        if (monsterMoved) {
-          l.moveMonster(monsterMoved)
+        const monsterStartTime = performance.now()
+        const monsterNotes = c.update(this.tick, l)
+        if (monsterNotes.moved) {
+          l.moveMonster(monsterNotes.moved)
         }
+        perfList.push({
+          notes: monsterNotes,
+          time: Math.floor(performance.now() - monsterStartTime)
+        })
       })
       l.players.forEach((p) => {
         p.update(this.tick, l)
       })
     })
+
+    return perfList
   }
 
   getFirstLevel(): Level<T> {

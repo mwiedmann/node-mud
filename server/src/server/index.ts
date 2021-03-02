@@ -50,7 +50,12 @@ const updateGame = () => {
     const perfStart = performance.now()
 
     const disconnectedPlayers: Player<WebSocket>[] = []
-    game.update()
+
+    const updatePerfStart = performance.now()
+    const updatePerfList = game.update()
+    const updatePerfTotal = performance.now() - updatePerfStart
+
+    const playerPerfStart = performance.now()
     game.levels.forEach((l) => {
       l.players.forEach((p) => {
         // Check if the player is still connected
@@ -71,6 +76,7 @@ const updateGame = () => {
         })
       })
     })
+    const playerPerfTotal = performance.now() - playerPerfStart
 
     // Logout any disconnected players
     disconnectedPlayers.forEach((p) => {
@@ -84,7 +90,12 @@ const updateGame = () => {
     // A few spikes here and there are ok
     // We warn for over 80 for now so we can keep an eye on it
     if (performance.now() - perfStart > 80) {
-      console.warn(`Slow performance. Update loop took ${performance.now() - perfStart} ms.`)
+      console.warn(
+        `Slow performance`,
+        `Total: ${Math.floor(performance.now() - perfStart)} ms`,
+        `update(): ${Math.floor(updatePerfTotal)} ms`,
+        updatePerfList.map((u) => `${u.notes.notes.join(' : ')} | ${Math.floor(u.time)} ms`)
+      )
     }
   } catch (ex) {
     console.log(ex)

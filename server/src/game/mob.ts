@@ -4,6 +4,8 @@ import { Dice, rollDice } from './combat'
 import { MOBSkills, PlayerProfession, PlayerRace } from './players'
 import { Moved } from './map'
 
+export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
+
 abstract class MOB implements MOBSkills {
   constructor(public type: MOBType, public team: number, public id: number, public name?: string) {}
   x = 0
@@ -72,9 +74,11 @@ abstract class MOB implements MOBSkills {
     }
   }
 
-  update(tick: number, level: Level<unknown>): Moved | undefined {
+  update(tick: number, level: Level<unknown>): MOBUpdateNotes {
+    const notes: MOBUpdateNotes = { notes: [], moved: undefined }
+
     if (this.dead) {
-      return undefined
+      return { notes: ['dead'], moved: undefined }
     }
 
     this.actionPoints += this.actionPointsGainedPerTick
@@ -84,7 +88,7 @@ abstract class MOB implements MOBSkills {
     }
 
     this.takeAction(tick, level)
-    return this.moveTowardsDestination(tick, level)
+    return this.moveTowardsDestination(tick, level, notes)
   }
 
   checkDestinationBounds(level: Level<unknown>) {
@@ -103,7 +107,7 @@ abstract class MOB implements MOBSkills {
     }
   }
 
-  moveTowardsDestination(tick: number, level: Level<unknown>): Moved | undefined {
+  moveTowardsDestination(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): MOBUpdateNotes {
     const startX = this.x
     const startY = this.y
 
@@ -116,6 +120,7 @@ abstract class MOB implements MOBSkills {
     ) {
       // See if we need to calculate the move graph
       if (this.moveGraph.length === 0) {
+        notes.notes.push('Finding path')
         // Use the A* Algorithm to find a path
         this.moveGraph = level.findPath({ x: this.x, y: this.y }, { x: this.destinationX, y: this.destinationY })
       }
@@ -138,6 +143,7 @@ abstract class MOB implements MOBSkills {
         // The next step in the path is blocked
         // Let's just clear it so it will be recalculated
         // Most likely another MOB moved in the way
+        notes.notes.push(`location blocked ${moveToX} ${moveToY}`)
         this.moveGraph = []
         this.destinationX = this.x
         this.destinationY = this.y
@@ -145,9 +151,10 @@ abstract class MOB implements MOBSkills {
     }
 
     // Return if the MOB actually moved
-    return startX !== this.x || startY !== this.y
-      ? { fromX: startX, fromY: startY, toX: this.x, toY: this.y }
-      : undefined
+    notes.moved =
+      startX !== this.x || startY !== this.y ? { fromX: startX, fromY: startY, toX: this.x, toY: this.y } : undefined
+
+    return notes
   }
 
   takeAction(tick: number, level: Level<unknown>) {
@@ -216,21 +223,27 @@ export class Monster extends MOB {
 
     this.huntRange = 5
   }
-  moveRange = 10
+  moveRange = 5
 
-  moveTowardsDestination(tick: number, level: Level<unknown>): Moved | undefined {
+  moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
+    const notes: MOBUpdateNotes = { notes: [], moved: undefined }
+
     // If it's time to move, see if there are any close players
     if (tick - this.lastMoveTick >= this.ticksPerMove && this.actionPoints >= this.actionPointCostPerMove) {
+      notes.notes.push('Looking for player')
       // Look for a close player
       const player = level.playerInRange(this.x, this.y, this.huntRange)
 
       if (player) {
+        notes.notes.push('Found close player')
         this.setDestination(player.x, player.y)
       }
     }
 
     // If already at the desired spot, pick a new spot
     if (this.destinationX === this.x && this.destinationY === this.y) {
+      notes.notes.push('At destination')
+
       // Check if the monster is tethered to a spot
       // This will force them to return to this spot when it walks out of range
       const nextLocation =
@@ -240,17 +253,19 @@ export class Monster extends MOB {
             : level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
           : level.getRandomLocation({ range: this.moveRange, x: this.x, y: this.y })
 
+      // Need to prevent unreachable locations here because findPath will scan a large portion of the dungeon to get there
+      // TODO: Can A* abort after a certain number of squares?
       this.setDestination(nextLocation.x, nextLocation.y)
-
       this.moveGraph = level.findPath({ x: this.x, y: this.y }, { x: this.destinationX, y: this.destinationY })
 
       // Check if not reachable
       if (this.moveGraph.length === 0) {
+        notes.notes.push('Not reachable')
         this.setDestination(this.x, this.y)
       }
     }
 
-    return super.moveTowardsDestination(tick, level)
+    return super.moveTowardsDestination(tick, level, notes)
   }
 }
 
@@ -267,7 +282,9 @@ export class Player<T> extends MOB {
     this.huntRange = 1
   }
 
-  moveTowardsDestination(tick: number, level: Level<unknown>): Moved | undefined {
+  moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
+    const notes: MOBUpdateNotes = { notes: [], moved: undefined }
+
     if (
       this.mode === 'hunt' &&
       tick - this.lastMoveTick >= this.ticksPerMove &&
@@ -281,6 +298,6 @@ export class Player<T> extends MOB {
       }
     }
 
-    return super.moveTowardsDestination(tick, level)
+    return super.moveTowardsDestination(tick, level, notes)
   }
 }
