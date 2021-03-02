@@ -10,12 +10,20 @@ export class Level<T> {
   private graph!: AStarFinder
 
   findPath(start: { x: number; y: number }, end: { x: number; y: number }): number[][] {
+    // Get the start and end nodes and set them to walkable
+    // We want to ignore those blocking spaces
+    const startNode = this.graph.getGrid().getGridNodes()[start.y][start.x]
+    const endNode = this.graph.getGrid().getGridNodes()[end.y][end.x]
+    const startWalkable = startNode.getIsWalkable()
+    const endWalkable = endNode.getIsWalkable()
+    startNode.setIsWalkable(true)
+    endNode.setIsWalkable(true)
+
     const path = this.graph.findPath(start, end)
 
-    // The first node is the starting location, remove it
-    if (path.length > 0) {
-      path.shift()
-    }
+    // Put the nodes back as they were
+    startNode.setIsWalkable(startWalkable)
+    endNode.setIsWalkable(endWalkable)
 
     return path
   }
@@ -32,7 +40,9 @@ export class Level<T> {
       grid: {
         matrix: this.wallsAndMobs
       },
-      diagonalAllowed: true
+      diagonalAllowed: true,
+      includeStartNode: false
+      // includeEndNode: false
       // heuristic: 'Chebyshev'
     })
   }
@@ -81,13 +91,9 @@ export class Level<T> {
     return undefined
   }
 
-  locationContainsMob(x: number, y: number): boolean {
-    const monIterator = this.monsters[Symbol.iterator]()
-
-    for (const m of monIterator) {
-      if (!m[1].dead && m[1].x === x && m[1].y === y) {
-        return true
-      }
+  locationIsBlocked(x: number, y: number): boolean {
+    if (this.wallsAndMobs[y][x] > 0) {
+      return true
     }
 
     const playerIterator = this.players[Symbol.iterator]()

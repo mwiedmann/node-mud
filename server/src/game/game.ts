@@ -15,9 +15,9 @@ export class Game<T> {
     const map = randomDungeon()
     level.setWalls(map) // This will also create the map search graph
 
-    // randomMonsters('orc', 2, level)
+    // randomMonsters('orc', 1, level)
 
-    randomMonsters('orc', 100, level)
+    randomMonsters('orc', 50, level)
     randomMonsters('ogre', 10, level)
     randomMonsters('dragon', 1, level)
 
@@ -34,15 +34,21 @@ export class Game<T> {
   update(): void {
     this.tick++
     this.levels.forEach((l) => {
+      let atLeastOneMonsterMoved = false
       l.monsters.forEach((c) => {
-        c.update(this.tick, l)
+        const monsterMoved = c.update(this.tick, l)
+        if (monsterMoved) {
+          atLeastOneMonsterMoved = true
+        }
       })
       l.players.forEach((p) => {
         p.update(this.tick, l)
       })
 
       // TODO: This is expensive. Only do it if a monster has moved.
-      l.updateGraph()
+      if (atLeastOneMonsterMoved) {
+        l.updateGraph()
+      }
     })
   }
 

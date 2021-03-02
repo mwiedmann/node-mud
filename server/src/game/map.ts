@@ -14,6 +14,12 @@ export enum SquareType {
 const mapWidth = 200
 const mapHeight = 100
 
+export const printMap = (map: SquareType[][]): string => {
+  return map.reduce((prev, next) => {
+    return prev + next.join('') + '\n'
+  }, '')
+}
+
 export const createEmptyMap = (): SquareType[][] => {
   const map: SquareType[][] = new Array(mapHeight)
   for (let y = 0; y < mapHeight; y++) {
@@ -31,7 +37,6 @@ export const createMapWithMonsters = (wallMap: SquareType[][], monsters: Map<num
     const monster = m[1]
     if (!monster.dead) {
       monsterMap[monster.y][monster.x] = SquareType.Monster
-      break
     }
   }
 

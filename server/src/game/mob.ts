@@ -71,9 +71,9 @@ abstract class MOB implements MOBSkills {
     }
   }
 
-  update(tick: number, level: Level<unknown>) {
+  update(tick: number, level: Level<unknown>): boolean {
     if (this.dead) {
-      return
+      return false
     }
 
     this.actionPoints += this.actionPointsGainedPerTick
@@ -83,7 +83,7 @@ abstract class MOB implements MOBSkills {
     }
 
     this.takeAction(tick, level)
-    this.moveTowardsDestination(tick, level)
+    return this.moveTowardsDestination(tick, level)
   }
 
   checkDestinationBounds(level: Level<unknown>) {
@@ -102,7 +102,10 @@ abstract class MOB implements MOBSkills {
     }
   }
 
-  moveTowardsDestination(tick: number, level: Level<unknown>) {
+  moveTowardsDestination(tick: number, level: Level<unknown>): boolean {
+    const startX = this.x
+    const startY = this.y
+
     this.checkDestinationBounds(level)
 
     if (
@@ -120,11 +123,10 @@ abstract class MOB implements MOBSkills {
       const moveToY = this.moveGraph.length > 0 ? this.moveGraph[0][1] : this.y
 
       // Only move if the location is open
-      if (!level.locationContainsMob(moveToX, moveToY)) {
+      if (!level.locationIsBlocked(moveToX, moveToY)) {
         // Set the next x/y from the path
-        this.x = this.moveGraph.length > 0 ? this.moveGraph[0][0] : this.x
-
-        this.y = this.moveGraph.length > 0 ? this.moveGraph[0][1] : this.y
+        this.x = moveToX
+        this.y = moveToY
 
         // Remove the move just made
         this.moveGraph.shift()
@@ -140,6 +142,9 @@ abstract class MOB implements MOBSkills {
         this.destinationY = this.y
       }
     }
+
+    // Return if the MOB actually moved
+    return startX !== this.x || startY !== this.y
   }
 
   takeAction(tick: number, level: Level<unknown>) {
@@ -206,7 +211,7 @@ export class Monster extends MOB {
   }
   moveRange = 10
 
-  moveTowardsDestination(tick: number, level: Level<unknown>): void {
+  moveTowardsDestination(tick: number, level: Level<unknown>): boolean {
     // If it's time to move, see if there are any close players
     if (tick - this.lastMoveTick >= this.ticksPerMove && this.actionPoints >= this.actionPointCostPerMove) {
       // Look for a close player
@@ -238,7 +243,7 @@ export class Monster extends MOB {
       }
     }
 
-    super.moveTowardsDestination(tick, level)
+    return super.moveTowardsDestination(tick, level)
   }
 }
 
@@ -252,10 +257,10 @@ export class Player<T> extends MOB {
     public connection: T
   ) {
     super('player', team, id, name)
-    this.huntRange = 2
+    this.huntRange = 1
   }
 
-  moveTowardsDestination(tick: number, level: Level<unknown>): void {
+  moveTowardsDestination(tick: number, level: Level<unknown>): boolean {
     if (
       this.mode === 'hunt' &&
       tick - this.lastMoveTick >= this.ticksPerMove &&
@@ -265,11 +270,10 @@ export class Player<T> extends MOB {
       const monster = level.monsterInRange(this.x, this.y, this.huntRange)
 
       if (monster) {
-        // console.log('Player has taret', monster.x, monster.y, 'Current spot', this.x, this.y)
         this.setDestination(monster.x, monster.y)
       }
     }
 
-    super.moveTowardsDestination(tick, level)
+    return super.moveTowardsDestination(tick, level)
   }
 }
