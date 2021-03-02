@@ -178,6 +178,7 @@ abstract class MOB implements MOBSkills {
             level.removeMonster(mobToAttack.x, mobToAttack.y)
           }
         } else {
+          mobToAttack.addActivity('Dodged attack')
           console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
         }
 

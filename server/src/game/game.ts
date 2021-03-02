@@ -40,6 +40,8 @@ export class Game<T> {
       l.monsters.forEach((c) => {
         const monsterStartTime = performance.now()
         const monsterNotes = c.update(this.tick, l)
+
+        // If the monster moved, we need to update the master map (used for path finding)
         if (monsterNotes.moved) {
           l.moveMonster(monsterNotes.moved)
         }

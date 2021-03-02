@@ -71,7 +71,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
         direction: 1,
         text: scene.add.text(
           gameSettings.screenPosFromMap(gameState.player.x),
-          gameSettings.screenPosFromMap(gameState.player.y) + (gameSettings.cellSize + offSet),
+          gameSettings.screenPosFromMap(gameState.player.y) + (gameSettings.halfCell + offSet),
           a,
           { color: '#FF0000', align: 'center' }
         )
@@ -112,21 +112,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
   // Check monsterss
   gameState.monsters.forEach((m) => {
-    // If the monster is dead, destroy any sprite
-    // We could remove from the list, but we might want to leave a body behind
-    if (m.dead) {
-      if (m.sprite) {
-        m.sprite.destroy()
-        m.sprite = undefined
-      }
-      return
-    }
-
-    if (!m.sprite) {
-      m.sprite = scene.add.image(m.x * gameSettings.cellSize, m.y * gameSettings.cellSize, m.subType)
-      m.sprite.setVisible(false)
-    }
-
+    // First show any activity for the monster
     if (m.activityLog.length > 0) {
       // TODO: Calc the offset and y pos from cellSize?
       let offSet = 0
@@ -144,6 +130,21 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
         offSet += 16
       })
       m.activityLog = []
+    }
+
+    // If the monster is dead, destroy any sprite
+    // We could remove from the list, but we might want to leave a body behind
+    if (m.dead) {
+      if (m.sprite) {
+        m.sprite.destroy()
+        m.sprite = undefined
+      }
+      return
+    }
+
+    if (!m.sprite) {
+      m.sprite = scene.add.image(m.x * gameSettings.cellSize, m.y * gameSettings.cellSize, m.subType)
+      m.sprite.setVisible(false)
     }
 
     // If the monster or player moved, then recalc the visibility of the monster
@@ -186,7 +187,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
   // Move any floating text and destroy after a while
   floatingObjects.forEach((l) => {
-    l.text.y += 15 * l.direction * (delta / 100)
+    l.text.y += 10 * l.direction * (delta / 100)
     if (time - l.timeStart >= 1000) {
       l.text.destroy()
       l.delete = true
