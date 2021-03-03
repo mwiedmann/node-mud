@@ -4,10 +4,13 @@ import { gameSettings } from '../settings'
 import { controls, gameState, sceneUpdate, SquareType } from '../init'
 import { checkGhostStatus, inRange, MapTiles, setMapTilesSight, tileIsBlocked } from '../mapTiles'
 import { defaultMaxListeners } from 'ws'
+import { StatusBars } from '../statusbars'
 
 const mapTiles: MapTiles = new Map()
 
 let guy: Phaser.GameObjects.Image
+let statusbars: StatusBars
+
 let pointerCallback: (p: Phaser.Input.Pointer) => void
 let floatingObjects: {
   timeStart: number
@@ -21,6 +24,7 @@ const init = (scene: Phaser.Scene): void => {
   scene.cameras.main.setZoom(gameSettings.gameCameraZoom)
 
   guy = scene.add.image(0, 0, 'guy')
+  statusbars = new StatusBars(scene)
 
   // Set the camera to follow the guy (with some lerping, a deadzone, and bounds)
   scene.cameras.main.startFollow(guy, true, 0.03, 0.03)
@@ -55,11 +59,23 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       gameSettings.screenPosFromMap(gameState.player.x),
       gameSettings.screenPosFromMap(gameState.player.y)
     )
+
     gameState.player.lastX = gameState.player.x
     gameState.player.lastY = gameState.player.y
 
     // Calculate visible spaces
     setMapTilesSight(mapTiles, gameState.player.visibleRange, gameState.player.x, gameState.player.y)
+  }
+
+  if (statusbars) {
+    statusbars.set(
+      guy.x,
+      guy.y,
+      gameState.player.hp,
+      gameState.player.hpMax,
+      gameState.player.ap,
+      gameState.player.apMax
+    )
   }
 
   // Create floating text for any player activity
@@ -139,12 +155,21 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
         m.sprite.destroy()
         m.sprite = undefined
       }
+      if (m.statusbars) {
+        m.statusbars.destroy()
+        m.statusbars = undefined
+      }
       return
     }
 
     if (!m.sprite) {
-      m.sprite = scene.add.image(m.x * gameSettings.cellSize, m.y * gameSettings.cellSize, m.subType)
+      m.sprite = scene.add.image(gameSettings.screenPosFromMap(m.x), gameSettings.screenPosFromMap(m.y), m.subType)
       m.sprite.setVisible(false)
+    }
+
+    if (!m.statusbars) {
+      m.statusbars = new StatusBars(scene)
+      m.statusbars.set(m.sprite.x, m.sprite.y, m.hp, m.hpMax, m.ap, m.apMax)
     }
 
     // If the monster or player moved, then recalc the visibility of the monster
@@ -158,6 +183,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       // If the monster was visible, the player will continue to see it in it's last known position as a reminder (ghost)
       if (!isInRange) {
         m.sprite.alpha = 0.5
+        m.statusbars.setVisibility(false)
 
         // The monster is out of range so check the status of it's last known location (ghost)
         checkGhostStatus(mapTiles, m, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
@@ -168,7 +194,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
         // If the monster is blocked, dim it and the player may still be able to see it if they saw it before (since it will be visible)
         if (sightToMonsterBlocked) {
           m.sprite.alpha = 0.5
-
+          m.statusbars.setVisibility(false)
           // Since the monster is blocked the player may still be seeing it's ghost
           checkGhostStatus(mapTiles, m, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
         } else {
@@ -177,6 +203,8 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
           m.sprite.setVisible(true)
           m.sprite.alpha = 1
           m.sprite.setPosition(gameSettings.screenPosFromMap(m.x), gameSettings.screenPosFromMap(m.y))
+          m.statusbars.setVisibility(true)
+          m.statusbars.set(m.sprite.x, m.sprite.y, m.hp, m.hpMax, m.ap, m.apMax)
           m.ghostX = m.x
           m.ghostY = m.y
           m.seen = true
@@ -202,7 +230,7 @@ const cleanup = (scene: Phaser.Scene): void => {
   mapTiles.clear()
 
   guy.destroy()
-
+  statusbars.destroy()
   scene.input.removeListener('pointerup', pointerCallback)
 }
 

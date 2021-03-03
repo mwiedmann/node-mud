@@ -70,7 +70,7 @@ export class Game<T> {
 
   login(name: string, connection: T): Player<T> {
     const level = this.getFirstLevel()
-    const player = playerFactory('dwarf', 'warrior', name, 1, connection)
+    const player = playerFactory('elf', 'barbarian', name, 1, connection)
 
     const startingLocation = level.findOpenLocation()
     player.x = startingLocation.x

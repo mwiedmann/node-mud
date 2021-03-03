@@ -6,7 +6,7 @@ export type PlayerRace = 'elf' | 'dwarf' | 'human' | 'gnome' | 'giant'
 export type PlayerProfession = 'warrior' | 'barbarian' | 'rogue' | 'wizard' | 'illusionist' | 'ranger'
 
 export type MOBSkills = {
-  health: number
+  maxHealth: number
   maxAtionPoints: number
   actionPointsGainedPerTick: number
   actionPointCostPerMove: number
@@ -31,7 +31,7 @@ export type MOBSkills = {
 type MOBSKillsKeys = keyof MOBSkills
 
 const basePlayerScores: MOBSkills = {
-  health: 10,
+  maxHealth: 10,
   maxAtionPoints: 100,
   actionPointsGainedPerTick: 1,
   actionPointCostPerMove: 1,
@@ -53,28 +53,28 @@ const basePlayerScores: MOBSkills = {
 
 const raceSettings: { [K in PlayerRace]: Partial<MOBSkills> } = {
   elf: {
-    health: 16,
+    maxHealth: 16,
     ticksPerMove: 2,
     meleeHitBonus: 1,
     rangedHitBonus: 2
   },
   dwarf: {
-    health: 24,
+    maxHealth: 24,
     meleeHitBonus: 1,
     meleeDamageBonus: 1
   },
   giant: {
-    health: 28,
+    maxHealth: 28,
     ticksPerMove: 4,
     meleeHitBonus: 2,
     meleeDamageBonus: 2
   },
   gnome: {
-    health: 12,
+    maxHealth: 12,
     meleeDamageBonus: -1
   },
   human: {
-    health: 20
+    maxHealth: 20
   }
 }
 
@@ -124,7 +124,9 @@ export const playerFactory = <T>(
   })
 
   // TODO: Remove. Just for testing
-  player.health = 1000
+  player.maxHealth = 100
+
+  player.init()
 
   return player
 }

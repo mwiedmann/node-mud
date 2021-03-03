@@ -1,7 +1,13 @@
+import { StatusBars } from './statusbars'
+
 export type Player = {
   loggedIn: boolean
   x: number
   y: number
+  hp: number
+  hpMax: number
+  ap: number
+  apMax: number
   lastX: number
   lastY: number
   visibleRange: number
@@ -13,6 +19,10 @@ export type Monster = {
   id: number
   x: number
   y: number
+  hp: number
+  hpMax: number
+  ap: number
+  apMax: number
   lastX: number
   lastY: number
   seen: boolean
@@ -21,4 +31,5 @@ export type Monster = {
   dead: boolean
   activityLog: string[]
   sprite?: Phaser.GameObjects.Image
+  statusbars?: StatusBars
 }

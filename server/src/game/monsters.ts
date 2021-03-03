@@ -6,7 +6,7 @@ export type MOBType = 'player' | 'orc' | 'ogre' | 'dragon'
 export type MonsterType = Exclude<MOBType, 'player'>
 
 const baseMonsterScores: MOBSkills = {
-  health: 10,
+  maxHealth: 10,
   maxAtionPoints: 100,
   actionPointsGainedPerTick: 1,
   actionPointCostPerMove: 1,
@@ -30,17 +30,17 @@ const baseMonsterScores: MOBSkills = {
 
 const monsterSettings: { [K in MonsterType]: Partial<MOBSkills> } = {
   orc: {
-    health: 3,
+    maxHealth: 3,
     ticksPerMove: 6,
     physicalDefense: 5
   },
   ogre: {
-    health: 8,
+    maxHealth: 8,
     ticksPerMove: 7,
     physicalDefense: 10
   },
   dragon: {
-    health: 25,
+    maxHealth: 25,
     ticksPerMove: 2,
     physicalDefense: 15
   }
@@ -60,6 +60,8 @@ export const monsterFactory = (type: MonsterType): Monster => {
     // monster implements MOBSkills
     m[k as keyof MOBSkills] = startingSettings[k as keyof MOBSkills]
   })
+
+  monster.init()
 
   return monster
 }

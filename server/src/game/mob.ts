@@ -17,6 +17,7 @@ abstract class MOB implements MOBSkills {
 
   dead = false
 
+  maxHealth = 10
   health = 10
   maxAtionPoints = 100
   actionPoints = 100
@@ -48,6 +49,11 @@ abstract class MOB implements MOBSkills {
   magicDefense = 10
 
   activityLog: string[] = []
+
+  init() {
+    this.health = this.maxHealth
+    this.actionPoints = this.maxAtionPoints
+  }
 
   addActivity(activity: string) {
     this.activityLog.push(activity)
@@ -203,7 +209,10 @@ abstract class MOB implements MOBSkills {
         id: this.id,
         x: this.x,
         y: this.y,
+        apMax: this.maxAtionPoints,
         ap: this.actionPoints,
+        hp: this.health,
+        hpMax: this.maxHealth,
         dead: this.dead,
         activityLog: this.activityLog
       }
@@ -304,18 +313,18 @@ export class Player<T> extends MOB {
   moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
     const notes: MOBUpdateNotes = { notes: [], moved: undefined }
 
-    if (
-      this.mode === 'hunt' &&
-      tick - this.lastMoveTick >= this.ticksPerMove &&
-      this.actionPoints >= this.actionPointCostPerMove
-    ) {
-      // If the player is hunting, look for close monsters
-      const monster = level.monsterInRange(this.x, this.y, this.huntRange)
+    // if (
+    //   this.mode === 'hunt' &&
+    //   tick - this.lastMoveTick >= this.ticksPerMove &&
+    //   this.actionPoints >= this.actionPointCostPerMove
+    // ) {
+    //   // If the player is hunting, look for close monsters
+    //   const monster = level.monsterInRange(this.x, this.y, this.huntRange)
 
-      if (monster) {
-        this.setDestination(monster.x, monster.y)
-      }
-    }
+    //   if (monster) {
+    //     this.setDestination(monster.x, monster.y)
+    //   }
+    // }
 
     return super.moveTowardsDestination(tick, level, notes)
   }

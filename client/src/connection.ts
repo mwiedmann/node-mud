@@ -1,6 +1,7 @@
 import { gameState, SquareType } from './init'
 import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
+import { StatusBars } from './statusbars'
 
 type MapMessage = {
   type: 'map'
@@ -17,6 +18,10 @@ type PlayerMessage = {
   data: {
     x: number
     y: number
+    hp: number
+    hpMax: number
+    ap: number
+    apMax: number
     activityLog: string[]
   }
 }
@@ -29,6 +34,10 @@ type MonsterMessage = {
     x: number
     y: number
     dead: boolean
+    hp: number
+    hpMax: number
+    ap: number
+    apMax: number
     activityLog: string[]
   }
 }
@@ -67,6 +76,10 @@ class ConnectionManager {
         case 'player':
           gameState.player.x = message.data.x
           gameState.player.y = message.data.y
+          gameState.player.hp = message.data.hp
+          gameState.player.ap = message.data.ap
+          gameState.player.hpMax = message.data.hpMax
+          gameState.player.apMax = message.data.apMax
           gameState.player.activityLog = message.data.activityLog
 
           // This is the first update for the player on this level
@@ -84,11 +97,20 @@ class ConnectionManager {
           let monster = gameState.monsters.get(message.data.id)
 
           if (!monster) {
-            monster = { ...message.data, lastX: -1, lastY: -1, seen: false, ghostX: -1, ghostY: -1 }
+            monster = {
+              ...message.data,
+              lastX: -1,
+              lastY: -1,
+              seen: false,
+              ghostX: -1,
+              ghostY: -1
+            }
             gameState.monsters.set(monster.id, monster)
           } else {
             monster.x = message.data.x
             monster.y = message.data.y
+            monster.hp = message.data.hp
+            monster.ap = message.data.ap
             monster.dead = message.data.dead
             monster.activityLog = message.data.activityLog
           }
