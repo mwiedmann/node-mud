@@ -3,7 +3,6 @@ import { connectionManager } from '../connection'
 import { gameSettings } from '../settings'
 import { controls, gameState, sceneUpdate, SquareType } from '../init'
 import { checkGhostStatus, inRange, MapTiles, setMapTilesSight, tileIsBlocked } from '../mapTiles'
-import { defaultMaxListeners } from 'ws'
 import { StatusBars } from '../statusbars'
 
 const mapTiles: MapTiles = new Map()
@@ -208,6 +207,55 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
           m.ghostX = m.x
           m.ghostY = m.y
           m.seen = true
+        }
+      }
+    }
+  })
+
+  // TODO: This whole consumable section is almost the same as the monster one (minus the status bars)
+  // Refactor into a functon that can handle both
+  gameState.consumables.forEach((c) => {
+    if (c.gone) {
+      if (c.sprite) {
+        c.sprite.destroy()
+        c.sprite = undefined
+      }
+      return
+    }
+
+    if (!c.sprite) {
+      c.sprite = scene.add.image(gameSettings.screenPosFromMap(c.x), gameSettings.screenPosFromMap(c.y), c.subType)
+      c.sprite.setVisible(false)
+    }
+
+    // If the player has moved, recalc the visibility of the consumable
+    if (playerMoved) {
+      const isInRange = inRange(gameState.player.visibleRange, gameState.player.x, gameState.player.y, c.x, c.y)
+
+      // If the consumable is in range, dim it but don't change it's visibility
+      // If the consumable was visible, the player will continue to see it in it's last known position as a reminder (ghost)
+      if (!isInRange) {
+        c.sprite.alpha = 0.5
+        // The consumable is out of range so check the status of it's last known location (ghost)
+        checkGhostStatus(mapTiles, c, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
+      } else {
+        // The consumable is in range so lets check if sight is blocked by a wall
+        const sightToConsumableBlocked = tileIsBlocked(mapTiles, gameState.player.x, gameState.player.y, c.x, c.y)
+
+        // If the consumable is blocked, dim it and the player may still be able to see it if they saw it before (since it will be visible)
+        if (sightToConsumableBlocked) {
+          c.sprite.alpha = 0.5
+          // Since the consumable is blocked the player may still be seeing it's ghost
+          checkGhostStatus(mapTiles, c, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
+        } else {
+          // The consumable is in range and sight is not blocked
+          // Show it and set alpha to full visibility
+          c.sprite.setVisible(true)
+          c.sprite.alpha = 1
+          c.sprite.setPosition(gameSettings.screenPosFromMap(c.x), gameSettings.screenPosFromMap(c.y))
+          c.ghostX = c.x
+          c.ghostY = c.y
+          c.seen = true
         }
       }
     }

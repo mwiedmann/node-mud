@@ -74,6 +74,13 @@ const updateGame = () => {
             p.connection.send(state)
           }
         })
+
+        l.consumables.forEach((c) => {
+          const state = c.getState()
+          if (state) {
+            p.connection.send(state)
+          }
+        })
       })
     })
     const playerPerfTotal = performance.now() - playerPerfStart

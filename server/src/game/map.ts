@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { NewDungeon } from 'random-dungeon-generator'
+import { Consumable, ConsumableTypes } from './consumable'
 import { Level } from './level'
 import { Monster } from './mob'
 import { monsterFactory, MonsterType } from './monsters'
@@ -103,6 +104,21 @@ export const randomMonsters = (type: MonsterType, count: number, level: Level<un
     monster.setDestination(location.x, location.y)
 
     level.monsters.set(monster.id, monster)
+  }
+}
+
+export const randomConsumables = (type: ConsumableTypes, count: number, level: Level<unknown>): void => {
+  for (let i = 0; i < count; i++) {
+    const c = new Consumable()
+    c.type = type
+    c.health = 5
+
+    const location = findOpenSpace(level)
+
+    c.x = location.x
+    c.y = location.y
+
+    level.consumables.set(c.key(), c)
   }
 }
 

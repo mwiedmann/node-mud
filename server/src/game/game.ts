@@ -1,4 +1,4 @@
-import { randomDungeon, randomMonsters } from './map'
+import { randomConsumables, randomDungeon, randomMonsters } from './map'
 import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './level'
 import { playerFactory } from './players'
@@ -21,6 +21,8 @@ export class Game<T> {
     randomMonsters('orc', 100, level)
     randomMonsters('ogre', 50, level)
     randomMonsters('dragon', 2, level)
+
+    randomConsumables('healing', 50, level)
 
     // Need to reupdate the graph after adding monsters
     level.updateGraph()

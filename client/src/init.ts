@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
 import { stateFunctions, States } from './states'
-import { Monster, Player } from './player'
+import { Consumable, Monster, Player } from './player'
 
 export let controls: {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
@@ -23,6 +23,7 @@ export const gameState: {
   mapUpdate: boolean
   player: Player
   monsters: Map<number, Monster>
+  consumables: Map<string, Consumable>
 } = {
   phase: 'init',
   map: [[SquareType.Empty]],
@@ -40,7 +41,8 @@ export const gameState: {
     activityLog: [],
     visibleRange: 15
   },
-  monsters: new Map()
+  monsters: new Map(),
+  consumables: new Map()
 }
 
 function scenePreload(this: Phaser.Scene) {
@@ -54,6 +56,9 @@ function scenePreload(this: Phaser.Scene) {
   this.load.image('orc', 'images/monsters/orc.png')
   this.load.image('ogre', 'images/monsters/ogre.png')
   this.load.image('dragon', 'images/monsters/dragon.png')
+
+  // Consumables
+  this.load.image('healing', 'images/consumables/healing.png')
 
   // Sprites
   // this.load.spritesheet('guy-run', 'images/guy-run-55x59.png', { frameWidth: 55, frameHeight: 59 })

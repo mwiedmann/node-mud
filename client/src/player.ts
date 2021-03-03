@@ -14,7 +14,14 @@ export type Player = {
   activityLog: string[]
 }
 
-export type Monster = {
+export type Ghost = {
+  seen: boolean
+  ghostX: number
+  ghostY: number
+  sprite?: Phaser.GameObjects.Image
+}
+
+export type Monster = Ghost & {
   subType: string
   id: number
   x: number
@@ -25,11 +32,16 @@ export type Monster = {
   apMax: number
   lastX: number
   lastY: number
-  seen: boolean
-  ghostX: number
-  ghostY: number
   dead: boolean
   activityLog: string[]
-  sprite?: Phaser.GameObjects.Image
   statusbars?: StatusBars
+}
+
+export type Consumable = Ghost & {
+  subType: string
+  x: number
+  y: number
+  health?: number
+  actionPoints?: number
+  gone: boolean
 }

@@ -1,4 +1,5 @@
-import { Monster } from './player'
+import * as Phaser from 'phaser'
+import { Ghost } from './player'
 
 export type MapTiles = Map<
   string,
@@ -93,7 +94,7 @@ export const tileIsBlocked = (
 
 export const checkGhostStatus = (
   mapTiles: MapTiles,
-  monster: Monster,
+  monster: Ghost,
   playerX: number,
   playerY: number,
   visibleRange: number

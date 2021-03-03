@@ -1,13 +1,13 @@
 import { MOBType } from './monsters'
 import { Level } from './level'
-import { Dice, rollDice } from './combat'
+import { Dice, rollDice, RollResult } from './combat'
 import { MOBSkills, PlayerProfession, PlayerRace } from './players'
 import { Moved } from './map'
 import { inRange } from './util'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
-abstract class MOB implements MOBSkills {
+export abstract class MOB implements MOBSkills {
   constructor(public type: MOBType, public team: number, public id: number, public name?: string) {}
   x = 0
   y = 0
@@ -50,24 +50,43 @@ abstract class MOB implements MOBSkills {
 
   activityLog: string[] = []
 
-  init() {
+  init(): void {
     this.health = this.maxHealth
     this.actionPoints = this.maxAtionPoints
   }
 
-  addActivity(activity: string) {
+  addActivity(activity: string): void {
     this.activityLog.push(activity)
   }
 
-  meleeAttackRoll() {
+  meleeAttackRoll(): RollResult {
     return rollDice('d20', 1, this.meleeHitBonus)
   }
 
-  meleeDamageRoll() {
+  meleeDamageRoll(): RollResult {
     return rollDice('d4', 1, this.meleeDamageBonus)
   }
 
-  takeDamage(dmg: number) {
+  heal(amount: number): void {
+    this.health += amount
+    if (this.health > this.maxHealth) {
+      this.health = this.maxHealth
+    }
+
+    this.addActivity(`Healed ${amount}`)
+  }
+
+  gainActionPoints(amount: number): void {
+    this.actionPoints += amount
+
+    if (this.actionPoints > this.maxAtionPoints) {
+      this.actionPoints = this.maxAtionPoints
+    }
+
+    this.addActivity(`${amount} action points`)
+  }
+
+  takeDamage(dmg: number): void {
     this.health -= dmg
 
     this.addActivity(`${dmg} damage`)
@@ -96,7 +115,7 @@ abstract class MOB implements MOBSkills {
     return this.moveTowardsDestination(tick, level, notes)
   }
 
-  checkDestinationBounds(level: Level<unknown>) {
+  checkDestinationBounds(level: Level<unknown>): void {
     // Make sure the requested cell is in bounds
     if (this.destinationX >= level.wallsAndMobs[0].length) {
       this.destinationX = level.wallsAndMobs[0].length - 1
@@ -143,6 +162,10 @@ abstract class MOB implements MOBSkills {
         this.x = moveToX
         this.y = moveToY
 
+        if (this.type === 'player') {
+          level.grabConsumable(this)
+        }
+
         // Remove the move just made
         this.moveGraph.shift()
 
@@ -166,7 +189,7 @@ abstract class MOB implements MOBSkills {
     return notes
   }
 
-  takeAction(tick: number, level: Level<unknown>) {
+  takeAction(tick: number, level: Level<unknown>): void {
     if (tick - this.lastActionTick >= this.ticksPerAction && this.actionPoints >= this.actionPointsCostPerAction) {
       const mobToAttack =
         this.type === 'player' ? level.monsterInRange(this.x, this.y, 1) : level.playerInRange(this.x, this.y, 1)
@@ -194,14 +217,14 @@ abstract class MOB implements MOBSkills {
     }
   }
 
-  setDestination(x: number, y: number) {
+  setDestination(x: number, y: number): void {
     this.destinationX = x
     this.destinationY = y
 
     this.moveGraph = []
   }
 
-  getState() {
+  getState(): string | undefined {
     const state = JSON.stringify({
       type: this.type === 'player' ? 'player' : 'monster',
       data: {

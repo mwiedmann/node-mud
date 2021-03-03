@@ -1,7 +1,6 @@
 import { gameState, SquareType } from './init'
 import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
-import { StatusBars } from './statusbars'
 
 type MapMessage = {
   type: 'map'
@@ -42,7 +41,19 @@ type MonsterMessage = {
   }
 }
 
-type BaseMessage = WelcomeMessage | MapMessage | PlayerMessage | MonsterMessage
+type ConsumableMessage = {
+  type: 'consumable'
+  data: {
+    subType: string
+    x: number
+    y: number
+    health: number
+    actionPoints: number
+    gone: boolean
+  }
+}
+
+type BaseMessage = WelcomeMessage | MapMessage | PlayerMessage | MonsterMessage | ConsumableMessage
 
 class ConnectionManager {
   connection!: WebSocket
@@ -113,6 +124,26 @@ class ConnectionManager {
             monster.ap = message.data.ap
             monster.dead = message.data.dead
             monster.activityLog = message.data.activityLog
+          }
+          break
+
+        case 'consumable':
+          let consumable = gameState.consumables.get(`${message.data.x},${message.data.y}`)
+
+          if (!consumable) {
+            consumable = {
+              ...message.data,
+              seen: false,
+              ghostX: -1,
+              ghostY: -1
+            }
+            gameState.consumables.set(`${message.data.x},${message.data.y}`, consumable)
+          } else {
+            consumable.x = message.data.x
+            consumable.y = message.data.y
+            consumable.health = message.data.health
+            consumable.actionPoints = message.data.actionPoints
+            consumable.gone = message.data.gone
           }
           break
       }
