@@ -197,6 +197,10 @@ class ConnectionManager {
   setDestination(x: number, y: number) {
     this.connection.send(JSON.stringify({ type: 'setDestination', x, y }))
   }
+
+  getItem(x: number, y: number) {
+    this.connection.send(JSON.stringify({ type: 'getItem', x, y }))
+  }
 }
 
 export const connectionManager = new ConnectionManager()

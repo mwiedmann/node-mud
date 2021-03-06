@@ -138,6 +138,31 @@ export class Level<T> {
     return undefined
   }
 
+  grabItem(player: MOB): Item | undefined {
+    const key = `${player.x},${player.y}`
+    const item = this.items.get(key)
+
+    if (item instanceof Item && !item.gone) {
+      const itemToDrop = player.removeItem(item.type)
+      if (itemToDrop) {
+        this.items.set(key, itemToDrop)
+        console.log('Player droped', itemToDrop.getDescription())
+      }
+
+      player.useItem(item)
+      console.log('Player picked up', item.getDescription())
+
+      // Leave it in the list so the UI will get an update that it has been consumed later.
+      // TODO: If/when should we remove it? Do they "respawn"
+      // this.consumables.delete(key)
+      return item
+    } else {
+      console.log('No item found at', player.x, player.y)
+    }
+
+    return undefined
+  }
+
   playerInRange(x: number, y: number, range: number): Player<unknown> | undefined {
     const iterator = this.players[Symbol.iterator]()
 

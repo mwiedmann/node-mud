@@ -2,6 +2,7 @@
 // @ts-ignore
 import { NewDungeon } from 'random-dungeon-generator'
 import { Consumable, ConsumableTypes } from './consumable'
+import { ItemType, MeleeWeapon } from './item'
 import { Level } from './level'
 import { Monster } from './mob'
 import { monsterFactory, MonsterType } from './monsters'
@@ -112,6 +113,19 @@ export const randomConsumables = (type: ConsumableTypes, count: number, level: L
     const c = new Consumable()
     c.type = type
     c.health = 5
+
+    const location = findOpenSpace(level)
+
+    c.x = location.x
+    c.y = location.y
+
+    level.items.set(c.key(), c)
+  }
+}
+
+export const randomItems = (type: ItemType, count: number, level: Level<unknown>): void => {
+  for (let i = 0; i < count; i++) {
+    const c = new MeleeWeapon('Foo Weapon', {}, 'd12')
 
     const location = findOpenSpace(level)
 

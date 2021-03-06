@@ -10,6 +10,7 @@ export let controls: {
   quit: Phaser.Input.Keyboard.Key
   zoomIn: Phaser.Input.Keyboard.Key
   zoomOut: Phaser.Input.Keyboard.Key
+  getItem: Phaser.Input.Keyboard.Key
 }
 
 export enum SquareType {
@@ -105,7 +106,8 @@ function scenePreload(this: Phaser.Scene) {
   this.load.image('armor', 'images/items/armor.png')
   this.load.image('ring', 'images/items/ring.png')
   this.load.image('gold', 'images/items/gold.png')
-  this.load.image('spell', 'images/items/spell.png')
+  this.load.image('ranged-spell', 'images/items/spell.png')
+  this.load.image('melee-spell', 'images/items/spell.png')
   this.load.image('melee', 'images/items/melee.png')
   this.load.image('ranged', 'images/items/ranged.png')
   this.load.image('boots', 'images/items/head.png')
@@ -119,7 +121,8 @@ function sceneCreate(this: Phaser.Scene) {
     spell: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL),
     quit: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS),
-    zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS)
+    zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS),
+    getItem: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G)
   }
 }
 

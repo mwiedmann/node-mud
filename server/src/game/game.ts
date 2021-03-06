@@ -1,4 +1,4 @@
-import { randomConsumables, randomDungeon, randomMonsters } from './map'
+import { randomConsumables, randomDungeon, randomItems, randomMonsters } from './map'
 import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './level'
 import { playerFactory } from './players'
@@ -26,6 +26,7 @@ export class Game<T> {
       })
 
     randomConsumables('healing', 100, level)
+    randomItems('melee', 100, level)
 
     // Need to reupdate the graph after adding monsters
     level.updateGraph()
@@ -113,6 +114,21 @@ export class Game<T> {
     }
 
     player.setDestination(x, y)
+  }
+
+  getItem(connection: T, x: number, y: number): void {
+    const player = this.players.get(connection)
+
+    if (!player) {
+      console.log('No player found')
+      return
+    }
+
+    this.levels.forEach((l) => {
+      if (l.players.has(player.id)) {
+        l.grabItem(player)
+      }
+    })
   }
 }
 

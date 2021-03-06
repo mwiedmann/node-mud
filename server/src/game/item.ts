@@ -2,7 +2,16 @@ import { Dice } from './combat'
 import { nextId } from './id'
 import { MOBSkills } from './players'
 
-type ItemType = 'melee' | 'ranged' | 'ring' | 'amulet' | 'head' | 'armor' | 'boots' | 'ranged-spell' | 'melee-spell'
+export type ItemType =
+  | 'melee'
+  | 'ranged'
+  | 'ring'
+  | 'amulet'
+  | 'head'
+  | 'armor'
+  | 'boots'
+  | 'ranged-spell'
+  | 'melee-spell'
 
 export class Item {
   constructor(public type: ItemType, public name: string, public bonuses: Partial<MOBSkills>) {}
@@ -26,7 +35,7 @@ export class Item {
         x: this.x,
         y: this.y,
         description: this.getDescription(),
-        pickedUp: this.gone
+        gone: this.gone
       }
     })
 
@@ -36,6 +45,10 @@ export class Item {
     }
 
     return undefined
+  }
+
+  key(): string {
+    return `${this.x},${this.y}`
   }
 }
 

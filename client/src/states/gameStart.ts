@@ -36,6 +36,10 @@ const init = (scene: Phaser.Scene): void => {
   }
 
   scene.input.on('pointerup', pointerCallback)
+
+  controls.getItem.on('up', () => {
+    connectionManager.getItem(gameState.player.x, gameState.player.y)
+  })
 }
 
 // const isTileVisible = (startX: number, startY: number, endX: number, endY: number, )
@@ -308,6 +312,7 @@ const cleanup = (scene: Phaser.Scene): void => {
   statusbars = undefined
 
   scene.input.removeListener('pointerup', pointerCallback)
+  controls.getItem.removeAllListeners()
 }
 
 const drawMap = (scene: Phaser.Scene): void => {

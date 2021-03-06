@@ -34,6 +34,10 @@ export const startServer = (): void => {
               setDestination(ws, obj)
               break
 
+            case 'getItem':
+              getItem(ws, obj)
+              break
+
             default:
               console.error('Invalid message type')
           }
@@ -124,7 +128,13 @@ type MessageSetDestination = {
   y: number
 }
 
-type MessageBase = MessageLogin | MessageLogout | MessageSetDestination
+type MessageGetItem = {
+  type: 'getItem'
+  x: number
+  y: number
+}
+
+type MessageBase = MessageLogin | MessageLogout | MessageSetDestination | MessageGetItem
 
 type PlayerConnection = {
   id: number
@@ -157,4 +167,8 @@ const logoutPlayer = (ws: WebSocket) => {
 
 const setDestination = (ws: WebSocket, { x, y }: MessageSetDestination) => {
   game.setDestination(ws, x, y)
+}
+
+const getItem = (ws: WebSocket, { x, y }: MessageGetItem) => {
+  game.getItem(ws, x, y)
 }
