@@ -15,6 +15,7 @@ export abstract class MOB implements MOBSkills {
   destinationY = 0
   abstract moveSearchLimit: number
 
+  level = 1
   dead = false
 
   maxHealth = 10
@@ -64,7 +65,7 @@ export abstract class MOB implements MOBSkills {
   }
 
   meleeDamageRoll(): RollResult {
-    return rollDice('d4', 1, this.meleeDamageBonus)
+    return rollDice(this.meleeDamageDie, 1, this.meleeDamageBonus)
   }
 
   heal(amount: number): void {

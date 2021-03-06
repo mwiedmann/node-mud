@@ -16,7 +16,7 @@ class GameSettings {
   screenHeight = 1080
   screenWidthMid: number
   screenHeightMid: number
-  gameCameraZoom = 1
+  gameCameraZoom = 1.7
 
   halfCell: number
   fieldWidth: number

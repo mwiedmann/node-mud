@@ -27,7 +27,7 @@ const init = (scene: Phaser.Scene): void => {
 
   // Set the camera to follow the guy (with some lerping, a deadzone, and bounds)
   scene.cameras.main.startFollow(guy, true, 0.03, 0.03)
-  scene.cameras.main.setDeadzone(gameSettings.cellSize * 5, gameSettings.cellSize * 5)
+  scene.cameras.main.setDeadzone(gameSettings.cellSize * 2, gameSettings.cellSize * 2)
   scene.cameras.main.setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
 
   const pointerCallback = (p: Phaser.Input.Pointer) => {

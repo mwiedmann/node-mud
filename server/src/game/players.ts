@@ -3,9 +3,10 @@ import { nextId } from './id'
 import { Monster, Player } from './mob'
 
 export type PlayerRace = 'elf' | 'dwarf' | 'human' | 'gnome' | 'giant'
-export type PlayerProfession = 'warrior' | 'barbarian' | 'rogue' | 'wizard' | 'illusionist' | 'ranger'
+export type PlayerProfession = 'warrior' | 'barbarian' | 'rogue' | 'wizard' | 'illusionist' | 'ranger' | 'cleric'
 
 export type MOBSkills = {
+  level: number
   maxHealth: number
   maxAtionPoints: number
   actionPointsGainedPerTick: number
@@ -31,6 +32,7 @@ export type MOBSkills = {
 type MOBSKillsKeys = keyof MOBSkills
 
 const basePlayerScores: MOBSkills = {
+  level: 1,
   maxHealth: 10,
   maxAtionPoints: 100,
   actionPointsGainedPerTick: 1,
@@ -88,7 +90,8 @@ const professionSettings: { [K in PlayerProfession]: Partial<MOBSkills> } = {
   ranger: {},
   rogue: {},
   wizard: {},
-  illusionist: {}
+  illusionist: {},
+  cleric: {}
 }
 
 export const playerFactory = <T>(

@@ -3,6 +3,7 @@ import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './level'
 import { playerFactory } from './players'
 import { performance } from 'perf_hooks'
+import { monsterSettings, MonsterType } from './monsters'
 
 export class Game<T> {
   constructor() {
@@ -16,13 +17,15 @@ export class Game<T> {
     const map = randomDungeon()
     level.setWalls(map) // This will also create the map search graph
 
-    // randomMonsters('orc', 1, level)
+    // Add some level 1 mosnters
+    Object.entries(monsterSettings)
+      .filter(([_, value]) => value.level === 1)
+      .map(([key]) => key as MonsterType)
+      .forEach((monsterName) => {
+        randomMonsters(monsterName, 10, level)
+      })
 
-    randomMonsters('orc', 100, level)
-    randomMonsters('ogre', 50, level)
-    randomMonsters('dragon', 2, level)
-
-    randomConsumables('healing', 50, level)
+    randomConsumables('healing', 10, level)
 
     // Need to reupdate the graph after adding monsters
     level.updateGraph()
