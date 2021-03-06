@@ -118,7 +118,7 @@ export const randomConsumables = (type: ConsumableTypes, count: number, level: L
     c.x = location.x
     c.y = location.y
 
-    level.consumables.set(c.key(), c)
+    level.items.set(c.key(), c)
   }
 }
 

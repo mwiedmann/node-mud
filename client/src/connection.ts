@@ -1,6 +1,7 @@
 import { gameState, SquareType } from './init'
 import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
+import { Consumable, Item } from './player'
 
 type MapMessage = {
   type: 'map'
@@ -46,6 +47,7 @@ type ConsumableMessage = {
   type: 'consumable'
   data: {
     subType: string
+    id: number
     x: number
     y: number
     health: number
@@ -54,7 +56,19 @@ type ConsumableMessage = {
   }
 }
 
-type BaseMessage = WelcomeMessage | MapMessage | PlayerMessage | MonsterMessage | ConsumableMessage
+type ItemMessage = {
+  type: 'item'
+  data: {
+    subType: string
+    id: number
+    x: number
+    y: number
+    description: string
+    gone: boolean
+  }
+}
+
+type BaseMessage = WelcomeMessage | MapMessage | PlayerMessage | MonsterMessage | ConsumableMessage | ItemMessage
 
 class ConnectionManager {
   connection!: WebSocket
@@ -130,7 +144,7 @@ class ConnectionManager {
           break
 
         case 'consumable':
-          let consumable = gameState.consumables.get(`${message.data.x},${message.data.y}`)
+          let consumable = gameState.items.get(message.data.id) as Consumable
 
           if (!consumable) {
             consumable = {
@@ -139,13 +153,32 @@ class ConnectionManager {
               ghostX: -1,
               ghostY: -1
             }
-            gameState.consumables.set(`${message.data.x},${message.data.y}`, consumable)
+            gameState.items.set(message.data.id, consumable)
           } else {
             consumable.x = message.data.x
             consumable.y = message.data.y
             consumable.health = message.data.health
             consumable.actionPoints = message.data.actionPoints
             consumable.gone = message.data.gone
+          }
+          break
+
+        case 'item':
+          let item = gameState.items.get(message.data.id) as Item
+
+          if (!item) {
+            item = {
+              ...message.data,
+              seen: false,
+              ghostX: -1,
+              ghostY: -1
+            }
+            gameState.items.set(message.data.id, item)
+          } else {
+            item.x = message.data.x
+            item.y = message.data.y
+            item.description = message.data.description
+            item.gone = message.data.gone
           }
           break
       }

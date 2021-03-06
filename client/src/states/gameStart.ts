@@ -242,7 +242,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
   // TODO: This whole consumable section is almost the same as the monster one (minus the status bars)
   // Refactor into a functon that can handle both
-  gameState.consumables.forEach((c) => {
+  gameState.items.forEach((c) => {
     if (c.gone) {
       if (c.sprite) {
         c.sprite.destroy()

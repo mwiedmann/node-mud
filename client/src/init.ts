@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
 import { stateFunctions, States } from './states'
-import { Consumable, Monster, Player } from './player'
+import { Consumable, Item, Monster, Player } from './player'
 
 export let controls: {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
@@ -23,7 +23,7 @@ export const gameState: {
   mapUpdate: boolean
   player: Player
   monsters: Map<number, Monster>
-  consumables: Map<string, Consumable>
+  items: Map<number, Consumable | Item>
 } = {
   phase: 'init',
   map: [[SquareType.Empty]],
@@ -42,7 +42,7 @@ export const gameState: {
     visibleRange: 5
   },
   monsters: new Map(),
-  consumables: new Map()
+  items: new Map()
 }
 
 function scenePreload(this: Phaser.Scene) {
@@ -99,6 +99,17 @@ function scenePreload(this: Phaser.Scene) {
   // Consumables
   this.load.image('healing', 'images/consumables/healing.png')
   this.load.image('action-points', 'images/consumables/action-points.png')
+
+  // Items
+  this.load.image('amulet', 'images/items/amulet.png')
+  this.load.image('armor', 'images/items/armor.png')
+  this.load.image('ring', 'images/items/ring.png')
+  this.load.image('gold', 'images/items/gold.png')
+  this.load.image('spell', 'images/items/spell.png')
+  this.load.image('melee', 'images/items/melee.png')
+  this.load.image('ranged', 'images/items/ranged.png')
+  this.load.image('boots', 'images/items/head.png')
+  this.load.image('head', 'images/items/head.png')
 }
 
 function sceneCreate(this: Phaser.Scene) {

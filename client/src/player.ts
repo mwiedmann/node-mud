@@ -45,3 +45,11 @@ export type Consumable = Ghost & {
   actionPoints?: number
   gone: boolean
 }
+
+export type Item = Ghost & {
+  subType: string
+  x: number
+  y: number
+  description: string
+  gone: boolean
+}

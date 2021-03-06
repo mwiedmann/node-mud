@@ -1,3 +1,5 @@
+import { idText } from 'typescript'
+import { nextId } from './id'
 import { MOB } from './mob'
 
 export type ConsumableTypes = 'healing' | 'action'
@@ -7,6 +9,7 @@ export class Consumable {
   x = 0
   y = 0
   gone = false
+  id = nextId()
 
   health?: number
   actionPoints?: number
@@ -30,6 +33,7 @@ export class Consumable {
       type: 'consumable',
       data: {
         subType: this.type,
+        id: this.id,
         x: this.x,
         y: this.y,
         health: this.health,

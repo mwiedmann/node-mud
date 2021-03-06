@@ -1,5 +1,6 @@
 import { AStarFinder } from 'astar-typescript'
 import { Consumable } from './consumable'
+import { Item } from './item'
 import { createMapWithMonsters, findOpenSpace, Moved, getPrintableMap, SquareType } from './map'
 import { MOB, Monster, Player } from './mob'
 
@@ -8,7 +9,7 @@ export class Level<T> {
   wallsAndMobs: SquareType[][] = []
   players: Map<number, Player<T>> = new Map()
   monsters: Map<number, Monster> = new Map()
-  consumables: Map<string, Consumable> = new Map()
+  items: Map<string, Consumable | Item> = new Map()
 
   private createMapWithRangeBlockers(
     start: { x: number; y: number },
@@ -123,9 +124,9 @@ export class Level<T> {
 
   grabConsumable(player: MOB): Consumable | undefined {
     const key = `${player.x},${player.y}`
-    const c = this.consumables.get(key)
+    const c = this.items.get(key)
 
-    if (c && !c.gone) {
+    if (c instanceof Consumable && !c.gone) {
       c.apply(player)
 
       // Leave it in the list so the UI will get an update that it has been consumed later.

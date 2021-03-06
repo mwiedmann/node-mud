@@ -25,7 +25,7 @@ export class Game<T> {
         randomMonsters(monsterName, 10, level)
       })
 
-    randomConsumables('healing', 10, level)
+    randomConsumables('healing', 100, level)
 
     // Need to reupdate the graph after adding monsters
     level.updateGraph()

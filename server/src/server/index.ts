@@ -75,7 +75,7 @@ const updateGame = () => {
           }
         })
 
-        l.consumables.forEach((c) => {
+        l.items.forEach((c) => {
           const state = c.getState()
           if (state) {
             p.connection.send(state)
