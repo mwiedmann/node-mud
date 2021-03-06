@@ -5,10 +5,11 @@ import { controls, gameState, sceneUpdate, SquareType } from '../init'
 import { checkGhostStatus, inRange, MapTiles, setMapTilesSight, tileIsBlocked } from '../mapTiles'
 import { StatusBars } from '../statusbars'
 
-const mapTiles: MapTiles = new Map()
-
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
+let tileMap: Phaser.Tilemaps.Tilemap
+let tileSet: Phaser.Tilemaps.Tileset
+let mapLayer: Phaser.Tilemaps.TilemapLayer
 
 let pointerCallback: (p: Phaser.Input.Pointer) => void
 let floatingObjects: {
@@ -67,7 +68,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
     gameState.player.lastY = gameState.player.y
 
     // Calculate visible spaces
-    setMapTilesSight(mapTiles, gameState.player.visibleRange, gameState.player.x, gameState.player.y)
+    setMapTilesSight(mapLayer, gameState.player.visibleRange, gameState.player.x, gameState.player.y)
   }
 
   if (statusbars) {
@@ -177,29 +178,48 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
     // If the monster or player moved, then recalc the visibility of the monster
     if (m.x !== m.lastX || m.y !== m.lastY || playerMoved) {
-      m.lastX = m.x
-      m.lastY = m.y
-
       const isInRange = inRange(gameState.player.visibleRange, gameState.player.x, gameState.player.y, m.x, m.y)
 
       // If the monster is in range, dim it but don't change it's visibility
       // If the monster was visible, the player will continue to see it in it's last known position as a reminder (ghost)
       if (!isInRange) {
-        m.sprite.alpha = 0.5
+        m.sprite.alpha = gameSettings.ghostAlpha
         m.statusbars.setVisibility(false)
 
+        // If the monster is out of range, but the last positon WAS in range and WAS visible to the player, put the ghost in the monster's new postion
+        // Here we are assuming the player saw what square the monster stepped into.
+        // It makes for a better experience by leaving a ghost on the edge of the player's vision when a monster steps out of range
+        if (
+          m.seen &&
+          inRange(gameState.player.visibleRange, gameState.player.x, gameState.player.y, m.lastX, m.lastY) &&
+          !tileIsBlocked(gameState.player.x, gameState.player.y, m.lastX, m.lastY)
+        ) {
+          m.ghostX = m.x
+          m.ghostY = m.y
+          m.sprite.setPosition(gameSettings.screenPosFromMap(m.x), gameSettings.screenPosFromMap(m.y))
+        }
+
         // The monster is out of range so check the status of it's last known location (ghost)
-        checkGhostStatus(mapTiles, m, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
+        checkGhostStatus(m, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
       } else {
         // The monster is in range so lets check if sight is blocked by a wall
-        const sightToMonsterBlocked = tileIsBlocked(mapTiles, gameState.player.x, gameState.player.y, m.x, m.y)
+        const sightToMonsterBlocked = tileIsBlocked(gameState.player.x, gameState.player.y, m.x, m.y)
 
         // If the monster is blocked, dim it and the player may still be able to see it if they saw it before (since it will be visible)
         if (sightToMonsterBlocked) {
-          m.sprite.alpha = 0.5
+          m.sprite.alpha = gameSettings.ghostAlpha
           m.statusbars.setVisibility(false)
+
+          // If the monster just stepped out of vision, put the ghost in the monster's new postion
+          // This leaves a ghost on the screen when a monster steps behind a wall
+          if (m.seen && !tileIsBlocked(gameState.player.x, gameState.player.y, m.lastX, m.lastY)) {
+            m.ghostX = m.x
+            m.ghostY = m.y
+            m.sprite.setPosition(gameSettings.screenPosFromMap(m.x), gameSettings.screenPosFromMap(m.y))
+          }
+
           // Since the monster is blocked the player may still be seeing it's ghost
-          checkGhostStatus(mapTiles, m, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
+          checkGhostStatus(m, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
         } else {
           // The monster is in range and sight is not blocked
           // Show it and set alpha to full visibility
@@ -213,6 +233,10 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
           m.seen = true
         }
       }
+
+      // Update their last position, this lets us tell when the monster moves
+      m.lastX = m.x
+      m.lastY = m.y
     }
   })
 
@@ -239,18 +263,18 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       // If the consumable is in range, dim it but don't change it's visibility
       // If the consumable was visible, the player will continue to see it in it's last known position as a reminder (ghost)
       if (!isInRange) {
-        c.sprite.alpha = 0.5
+        c.sprite.alpha = gameSettings.ghostAlpha
         // The consumable is out of range so check the status of it's last known location (ghost)
-        checkGhostStatus(mapTiles, c, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
+        checkGhostStatus(c, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
       } else {
         // The consumable is in range so lets check if sight is blocked by a wall
-        const sightToConsumableBlocked = tileIsBlocked(mapTiles, gameState.player.x, gameState.player.y, c.x, c.y)
+        const sightToConsumableBlocked = tileIsBlocked(gameState.player.x, gameState.player.y, c.x, c.y)
 
         // If the consumable is blocked, dim it and the player may still be able to see it if they saw it before (since it will be visible)
         if (sightToConsumableBlocked) {
-          c.sprite.alpha = 0.5
+          c.sprite.alpha = gameSettings.ghostAlpha
           // Since the consumable is blocked the player may still be seeing it's ghost
-          checkGhostStatus(mapTiles, c, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
+          checkGhostStatus(c, gameState.player.x, gameState.player.y, gameState.player.visibleRange)
         } else {
           // The consumable is in range and sight is not blocked
           // Show it and set alpha to full visibility
@@ -278,9 +302,6 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 }
 
 const cleanup = (scene: Phaser.Scene): void => {
-  mapTiles.forEach((m) => m.sprite.destroy())
-  mapTiles.clear()
-
   guy?.destroy()
   guy = undefined
   statusbars?.destroy()
@@ -292,21 +313,18 @@ const cleanup = (scene: Phaser.Scene): void => {
 const drawMap = (scene: Phaser.Scene): void => {
   console.log('drawMap')
 
-  mapTiles.forEach((m) => m.sprite.destroy())
-  mapTiles.clear()
+  tileMap = scene.make.tilemap({
+    data: gameState.map,
+    tileWidth: gameSettings.cellSize,
+    tileHeight: gameSettings.cellSize,
+    width: gameState.map.length,
+    height: gameState.map[0].length
+  })
 
-  for (let y = 0; y < gameState.map.length; y++) {
-    for (let x = 0; x < gameState.map[y].length; x++) {
-      if (gameState.map[y][x] === SquareType.Wall) {
-        mapTiles.set(`${x},${y}`, {
-          x,
-          y,
-          seen: false, // TODO: If redrawing map, need to keep previous "seen" value
-          sprite: scene.add.image(gameSettings.screenPosFromMap(x), gameSettings.screenPosFromMap(y), 'wall')
-        })
-      }
-    }
-  }
+  tileSet = tileMap.addTilesetImage('maptiles', 'maptiles', gameSettings.cellSize, gameSettings.cellSize)
+
+  mapLayer = tileMap.createLayer(0, 'maptiles')
+  mapLayer.setDepth(-1)
 }
 
 export const fns = {

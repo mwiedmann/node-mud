@@ -45,6 +45,7 @@ export type MonsterType = Exclude<MOBType, 'player'>
 
 const baseMonsterScores: MOBSkills = {
   level: 1,
+  visibleRange: 5,
   maxHealth: 10,
   maxAtionPoints: 100,
   actionPointsGainedPerTick: 1,

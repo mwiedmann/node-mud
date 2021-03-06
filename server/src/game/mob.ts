@@ -18,6 +18,7 @@ export abstract class MOB implements MOBSkills {
   level = 1
   dead = false
 
+  visibleRange = 5
   maxHealth = 10
   health = 10
   maxAtionPoints = 100
@@ -238,7 +239,8 @@ export abstract class MOB implements MOBSkills {
         hp: this.health,
         hpMax: this.maxHealth,
         dead: this.dead,
-        activityLog: this.activityLog
+        activityLog: this.activityLog,
+        visibleRange: this.visibleRange
       }
     })
 

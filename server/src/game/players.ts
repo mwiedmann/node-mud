@@ -7,6 +7,7 @@ export type PlayerProfession = 'warrior' | 'barbarian' | 'rogue' | 'wizard' | 'i
 
 export type MOBSkills = {
   level: number
+  visibleRange: number
   maxHealth: number
   maxAtionPoints: number
   actionPointsGainedPerTick: number
@@ -33,6 +34,7 @@ type MOBSKillsKeys = keyof MOBSkills
 
 const basePlayerScores: MOBSkills = {
   level: 1,
+  visibleRange: 5,
   maxHealth: 10,
   maxAtionPoints: 100,
   actionPointsGainedPerTick: 1,
@@ -58,25 +60,30 @@ const raceSettings: { [K in PlayerRace]: Partial<MOBSkills> } = {
     maxHealth: 16,
     ticksPerMove: 2,
     meleeHitBonus: 1,
-    rangedHitBonus: 2
+    rangedHitBonus: 2,
+    visibleRange: 9
   },
   dwarf: {
     maxHealth: 24,
     meleeHitBonus: 1,
-    meleeDamageBonus: 1
+    meleeDamageBonus: 1,
+    visibleRange: 10
   },
   giant: {
     maxHealth: 28,
     ticksPerMove: 4,
     meleeHitBonus: 2,
-    meleeDamageBonus: 2
+    meleeDamageBonus: 2,
+    visibleRange: 7
   },
   gnome: {
     maxHealth: 12,
-    meleeDamageBonus: -1
+    meleeDamageBonus: -1,
+    visibleRange: 9
   },
   human: {
-    maxHealth: 20
+    maxHealth: 20,
+    visibleRange: 8
   }
 }
 

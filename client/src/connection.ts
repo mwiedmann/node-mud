@@ -22,6 +22,7 @@ type PlayerMessage = {
     ap: number
     apMax: number
     activityLog: string[]
+    visibleRange: number
   }
 }
 
@@ -92,6 +93,7 @@ class ConnectionManager {
           gameState.player.hpMax = message.data.hpMax
           gameState.player.apMax = message.data.apMax
           gameState.player.activityLog = message.data.activityLog
+          gameState.player.visibleRange = message.data.visibleRange
 
           // This is the first update for the player on this level
           // Snap the camera

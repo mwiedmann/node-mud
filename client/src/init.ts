@@ -39,7 +39,7 @@ export const gameState: {
     lastX: -1,
     lastY: -1,
     activityLog: [],
-    visibleRange: 15
+    visibleRange: 5
   },
   monsters: new Map(),
   consumables: new Map()
@@ -48,6 +48,7 @@ export const gameState: {
 function scenePreload(this: Phaser.Scene) {
   // Images
   this.load.image('title', 'images/title.png')
+  this.load.image('maptiles', 'images/maptiles.png')
 
   this.load.image('wall', 'images/wall.png')
   this.load.image('guy', 'images/players/warrior.png')

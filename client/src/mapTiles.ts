@@ -1,5 +1,7 @@
 import * as Phaser from 'phaser'
+import { gameState } from './init'
 import { Ghost } from './player'
+import { gameSettings } from './settings'
 
 export type MapTiles = Map<
   string,
@@ -11,39 +13,43 @@ export type MapTiles = Map<
   }
 >
 
+export type SeenTile = Phaser.Tilemaps.Tile & {
+  seen?: boolean
+}
+
 export const inRange = (visibleRange: number, startX: number, startY: number, endX: number, endY: number): boolean =>
   Math.abs(endX - startX) <= visibleRange && Math.abs(endY - startY) <= visibleRange
 
-export const setMapTilesSight = (mapTiles: MapTiles, visibleRange: number, startX: number, startY: number): void => {
+export const setMapTilesSight = (
+  mapLayer: Phaser.Tilemaps.TilemapLayer,
+  visibleRange: number,
+  startX: number,
+  startY: number
+): void => {
   // Calculate visible spaces
-  mapTiles.forEach((m) => {
+  mapLayer.forEachTile((m: SeenTile) => {
     const isInRange = inRange(visibleRange, startX, startY, m.x, m.y)
     let isBlocked = false
 
     // Is this tile in range?
     if (isInRange) {
-      isBlocked = tileIsBlocked(mapTiles, startX, startY, m.x, m.y)
+      isBlocked = tileIsBlocked(startX, startY, m.x, m.y)
     }
 
     if (isInRange && !isBlocked) {
-      m.sprite.setVisible(true)
+      m.setVisible(true)
       m.seen = true
-      m.sprite.alpha = 1
+      m.alpha = 1
     } else if (m.seen) {
-      m.sprite.alpha = 0.2
+      m.alpha = gameSettings.hiddenTileAlpha
     } else {
-      m.sprite.setVisible(false)
+      m.setVisible(false)
+      m.alpha = 0
     }
   })
 }
 
-export const tileIsBlocked = (
-  mapTiles: MapTiles,
-  startX: number,
-  startY: number,
-  endX: number,
-  endY: number
-): boolean => {
+export const tileIsBlocked = (startX: number, startY: number, endX: number, endY: number): boolean => {
   let isBlocked = false
   // Can the player see this tile?
   const playerLinesToTile = [
@@ -66,7 +72,7 @@ export const tileIsBlocked = (
     for (let x = Math.min(endX, startX); x <= Math.max(endX, startX) && !isBlocked; x++) {
       const isStart = x === startX && y === startY
       const isEnd = x === endX && y === endY
-      const hasTile = !isStart && !isEnd && mapTiles.has(`${x},${y}`)
+      const hasTile = !isStart && !isEnd && gameState.map[y][x] > 0
       if (hasTile) {
         const rect = new Phaser.Geom.Rectangle(x, y, 1, 1)
         // See if this tile is blocking any lines of sight
@@ -92,17 +98,11 @@ export const tileIsBlocked = (
   return isBlocked
 }
 
-export const checkGhostStatus = (
-  mapTiles: MapTiles,
-  monster: Ghost,
-  playerX: number,
-  playerY: number,
-  visibleRange: number
-): void => {
+export const checkGhostStatus = (monster: Ghost, playerX: number, playerY: number, visibleRange: number): void => {
   if (monster.seen) {
     const ghostInRange = inRange(visibleRange, playerX, playerY, monster.ghostX, monster.ghostY)
     if (ghostInRange) {
-      const sightToGhostBlocked = tileIsBlocked(mapTiles, playerX, playerY, monster.ghostX, monster.ghostY)
+      const sightToGhostBlocked = tileIsBlocked(playerX, playerY, monster.ghostX, monster.ghostY)
 
       if (!sightToGhostBlocked) {
         // The ghost is in range and not blocked so it will disappear since the real monster is not here
