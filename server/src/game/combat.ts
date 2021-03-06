@@ -1,6 +1,7 @@
 export type Dice = 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20'
 
 export type RollResult = {
+  description: string
   total: number
   rollTotal: number
   bonus: number
@@ -17,9 +18,10 @@ const diceRange = (type: Dice) =>
     d20: { min: 1, max: 20 }
   }[type])
 
-export const rollDice = (type: Dice, count: number, bonus: number): RollResult => {
+export const rollDice = (description: string, type: Dice, count: number, bonus: number): RollResult => {
   const range = diceRange(type)
   const result: RollResult = {
+    description,
     total: 0,
     rollTotal: 0,
     bonus,

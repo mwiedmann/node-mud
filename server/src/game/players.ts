@@ -1,6 +1,6 @@
-import { Dice } from './combat'
 import { nextId } from './id'
-import { Monster, Player } from './mob'
+import { MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon } from './item'
+import { MOBItems, Monster, Player } from './mob'
 
 export type PlayerRace = 'elf' | 'dwarf' | 'human' | 'gnome' | 'giant'
 export type PlayerProfession = 'warrior' | 'barbarian' | 'rogue' | 'wizard' | 'illusionist' | 'ranger' | 'cleric'
@@ -18,19 +18,15 @@ export type MOBSkills = {
   ticksPerAction: number
 
   meleeHitBonus: number
-  meleeDamageDie: Dice
   meleeDamageBonus: number
   rangedHitBonus: number
-  rangedDamageDie: Dice
   rangedDamageBonus: number
 
   physicalDefense: number
   magicDefense: number
-
-  tetherRange?: number
 }
 
-type MOBSKillsKeys = keyof MOBSkills
+type MOBSKillsAndItemsKeys = keyof MOBSkills & keyof MOBItems
 
 const basePlayerScores: MOBSkills = {
   level: 1,
@@ -45,17 +41,15 @@ const basePlayerScores: MOBSkills = {
   ticksPerAction: 5,
 
   meleeHitBonus: 0,
-  meleeDamageDie: 'd4',
   meleeDamageBonus: 0,
   rangedHitBonus: 0,
-  rangedDamageDie: 'd4',
   rangedDamageBonus: 0,
 
   physicalDefense: 10,
   magicDefense: 10
 }
 
-const raceSettings: { [K in PlayerRace]: Partial<MOBSkills> } = {
+const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () => ({
   elf: {
     maxHealth: 16,
     ticksPerMove: 2,
@@ -85,21 +79,36 @@ const raceSettings: { [K in PlayerRace]: Partial<MOBSkills> } = {
     maxHealth: 20,
     visibleRange: 8
   }
-}
+})
 
-const professionSettings: { [K in PlayerProfession]: Partial<MOBSkills> } = {
+const professionSettings: () => { [K in PlayerProfession]: Partial<MOBSkills> & Partial<MOBItems> } = () => ({
   barbarian: {
-    meleeDamageDie: 'd8'
+    meleeItem: new MeleeWeapon('battleaxe', {}, 'd8')
   },
   warrior: {
-    meleeDamageDie: 'd6'
+    meleeItem: new MeleeWeapon('long sword', {}, 'd8')
   },
-  ranger: {},
-  rogue: {},
-  wizard: {},
-  illusionist: {},
-  cleric: {}
-}
+  ranger: {
+    meleeItem: new MeleeWeapon('short sword', {}, 'd6'),
+    rangedItem: new RangedWeapon('longbow', {}, 'd8')
+  },
+  rogue: {
+    meleeItem: new MeleeWeapon('dagger', {}, 'd4'),
+    rangedItem: new RangedWeapon('shortbow', {}, 'd6')
+  },
+  wizard: {
+    meleeItem: new MeleeWeapon('staff', {}, 'd4'),
+    rangedSpell: new RangedSpell('energy blast', {}, 'd10')
+  },
+  illusionist: {
+    meleeItem: new MeleeWeapon('staff', {}, 'd4'),
+    rangedSpell: new RangedSpell('energy blast', {}, 'd10')
+  },
+  cleric: {
+    meleeItem: new MeleeWeapon('mace', {}, 'd6'),
+    meleeSpell: new MeleeSpell('divine smite', {}, 'd10')
+  }
+})
 
 export const playerFactory = <T>(
   race: PlayerRace,
@@ -108,8 +117,8 @@ export const playerFactory = <T>(
   team: number,
   connection: T
 ): Player<T> => {
-  const raceStartingValues = raceSettings[race]
-  const professionStartingValues = professionSettings[profession]
+  const raceStartingValues = raceSettings()[race]
+  const professionStartingValues = professionSettings()[profession]
 
   const player = new Player<T>(name, race, profession, team, nextId(), connection)
 
@@ -121,7 +130,7 @@ export const playerFactory = <T>(
 
     // Not sure why this doesn't work without the any
     // player implements MOBSkills
-    p[k as MOBSKillsKeys] = startingSettings[k as MOBSKillsKeys]
+    p[k as MOBSKillsAndItemsKeys] = startingSettings[k as MOBSKillsAndItemsKeys]
   })
 
   Object.keys(professionStartingValues).forEach((k) => {
@@ -130,7 +139,7 @@ export const playerFactory = <T>(
 
     // Not sure why this doesn't work without the any
     // player implements MOBSkills
-    p[k as MOBSKillsKeys] = professionStartingValues[k as MOBSKillsKeys]
+    p[k as MOBSKillsAndItemsKeys] = professionStartingValues[k as MOBSKillsAndItemsKeys]
   })
 
   // TODO: Remove. Just for testing

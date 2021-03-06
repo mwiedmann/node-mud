@@ -4,10 +4,23 @@ import { Dice, rollDice, RollResult } from './combat'
 import { MOBSkills, PlayerProfession, PlayerRace } from './players'
 import { Moved } from './map'
 import { inRange } from './util'
+import { Item, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon } from './item'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
-export abstract class MOB implements MOBSkills {
+export type MOBItems = {
+  meleeItem?: MeleeWeapon
+  rangedItem?: RangedWeapon
+  ringItem?: Item
+  amuletItem?: Item
+  headItem?: Item
+  armorItem?: Item
+  bootsItem?: Item
+  meleeSpell?: MeleeSpell
+  rangedSpell?: RangedSpell
+}
+
+export abstract class MOB implements MOBSkills, MOBItems {
   constructor(public type: MOBType, public team: number, public id: number, public name?: string) {}
   x = 0
   y = 0
@@ -40,6 +53,8 @@ export abstract class MOB implements MOBSkills {
 
   moveGraph: number[][] = []
 
+  defaultMeleeItem = new MeleeWeapon('fists', {}, 'd4')
+
   meleeHitBonus = 0
   meleeDamageDie: Dice = 'd4'
   meleeDamageBonus = 0
@@ -52,6 +67,32 @@ export abstract class MOB implements MOBSkills {
 
   activityLog: string[] = []
 
+  meleeItem?: MeleeWeapon
+  rangedItem?: RangedWeapon
+  ringItem?: Item
+  amuletItem?: Item
+  headItem?: Item
+  armorItem?: Item
+  bootsItem?: Item
+  meleeSpell?: MeleeSpell
+  rangedSpell?: RangedSpell
+
+  inventory: Item[] = []
+
+  usingItems(): Item[] {
+    return [
+      this.meleeItem,
+      this.rangedItem,
+      this.ringItem,
+      this.amuletItem,
+      this.headItem,
+      this.armorItem,
+      this.bootsItem
+    ].filter((i) => i) as Item[]
+  }
+
+  getBonusFromItems(): void {}
+
   init(): void {
     this.health = this.maxHealth
     this.actionPoints = this.maxAtionPoints
@@ -62,11 +103,26 @@ export abstract class MOB implements MOBSkills {
   }
 
   meleeAttackRoll(): RollResult {
-    return rollDice('d20', 1, this.meleeHitBonus)
+    const weapon = this.bestMeleeItem()
+    return rollDice(weapon.name, 'd20', 1, this.meleeHitBonus)
+  }
+
+  bestMeleeItem(): MeleeWeapon {
+    return this.meleeItem || this.defaultMeleeItem
   }
 
   meleeDamageRoll(): RollResult {
-    return rollDice(this.meleeDamageDie, 1, this.meleeDamageBonus)
+    const weapon = this.bestMeleeItem()
+    return rollDice(weapon.name, weapon.damageDie, 1, this.meleeDamageBonus)
+  }
+
+  bestRangedWeapon(): RangedWeapon | undefined {
+    return this.rangedItem
+  }
+
+  rangedDamageRoll(): RollResult | undefined {
+    const weapon = this.bestRangedWeapon()
+    return weapon ? rollDice(weapon.name, weapon.damageDie, 1, this.rangedDamageBonus) : undefined
   }
 
   heal(amount: number): void {
@@ -88,10 +144,10 @@ export abstract class MOB implements MOBSkills {
     this.addActivity(`${amount} action points`)
   }
 
-  takeDamage(dmg: number): void {
-    this.health -= dmg
+  takeDamage(roll: RollResult): void {
+    this.health -= roll.total
 
-    this.addActivity(`${dmg} damage`)
+    this.addActivity(`${roll.total} damage from ${roll.description}`)
 
     if (this.health <= 0) {
       this.addActivity('DEAD')
@@ -203,7 +259,7 @@ export abstract class MOB implements MOBSkills {
           const dmgRoll = this.meleeDamageRoll()
           console.log(this.name, 'hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 
-          mobToAttack.takeDamage(dmgRoll.total)
+          mobToAttack.takeDamage(dmgRoll)
 
           if (mobToAttack.dead) {
             level.removeMonster(mobToAttack.x, mobToAttack.y)
