@@ -33,7 +33,7 @@ export type MOBType =
   | 'giant'
   | 'griffon'
   | 'minotaur'
-  | 'manitcore'
+  | 'manticore'
   | 'dragon'
   | 'lich'
   | 'beholder'
@@ -249,7 +249,7 @@ export const monsterSettings: { [K in MonsterType]: Partial<MOBSkills> & Pick<MO
     ticksPerMove: 2,
     physicalDefense: 16
   },
-  manitcore: {
+  manticore: {
     level: 5,
     maxHealth: 20,
     ticksPerMove: 2,

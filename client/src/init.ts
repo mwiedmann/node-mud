@@ -86,7 +86,7 @@ function scenePreload(this: Phaser.Scene) {
   this.load.image('giant', 'images/monsters/giant.png')
   this.load.image('griffon', 'images/monsters/griffon.png')
   this.load.image('minotaur', 'images/monsters/minotaur.png')
-  this.load.image('manitcore', 'images/monsters/manitcore.png')
+  this.load.image('manticore', 'images/monsters/manticore.png')
 
   this.load.image('dragon', 'images/monsters/dragon.png')
   this.load.image('lich', 'images/monsters/lich.png')

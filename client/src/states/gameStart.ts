@@ -7,8 +7,8 @@ import { StatusBars } from '../statusbars'
 
 const mapTiles: MapTiles = new Map()
 
-let guy: Phaser.GameObjects.Image
-let statusbars: StatusBars
+let guy: Phaser.GameObjects.Image | undefined
+let statusbars: StatusBars | undefined
 
 let pointerCallback: (p: Phaser.Input.Pointer) => void
 let floatingObjects: {
@@ -48,6 +48,10 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
   if (gameState.mapUpdate) {
     gameState.mapUpdate = false
     drawMap(scene)
+  }
+
+  if (!guy) {
+    throw new Error('Player not initialized')
   }
 
   let playerMoved = false
@@ -277,8 +281,11 @@ const cleanup = (scene: Phaser.Scene): void => {
   mapTiles.forEach((m) => m.sprite.destroy())
   mapTiles.clear()
 
-  guy.destroy()
-  statusbars.destroy()
+  guy?.destroy()
+  guy = undefined
+  statusbars?.destroy()
+  statusbars = undefined
+
   scene.input.removeListener('pointerup', pointerCallback)
 }
 
