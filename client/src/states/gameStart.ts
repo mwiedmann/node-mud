@@ -1,10 +1,10 @@
 import * as Phaser from 'phaser'
 import { connectionManager } from '../connection'
 import { gameSettings } from '../settings'
-import { controls, gameState, sceneUpdate, SquareType } from '../init'
-import { checkGhostStatus, inRange, MapTiles, setMapTilesSight, tileIsBlocked } from '../mapTiles'
+import { controls, gameState, sceneUpdate } from '../init'
+import { checkGhostStatus, inRange, setMapTilesSight, tileIsBlocked } from '../mapTiles'
 import { StatusBars } from '../statusbars'
-import { ActivityLogLevel } from '../player'
+import { ActivityLogLevel } from 'dng-shared'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined

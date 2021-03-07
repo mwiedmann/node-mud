@@ -1,11 +1,5 @@
+import { ActivityLog } from 'dng-shared'
 import { StatusBars } from './statusbars'
-
-export type ActivityLogLevel = 'great' | 'good' | 'neutral' | 'bad' | 'terrible'
-
-export type ActivityLog = {
-  level: ActivityLogLevel
-  message: string
-}
 
 export type Player = {
   loggedIn: boolean

@@ -26,6 +26,16 @@ type MOBActivity = {
   message: string
 }
 
+type MOBAttackActivityType = 'ranged'
+type MOBAttackActivity = {
+  type: MOBAttackActivityType
+  fromX: number
+  fromY: number
+  toX: number
+  toY: number
+  hit: boolean
+}
+
 export abstract class MOB implements MOBSkills, MOBItems {
   constructor(public type: MOBType, public team: number, public id: number, public name?: string) {}
   x = 0
@@ -45,7 +55,9 @@ export abstract class MOB implements MOBSkills, MOBItems {
   actionPoints = 100
   actionPointsGainedPerTick = 1
   actionPointCostPerMove = 1
-  actionPointsCostPerAction = 5
+  actionPointsCostPerMeleeAction = 5
+  actionPointsCostPerRangedAction = 5
+  actionPointsCostPerSpellAction = 5
 
   mode: 'hunt' | 'move' = 'hunt'
   huntRange = 4
@@ -73,6 +85,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
   magicDefense = 10
 
   activityLog: MOBActivity[] = []
+  attackLog: MOBAttackActivity[] = []
 
   meleeItem?: MeleeWeapon
   rangedItem?: RangedWeapon
@@ -185,7 +198,11 @@ export abstract class MOB implements MOBSkills, MOBItems {
     ].filter((i) => i) as Item[]
   }
 
-  getBonusFromItems(): void {}
+  getBonusFromItems(skill: keyof MOBSkills): number {
+    return this.usingItems().reduce((prev, next) => {
+      return prev + (next.bonuses[skill] || 0)
+    }, 0)
+  }
 
   init(): void {
     this.health = this.maxHealth
@@ -196,9 +213,18 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.activityLog.push(activity)
   }
 
+  addAttackActivity(activity: MOBAttackActivity): void {
+    this.attackLog.push(activity)
+  }
+
   meleeAttackRoll(): RollResult {
     const weapon = this.bestMeleeItem()
-    return rollDice(weapon.getShortDescription(), 'd20', 1, this.meleeHitBonus)
+    return rollDice(
+      weapon.getShortDescription(),
+      'd20',
+      1,
+      this.getBonusFromItems('meleeHitBonus') + this.meleeHitBonus
+    )
   }
 
   bestMeleeItem(): MeleeWeapon {
@@ -207,16 +233,42 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   meleeDamageRoll(): RollResult {
     const weapon = this.bestMeleeItem()
-    return rollDice(weapon.getShortDescription(), weapon.damageDie, 1, this.meleeDamageBonus)
+    return rollDice(
+      weapon.getShortDescription(),
+      weapon.damageDie,
+      1,
+      this.getBonusFromItems('meleeDamageBonus') + this.meleeDamageBonus
+    )
   }
 
   bestRangedWeapon(): RangedWeapon | undefined {
     return this.rangedItem
   }
 
-  rangedDamageRoll(): RollResult | undefined {
+  rangedAttackRoll(): RollResult {
     const weapon = this.bestRangedWeapon()
-    return weapon ? rollDice(weapon.getShortDescription(), weapon.damageDie, 1, this.rangedDamageBonus) : undefined
+    if (weapon) {
+      return rollDice(
+        weapon.getShortDescription(),
+        'd20',
+        1,
+        this.getBonusFromItems('rangedHitBonus') + this.rangedHitBonus
+      )
+    }
+    throw new Error('rangedAttackRoll called without a ranged weapon')
+  }
+
+  rangedDamageRoll(): RollResult {
+    const weapon = this.bestRangedWeapon()
+    if (weapon) {
+      return rollDice(
+        weapon.getShortDescription(),
+        weapon.damageDie,
+        1,
+        this.getBonusFromItems('rangedDamageBonus') + this.rangedDamageBonus
+      )
+    }
+    throw new Error('rangedDamageRoll called without a ranged weapon')
   }
 
   heal(amount: number): void {
@@ -342,7 +394,42 @@ export abstract class MOB implements MOBSkills, MOBItems {
   }
 
   takeAction(tick: number, level: Level<unknown>): void {
-    if (tick - this.lastActionTick >= this.ticksPerAction && this.actionPoints >= this.actionPointsCostPerAction) {
+    // Check if a ranged attack is possible
+    // TODO: REFACTOR - The ranged and melee attacks are the same with a few params/functions
+    if (
+      this.rangedItem &&
+      tick - this.lastActionTick >= this.ticksPerAction &&
+      this.actionPoints >= this.actionPointsCostPerRangedAction
+    ) {
+      const mobToAttack =
+        this.type === 'player'
+          ? level.monsterInRange(this.x, this.y, this.rangedItem.range)
+          : level.playerInRange(this.x, this.y, this.rangedItem.range)
+
+      if (mobToAttack) {
+        const attackResult = this.rangedAttackRoll()
+
+        if (attackResult.total >= mobToAttack.physicalDefense) {
+          const dmgRoll = this.rangedDamageRoll()
+          console.log(this.name, 'ranged hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
+
+          mobToAttack.takeDamage(dmgRoll)
+
+          if (mobToAttack.dead) {
+            level.removeMonster(mobToAttack.x, mobToAttack.y)
+          }
+        } else {
+          mobToAttack.addActivity({ level: 'good', message: 'Dodged ranged attack' })
+          console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
+        }
+
+        this.actionPoints -= this.actionPointsCostPerRangedAction
+        this.lastActionTick = tick
+      }
+    }
+
+    // Check melee attack
+    if (tick - this.lastActionTick >= this.ticksPerAction && this.actionPoints >= this.actionPointsCostPerMeleeAction) {
       const mobToAttack =
         this.type === 'player' ? level.monsterInRange(this.x, this.y, 1) : level.playerInRange(this.x, this.y, 1)
 
@@ -351,7 +438,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
         if (attackResult.total >= mobToAttack.physicalDefense) {
           const dmgRoll = this.meleeDamageRoll()
-          console.log(this.name, 'hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
+          console.log(this.name, 'melee hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 
           mobToAttack.takeDamage(dmgRoll)
 
@@ -363,7 +450,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
           console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
         }
 
-        this.actionPoints -= this.actionPointsCostPerAction
+        this.actionPoints -= this.actionPointsCostPerMeleeAction
         this.lastActionTick = tick
       }
     }
@@ -390,12 +477,14 @@ export abstract class MOB implements MOBSkills, MOBItems {
         hpMax: this.maxHealth,
         dead: this.dead,
         activityLog: this.activityLog,
+        attackLog: this.attackLog,
         visibleRange: this.visibleRange
       }
     })
 
     // Reset the log after the state is gathered
     this.activityLog = []
+    this.attackLog = []
 
     if (this.lastState !== state) {
       this.lastState = state

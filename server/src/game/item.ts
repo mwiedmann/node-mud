@@ -103,13 +103,13 @@ export const MeleeWeaponFactory = (type: MeleeType, name = ''): MeleeWeapon => {
     dagger: 'd4',
     staff: 'd4',
     shortsword: 'd6',
+    spear: 'd6',
+    axe: 'd8',
+    mace: 'd8',
     broadsword: 'd8',
     longsword: 'd10',
     greatsword: 'd12',
-    axe: 'd6',
-    battleaxe: 'd12',
-    mace: 'd8',
-    spear: 'd6'
+    battleaxe: 'd12'
   }
 
   return new MeleeWeapon(type, name, {}, weapons[type])
@@ -117,7 +117,13 @@ export const MeleeWeaponFactory = (type: MeleeType, name = ''): MeleeWeapon => {
 
 export type RangedType = 'shortbow' | 'longbow' | 'crossbow'
 export class RangedWeapon extends Item {
-  constructor(subType: RangedType, name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
+  constructor(
+    subType: RangedType,
+    name: string,
+    bonuses: Partial<MOBSkills>,
+    public range: number,
+    public damageDie: Dice
+  ) {
     super('ranged', subType, name, bonuses)
   }
 }

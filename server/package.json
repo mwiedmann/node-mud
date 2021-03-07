@@ -9,7 +9,8 @@
     "astar-typescript": "1.2.5",
     "random-dungeon-generator": "1.0.32",
     "ts-node": "9.1.1",
-    "ws": "7.4.3"
+    "ws": "7.4.3",
+    "dng-shared": "1.0.0"
   },
   "devDependencies": {
     "@types/node": "14.14.31",

@@ -12,7 +12,9 @@ export type MOBSkills = {
   maxAtionPoints: number
   actionPointsGainedPerTick: number
   actionPointCostPerMove: number
-  actionPointsCostPerAction: number
+  actionPointsCostPerMeleeAction: number
+  actionPointsCostPerRangedAction: number
+  actionPointsCostPerSpellAction: number
 
   ticksPerMove: number
   ticksPerAction: number
@@ -35,7 +37,9 @@ const basePlayerScores: MOBSkills = {
   maxAtionPoints: 100,
   actionPointsGainedPerTick: 1,
   actionPointCostPerMove: 1,
-  actionPointsCostPerAction: 20,
+  actionPointsCostPerMeleeAction: 20,
+  actionPointsCostPerRangedAction: 30,
+  actionPointsCostPerSpellAction: 20,
 
   ticksPerMove: 3,
   ticksPerAction: 5,
@@ -83,18 +87,18 @@ const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () => ({
 
 const professionSettings: () => { [K in PlayerProfession]: Partial<MOBSkills> & Partial<MOBItems> } = () => ({
   barbarian: {
-    meleeItem: MeleeWeaponFactory('battleaxe', 'Fury')
+    meleeItem: MeleeWeaponFactory('axe', 'Fury')
   },
   warrior: {
-    meleeItem: MeleeWeaponFactory('longsword', 'Vengence')
+    meleeItem: MeleeWeaponFactory('broadsword', 'Vengence')
   },
   ranger: {
     meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
-    rangedItem: new RangedWeapon('longbow', 'Snipe', {}, 'd8')
+    rangedItem: new RangedWeapon('shortbow', 'Snipe', {}, 6, 'd6')
   },
   rogue: {
     meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
-    rangedItem: new RangedWeapon('shortbow', 'Stinger', {}, 'd6')
+    rangedItem: new RangedWeapon('shortbow', 'Stinger', {}, 6, 'd6')
   },
   wizard: {
     meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),

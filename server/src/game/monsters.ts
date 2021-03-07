@@ -51,7 +51,9 @@ const baseMonsterScores: MOBSkills = {
   maxAtionPoints: 100,
   actionPointsGainedPerTick: 1,
   actionPointCostPerMove: 1,
-  actionPointsCostPerAction: 20,
+  actionPointsCostPerMeleeAction: 20,
+  actionPointsCostPerRangedAction: 30,
+  actionPointsCostPerSpellAction: 20,
 
   ticksPerMove: 3,
   ticksPerAction: 5,

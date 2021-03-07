@@ -2,7 +2,8 @@
   "private": true,
   "workspaces": [
     "client",
-    "server"
+    "server",
+    "shared"
   ],
   "scripts": {
     "client": "yarn workspace dng-client start",

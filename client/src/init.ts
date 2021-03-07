@@ -2,6 +2,7 @@ import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
 import { stateFunctions, States } from './states'
 import { Consumable, Item, Monster, Player } from './player'
+import { SquareType } from 'dng-shared'
 
 export let controls: {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
@@ -11,11 +12,6 @@ export let controls: {
   zoomIn: Phaser.Input.Keyboard.Key
   zoomOut: Phaser.Input.Keyboard.Key
   getItem: Phaser.Input.Keyboard.Key
-}
-
-export enum SquareType {
-  Empty = 0,
-  Wall = 1
 }
 
 export const gameState: {

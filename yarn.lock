@@ -3260,6 +3260,11 @@ move-concurrently@^1.0.1:
     rimraf "^2.5.4"
     run-queue "^1.0.3"
 
+mrpas@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/mrpas/-/mrpas-2.0.0.tgz#df4fe8a637363aa5e4f2c1b46c04e3fe883cb3a1"
+  integrity sha512-f9Qv0DzYzPfWAIYQWT5zswHen8YDOrQ96KjQ54Nx7Zha8oLCt0c82L/PpmXyAvMNhrciZmQGbvg+m+QaK4B7Uw==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"

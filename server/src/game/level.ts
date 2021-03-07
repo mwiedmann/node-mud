@@ -1,7 +1,8 @@
 import { AStarFinder } from 'astar-typescript'
+import { SquareType } from 'dng-shared'
 import { Consumable } from './consumable'
 import { Item } from './item'
-import { createMapWithMonsters, findOpenSpace, Moved, getPrintableMap, SquareType } from './map'
+import { createMapWithMonsters, findOpenSpace, Moved, getPrintableMap } from './map'
 import { MOB, Monster, Player } from './mob'
 
 export class Level<T> {

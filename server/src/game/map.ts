@@ -6,12 +6,7 @@ import { MajorItemType, MeleeType, MeleeWeapon, MeleeWeaponFactory } from './ite
 import { Level } from './level'
 import { Monster } from './mob'
 import { monsterFactory, MonsterType } from './monsters'
-
-export enum SquareType {
-  Empty = 0,
-  Wall = 1,
-  Monster = 2
-}
+import { SquareType } from 'dng-shared'
 
 const mapWidth = 200
 const mapHeight = 100

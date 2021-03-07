@@ -5,7 +5,9 @@
   "main": "src/main.ts",
   "dependencies": {
     "phaser": "3.52.0",
-    "ws": "7.4.1"
+    "ws": "7.4.1",
+    "dng-shared": "1.0.0",
+    "mrpas": "2.0.0"
   },
   "devDependencies": {
     "@types/ws": "7.4.0",

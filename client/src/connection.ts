@@ -1,75 +1,8 @@
-import { gameState, SquareType } from './init'
+import { gameState } from './init'
 import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
-import { ActivityLog, Consumable, Item } from './player'
-
-type MapMessage = {
-  type: 'map'
-  data: SquareType[][]
-}
-
-type WelcomeMessage = {
-  type: 'welcome'
-  data: string
-}
-
-type PlayerMessage = {
-  type: 'player'
-  data: {
-    x: number
-    y: number
-    hp: number
-    hpMax: number
-    ap: number
-    apMax: number
-    activityLog: ActivityLog[]
-    visibleRange: number
-  }
-}
-
-type MonsterMessage = {
-  type: 'monster'
-  data: {
-    id: number
-    subType: string
-    x: number
-    y: number
-    dead: boolean
-    hp: number
-    hpMax: number
-    ap: number
-    apMax: number
-    activityLog: ActivityLog[]
-  }
-}
-
-type ConsumableMessage = {
-  type: 'consumable'
-  data: {
-    subType: string
-    id: number
-    x: number
-    y: number
-    health: number
-    actionPoints: number
-    gone: boolean
-  }
-}
-
-type ItemMessage = {
-  type: 'item'
-  data: {
-    majorType: string
-    subType: string
-    id: number
-    x: number
-    y: number
-    description: string
-    gone: boolean
-  }
-}
-
-type BaseMessage = WelcomeMessage | MapMessage | PlayerMessage | MonsterMessage | ConsumableMessage | ItemMessage
+import { Consumable, Item } from './player'
+import { BaseMessage } from 'dng-shared'
 
 class ConnectionManager {
   connection!: WebSocket

@@ -2,6 +2,11 @@ import * as Phaser from 'phaser'
 import { gameState } from './init'
 import { Ghost } from './player'
 import { gameSettings } from './settings'
+import { Mrpas } from 'mrpas'
+
+// const fov = new Mrpas(gameSettings.cellCountX, gameSettings.cellCountY, (x, y) => {
+//   return gameState.map[y][x] > 0
+// })
 
 export type MapTiles = Map<
   string,
@@ -47,6 +52,25 @@ export const setMapTilesSight = (
       m.alpha = 0
     }
   })
+  // fov.compute(
+  //   startX,
+  //   startY,
+  //   visibleRange,
+  //   (x, y) => {
+  //     const tile = mapLayer.getTileAt(x, y)
+  //     if (!tile) {
+  //       return false
+  //     }
+  //     return tile.alpha > 0
+  //   },
+  //   (x, y) => {
+  //     const tile = mapLayer.getTileAt(x, y)
+  //     if (!tile) {
+  //       return
+  //     }
+  //     tile.alpha = 1
+  //   }
+  // )
 }
 
 export const tileIsBlocked = (startX: number, startY: number, endX: number, endY: number): boolean => {
