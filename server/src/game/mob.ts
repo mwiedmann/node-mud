@@ -20,6 +20,12 @@ export type MOBItems = {
   rangedSpell?: RangedSpell
 }
 
+type MOBActivityLevel = 'great' | 'good' | 'neutral' | 'bad' | 'terrible'
+type MOBActivity = {
+  level: MOBActivityLevel
+  message: string
+}
+
 export abstract class MOB implements MOBSkills, MOBItems {
   constructor(public type: MOBType, public team: number, public id: number, public name?: string) {}
   x = 0
@@ -30,6 +36,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   level = 1
   dead = false
+  rangedAttackOn = true
 
   visibleRange = 5
   maxHealth = 10
@@ -65,7 +72,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
   physicalDefense = 10
   magicDefense = 10
 
-  activityLog: string[] = []
+  activityLog: MOBActivity[] = []
 
   meleeItem?: MeleeWeapon
   rangedItem?: RangedWeapon
@@ -121,7 +128,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     }
 
     if (item) {
-      this.addActivity(`Dropped ${item.getDescription()}`)
+      this.addActivity({ level: 'neutral', message: `Dropped ${item.getDescription()}` })
       item.lastState = undefined
       item.gone = false
     }
@@ -161,7 +168,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
     item.lastState = undefined
     item.gone = true
-    this.addActivity(`Picked up ${item.getDescription()}`)
+    this.addActivity({ level: 'neutral', message: `Picked up ${item.getDescription()}` })
   }
 
   usingItems(): Item[] {
@@ -185,7 +192,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.actionPoints = this.maxAtionPoints
   }
 
-  addActivity(activity: string): void {
+  addActivity(activity: MOBActivity): void {
     this.activityLog.push(activity)
   }
 
@@ -218,7 +225,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
       this.health = this.maxHealth
     }
 
-    this.addActivity(`Healed ${amount}`)
+    this.addActivity({ level: 'good', message: `Healed ${amount}` })
   }
 
   gainActionPoints(amount: number): void {
@@ -228,16 +235,16 @@ export abstract class MOB implements MOBSkills, MOBItems {
       this.actionPoints = this.maxAtionPoints
     }
 
-    this.addActivity(`${amount} action points`)
+    this.addActivity({ level: 'good', message: `${amount} action points` })
   }
 
   takeDamage(roll: RollResult): void {
     this.health -= roll.total
 
-    this.addActivity(`${roll.total} damage from ${roll.description}`)
+    this.addActivity({ level: 'bad', message: `${roll.total} damage from ${roll.description}` })
 
     if (this.health <= 0) {
-      this.addActivity('DEAD')
+      this.addActivity({ level: 'terrible', message: 'DEAD' })
       this.dead = true
       console.log(this.name, 'is dead!!!')
     }
@@ -352,7 +359,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
             level.removeMonster(mobToAttack.x, mobToAttack.y)
           }
         } else {
-          mobToAttack.addActivity('Dodged attack')
+          mobToAttack.addActivity({ level: 'good', message: 'Dodged attack' })
           console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
         }
 

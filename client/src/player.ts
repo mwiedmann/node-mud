@@ -1,5 +1,12 @@
 import { StatusBars } from './statusbars'
 
+export type ActivityLogLevel = 'great' | 'good' | 'neutral' | 'bad' | 'terrible'
+
+export type ActivityLog = {
+  level: ActivityLogLevel
+  message: string
+}
+
 export type Player = {
   loggedIn: boolean
   x: number
@@ -11,7 +18,7 @@ export type Player = {
   lastX: number
   lastY: number
   visibleRange: number
-  activityLog: string[]
+  activityLog: ActivityLog[]
 }
 
 export type Ghost = {
@@ -33,7 +40,7 @@ export type Monster = Ghost & {
   lastX: number
   lastY: number
   dead: boolean
-  activityLog: string[]
+  activityLog: ActivityLog[]
   statusbars?: StatusBars
 }
 

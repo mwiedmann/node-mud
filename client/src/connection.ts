@@ -1,7 +1,7 @@
 import { gameState, SquareType } from './init'
 import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
-import { Consumable, Item } from './player'
+import { ActivityLog, Consumable, Item } from './player'
 
 type MapMessage = {
   type: 'map'
@@ -22,7 +22,7 @@ type PlayerMessage = {
     hpMax: number
     ap: number
     apMax: number
-    activityLog: string[]
+    activityLog: ActivityLog[]
     visibleRange: number
   }
 }
@@ -39,7 +39,7 @@ type MonsterMessage = {
     hpMax: number
     ap: number
     apMax: number
-    activityLog: string[]
+    activityLog: ActivityLog[]
   }
 }
 

@@ -4,11 +4,11 @@ import { gameSettings } from '../settings'
 import { controls, gameState, sceneUpdate, SquareType } from '../init'
 import { checkGhostStatus, inRange, MapTiles, setMapTilesSight, tileIsBlocked } from '../mapTiles'
 import { StatusBars } from '../statusbars'
+import { ActivityLogLevel } from '../player'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
 let tileMap: Phaser.Tilemaps.Tilemap
-let tileSet: Phaser.Tilemaps.Tileset
 let mapLayer: Phaser.Tilemaps.TilemapLayer
 
 let pointerCallback: (p: Phaser.Input.Pointer) => void
@@ -18,6 +18,27 @@ let floatingObjects: {
   delete?: boolean
   direction: number
 }[] = []
+
+const activityColors: Record<ActivityLogLevel, string> = {
+  great: '#00FF00',
+  good: '#00FFAA',
+  neutral: '#00DDFF',
+  bad: '#FFCC00',
+  terrible: '#FF0000'
+}
+
+const activityLogColor = (level: ActivityLogLevel, flip?: boolean) =>
+  (level === 'great' && !flip) || (level === 'terrible' && flip)
+    ? activityColors.great
+    : (level === 'good' && !flip) || (level === 'bad' && flip)
+    ? activityColors.good
+    : level === 'neutral'
+    ? activityColors.neutral
+    : (level === 'bad' && !flip) || (level === 'good' && flip)
+    ? activityColors.bad
+    : (level === 'terrible' && !flip) || (level === 'great' && flip)
+    ? activityColors.terrible
+    : activityColors.neutral
 
 const init = (scene: Phaser.Scene): void => {
   connectionManager.openConnection(scene)
@@ -96,8 +117,8 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
         text: scene.add.text(
           gameSettings.screenPosFromMap(gameState.player.x),
           gameSettings.screenPosFromMap(gameState.player.y) + (gameSettings.halfCell + offSet),
-          a,
-          { color: '#FF0000', align: 'center' }
+          a.message,
+          { color: activityLogColor(a.level), align: 'center' }
         )
       })
       offSet += 16
@@ -147,8 +168,8 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
           text: scene.add.text(
             gameSettings.screenPosFromMap(m.x),
             gameSettings.screenPosFromMap(m.y) - (gameSettings.cellSize + offSet),
-            a,
-            { color: '#00FF00', align: 'center' }
+            a.message,
+            { color: activityLogColor(a.level), align: 'center' }
           )
         })
         offSet += 16
@@ -313,6 +334,9 @@ const cleanup = (scene: Phaser.Scene): void => {
 
   scene.input.removeListener('pointerup', pointerCallback)
   controls.getItem.removeAllListeners()
+
+  mapLayer.destroy()
+  tileMap.destroy()
 }
 
 const drawMap = (scene: Phaser.Scene): void => {
@@ -326,7 +350,7 @@ const drawMap = (scene: Phaser.Scene): void => {
     height: gameState.map[0].length
   })
 
-  tileSet = tileMap.addTilesetImage('maptiles', 'maptiles', gameSettings.cellSize, gameSettings.cellSize)
+  tileMap.addTilesetImage('maptiles', 'maptiles', gameSettings.cellSize, gameSettings.cellSize)
 
   mapLayer = tileMap.createLayer(0, 'maptiles')
   mapLayer.setDepth(-1)
