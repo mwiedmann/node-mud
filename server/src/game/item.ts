@@ -2,7 +2,7 @@ import { Dice } from './combat'
 import { nextId } from './id'
 import { MOBSkills } from './players'
 
-export type ItemType =
+export type MajorItemType =
   | 'melee'
   | 'ranged'
   | 'ring'
@@ -13,8 +13,16 @@ export type ItemType =
   | 'ranged-spell'
   | 'melee-spell'
 
+const getBonusesDescription = (amount: number | undefined, description: string) =>
+  amount && amount !== 0 ? `${amount > 0 ? '+' : '-'}${amount} ${description}` : undefined
+
 export class Item {
-  constructor(public type: ItemType, public name: string, public bonuses: Partial<MOBSkills>) {}
+  constructor(
+    public type: MajorItemType,
+    public subType: string,
+    public name: string,
+    public bonuses: Partial<MOBSkills>
+  ) {}
 
   id = nextId()
   x = 0
@@ -22,15 +30,32 @@ export class Item {
   lastState?: string
   gone?: boolean
 
-  getDescription(): string {
-    return `${this.type} ${this.name}`
+  getSubTypeDescription(): string {
+    return this.subType
   }
 
-  getState(): string | undefined {
+  getShortDescription(): string {
+    return this.name || this.subType
+  }
+
+  getDescription(): string {
+    return [
+      this.name,
+      this.getSubTypeDescription(),
+      getBonusesDescription(this.bonuses.meleeHitBonus, 'hit'),
+      getBonusesDescription(this.bonuses.meleeDamageBonus, 'dmg'),
+      getBonusesDescription(this.bonuses.physicalDefense, 'AC')
+    ]
+      .filter((d) => d)
+      .join(' ')
+  }
+
+  getState(currentTick: number, lastTickReceivedState: number): string | undefined {
     const state = JSON.stringify({
       type: 'item',
       data: {
-        subType: this.type,
+        majorType: this.type,
+        subType: this.subType,
         id: this.id,
         x: this.x,
         y: this.y,
@@ -39,12 +64,12 @@ export class Item {
       }
     })
 
+    const sendState = currentTick - lastTickReceivedState > 1 || this.lastState !== state
     if (this.lastState !== state) {
       this.lastState = state
-      return state
     }
 
-    return undefined
+    return sendState ? state : undefined
   }
 
   key(): string {
@@ -52,26 +77,59 @@ export class Item {
   }
 }
 
+export type MeleeType =
+  | 'natural'
+  | 'dagger'
+  | 'staff'
+  | 'shortsword'
+  | 'broadsword'
+  | 'longsword'
+  | 'greatsword'
+  | 'axe'
+  | 'battleaxe'
+  | 'mace'
+  | 'spear'
 export class MeleeWeapon extends Item {
-  constructor(name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
-    super('melee', name, bonuses)
+  constructor(subType: MeleeType, name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
+    super('melee', subType, name, bonuses)
+  }
+  getSubTypeDescription(): string {
+    return `(${this.subType} ${this.damageDie})`
   }
 }
+export const MeleeWeaponFactory = (type: MeleeType, name = ''): MeleeWeapon => {
+  const weapons: Record<MeleeType, Dice> = {
+    natural: 'd4',
+    dagger: 'd4',
+    staff: 'd4',
+    shortsword: 'd6',
+    broadsword: 'd8',
+    longsword: 'd10',
+    greatsword: 'd12',
+    axe: 'd6',
+    battleaxe: 'd12',
+    mace: 'd8',
+    spear: 'd6'
+  }
 
+  return new MeleeWeapon(type, name, {}, weapons[type])
+}
+
+export type RangedType = 'shortbow' | 'longbow' | 'crossbow'
 export class RangedWeapon extends Item {
-  constructor(name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
-    super('ranged', name, bonuses)
+  constructor(subType: RangedType, name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
+    super('ranged', subType, name, bonuses)
   }
 }
 
 export class MeleeSpell extends Item {
   constructor(name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
-    super('melee-spell', name, bonuses)
+    super('melee-spell', '', name, bonuses)
   }
 }
 
 export class RangedSpell extends Item {
   constructor(name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
-    super('ranged-spell', name, bonuses)
+    super('ranged-spell', '', name, bonuses)
   }
 }

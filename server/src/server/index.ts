@@ -80,11 +80,20 @@ const updateGame = () => {
         })
 
         l.items.forEach((c) => {
-          const state = c.getState()
+          const state = c.getState(game.tick, p.lastTickReceivedState)
           if (state) {
             p.connection.send(state)
           }
         })
+
+        p.usingItems().forEach((i) => {
+          const state = i.getState(game.tick, p.lastTickReceivedState)
+          if (state) {
+            p.connection.send(state)
+          }
+        })
+
+        p.lastTickReceivedState = game.tick
       })
     })
     const playerPerfTotal = performance.now() - playerPerfStart

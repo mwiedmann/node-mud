@@ -145,6 +145,8 @@ export class Level<T> {
     if (item instanceof Item && !item.gone) {
       const itemToDrop = player.removeItem(item.type)
       if (itemToDrop) {
+        itemToDrop.x = player.x
+        itemToDrop.y = player.y
         this.items.set(key, itemToDrop)
         console.log('Player droped', itemToDrop.getDescription())
       }

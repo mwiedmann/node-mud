@@ -101,6 +101,19 @@ function scenePreload(this: Phaser.Scene) {
   this.load.image('healing', 'images/consumables/healing.png')
   this.load.image('action-points', 'images/consumables/action-points.png')
 
+  // Weapons
+  this.load.image('amulet', 'images/items/amulet.png')
+  this.load.image('axe', 'images/items/weapons/axe.png')
+  this.load.image('battleaxe', 'images/items/weapons/battleaxe.png')
+  this.load.image('broadsword', 'images/items/weapons/broadsword.png')
+  this.load.image('dagger', 'images/items/weapons/dagger.png')
+  this.load.image('greatsword', 'images/items/weapons/greatsword.png')
+  this.load.image('longsword', 'images/items/weapons/longsword.png')
+  this.load.image('mace', 'images/items/weapons/mace.png')
+  this.load.image('shortsword', 'images/items/weapons/shortsword.png')
+  this.load.image('spear', 'images/items/weapons/spear.png')
+  this.load.image('staff', 'images/items/weapons/staff.png')
+
   // Items
   this.load.image('amulet', 'images/items/amulet.png')
   this.load.image('armor', 'images/items/armor.png')
@@ -108,7 +121,6 @@ function scenePreload(this: Phaser.Scene) {
   this.load.image('gold', 'images/items/gold.png')
   this.load.image('ranged-spell', 'images/items/spell.png')
   this.load.image('melee-spell', 'images/items/spell.png')
-  this.load.image('melee', 'images/items/melee.png')
   this.load.image('ranged', 'images/items/ranged.png')
   this.load.image('boots', 'images/items/head.png')
   this.load.image('head', 'images/items/head.png')

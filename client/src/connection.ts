@@ -59,6 +59,7 @@ type ConsumableMessage = {
 type ItemMessage = {
   type: 'item'
   data: {
+    majorType: string
     subType: string
     id: number
     x: number

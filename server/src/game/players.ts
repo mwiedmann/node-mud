@@ -1,5 +1,5 @@
 import { nextId } from './id'
-import { MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon } from './item'
+import { MeleeSpell, MeleeWeapon, MeleeWeaponFactory, RangedSpell, RangedWeapon } from './item'
 import { MOBItems, Monster, Player } from './mob'
 
 export type PlayerRace = 'elf' | 'dwarf' | 'human' | 'gnome' | 'giant'
@@ -83,29 +83,29 @@ const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () => ({
 
 const professionSettings: () => { [K in PlayerProfession]: Partial<MOBSkills> & Partial<MOBItems> } = () => ({
   barbarian: {
-    meleeItem: new MeleeWeapon('battleaxe', {}, 'd8')
+    meleeItem: MeleeWeaponFactory('battleaxe', 'Fury')
   },
   warrior: {
-    meleeItem: new MeleeWeapon('long sword', {}, 'd8')
+    meleeItem: MeleeWeaponFactory('longsword', 'Vengence')
   },
   ranger: {
-    meleeItem: new MeleeWeapon('short sword', {}, 'd6'),
-    rangedItem: new RangedWeapon('longbow', {}, 'd8')
+    meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
+    rangedItem: new RangedWeapon('longbow', 'Snipe', {}, 'd8')
   },
   rogue: {
-    meleeItem: new MeleeWeapon('dagger', {}, 'd4'),
-    rangedItem: new RangedWeapon('shortbow', {}, 'd6')
+    meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
+    rangedItem: new RangedWeapon('shortbow', 'Stinger', {}, 'd6')
   },
   wizard: {
-    meleeItem: new MeleeWeapon('staff', {}, 'd4'),
+    meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
     rangedSpell: new RangedSpell('energy blast', {}, 'd10')
   },
   illusionist: {
-    meleeItem: new MeleeWeapon('staff', {}, 'd4'),
+    meleeItem: MeleeWeaponFactory('staff', 'Willow'),
     rangedSpell: new RangedSpell('energy blast', {}, 'd10')
   },
   cleric: {
-    meleeItem: new MeleeWeapon('mace', {}, 'd6'),
+    meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
     meleeSpell: new MeleeSpell('divine smite', {}, 'd10')
   }
 })

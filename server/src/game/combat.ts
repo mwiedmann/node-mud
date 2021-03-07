@@ -1,4 +1,4 @@
-export type Dice = 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20'
+export type Dice = 'd2' | 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20'
 
 export type RollResult = {
   description: string
@@ -10,6 +10,7 @@ export type RollResult = {
 
 const diceRange = (type: Dice) =>
   ({
+    d2: { min: 1, max: 2 },
     d4: { min: 1, max: 4 },
     d6: { min: 1, max: 6 },
     d8: { min: 1, max: 8 },

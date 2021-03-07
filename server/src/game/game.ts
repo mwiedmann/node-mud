@@ -1,4 +1,4 @@
-import { randomConsumables, randomDungeon, randomItems, randomMonsters } from './map'
+import { randomConsumables, randomDungeon, randomMeleeWeapons, randomMonsters } from './map'
 import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './level'
 import { playerFactory } from './players'
@@ -25,8 +25,18 @@ export class Game<T> {
         randomMonsters(monsterName, 10, level)
       })
 
-    randomConsumables('healing', 100, level)
-    randomItems('melee', 100, level)
+    randomConsumables('healing', 20, level)
+
+    randomMeleeWeapons('axe', 10, level)
+    randomMeleeWeapons('battleaxe', 10, level)
+    randomMeleeWeapons('broadsword', 10, level)
+    randomMeleeWeapons('dagger', 10, level)
+    randomMeleeWeapons('greatsword', 10, level)
+    randomMeleeWeapons('longsword', 10, level)
+    randomMeleeWeapons('mace', 10, level)
+    randomMeleeWeapons('shortsword', 10, level)
+    randomMeleeWeapons('spear', 10, level)
+    randomMeleeWeapons('staff', 10, level)
 
     // Need to reupdate the graph after adding monsters
     level.updateGraph()

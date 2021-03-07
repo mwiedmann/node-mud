@@ -4,7 +4,7 @@ import { Dice, rollDice, RollResult } from './combat'
 import { MOBSkills, PlayerProfession, PlayerRace } from './players'
 import { Moved } from './map'
 import { inRange } from './util'
-import { Item, ItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon } from './item'
+import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon } from './item'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
@@ -53,7 +53,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   moveGraph: number[][] = []
 
-  defaultMeleeItem = new MeleeWeapon('fists', {}, 'd4')
+  defaultMeleeItem = new MeleeWeapon('natural', 'fists', {}, 'd2')
 
   meleeHitBonus = 0
   meleeDamageDie: Dice = 'd4'
@@ -79,7 +79,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   inventory: Item[] = []
 
-  removeItem(type: ItemType): Item | undefined {
+  removeItem(type: MajorItemType): Item | undefined {
     let item: Item | undefined
     switch (type) {
       case 'amulet':
@@ -122,6 +122,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
     if (item) {
       this.addActivity(`Dropped ${item.getDescription()}`)
+      item.lastState = undefined
+      item.gone = false
     }
     return item
   }
@@ -157,12 +159,16 @@ export abstract class MOB implements MOBSkills, MOBItems {
         break
     }
 
+    item.lastState = undefined
+    item.gone = true
     this.addActivity(`Picked up ${item.getDescription()}`)
   }
 
   usingItems(): Item[] {
     return [
       this.meleeItem,
+      this.meleeSpell,
+      this.rangedSpell,
       this.rangedItem,
       this.ringItem,
       this.amuletItem,
@@ -185,7 +191,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   meleeAttackRoll(): RollResult {
     const weapon = this.bestMeleeItem()
-    return rollDice(weapon.name, 'd20', 1, this.meleeHitBonus)
+    return rollDice(weapon.getShortDescription(), 'd20', 1, this.meleeHitBonus)
   }
 
   bestMeleeItem(): MeleeWeapon {
@@ -194,7 +200,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   meleeDamageRoll(): RollResult {
     const weapon = this.bestMeleeItem()
-    return rollDice(weapon.name, weapon.damageDie, 1, this.meleeDamageBonus)
+    return rollDice(weapon.getShortDescription(), weapon.damageDie, 1, this.meleeDamageBonus)
   }
 
   bestRangedWeapon(): RangedWeapon | undefined {
@@ -203,7 +209,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   rangedDamageRoll(): RollResult | undefined {
     const weapon = this.bestRangedWeapon()
-    return weapon ? rollDice(weapon.name, weapon.damageDie, 1, this.rangedDamageBonus) : undefined
+    return weapon ? rollDice(weapon.getShortDescription(), weapon.damageDie, 1, this.rangedDamageBonus) : undefined
   }
 
   heal(amount: number): void {
@@ -472,6 +478,7 @@ export class Player<T> extends MOB {
   }
 
   moveSearchLimit = 20
+  lastTickReceivedState = 0
 
   moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
     const notes: MOBUpdateNotes = { notes: [], moved: undefined }

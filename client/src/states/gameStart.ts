@@ -295,8 +295,8 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
   // Move any floating text and destroy after a while
   floatingObjects.forEach((l) => {
-    l.text.y += 10 * l.direction * (delta / 100)
-    if (time - l.timeStart >= 1000) {
+    l.text.y += 8 * l.direction * (delta / 100)
+    if (time - l.timeStart >= 1250) {
       l.text.destroy()
       l.delete = true
     }

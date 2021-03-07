@@ -28,7 +28,7 @@ export class Consumable {
     this.gone = true
   }
 
-  getState(): string | undefined {
+  getState(currentTick: number, lastTickReceivedState: number): string | undefined {
     const state = JSON.stringify({
       type: 'consumable',
       data: {
@@ -42,12 +42,12 @@ export class Consumable {
       }
     })
 
+    const sendState = currentTick - lastTickReceivedState > 1 || this.lastState !== state
     if (this.lastState !== state) {
       this.lastState = state
-      return state
     }
 
-    return undefined
+    return sendState ? state : undefined
   }
 
   key(): string {

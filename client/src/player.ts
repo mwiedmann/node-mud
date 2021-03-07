@@ -47,6 +47,7 @@ export type Consumable = Ghost & {
 }
 
 export type Item = Ghost & {
+  majorType: string
   subType: string
   x: number
   y: number
