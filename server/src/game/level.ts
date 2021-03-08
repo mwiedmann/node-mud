@@ -1,10 +1,9 @@
 import { AStarFinder } from 'astar-typescript'
-import { SquareType } from 'dng-shared'
+import { intersect, SquareType } from 'dng-shared'
 import { Consumable } from './consumable'
 import { Item } from './item'
 import { createMapWithMonsters, findOpenSpace, Moved, getPrintableMap } from './map'
 import { MOB, Monster, Player } from './mob'
-import { intersect } from 'mathjs'
 
 export class Level<T> {
   walls: SquareType[][] = []
@@ -138,21 +137,39 @@ export class Level<T> {
       endY: endY + 0.5
     }
 
+    const adj = 0.01 // We shrink the walls a tad to allow steeper angles to get by. A 45 degree check fails without this.
     for (let y = Math.min(endY, startY); y <= Math.max(endY, startY); y++) {
       for (let x = Math.min(endX, startX); x <= Math.max(endX, startX); x++) {
         const isStart = x === startX && y === startY
         const isEnd = x === endX && y === endY
         const hasTile = !isStart && !isEnd && this.walls[y][x] > 0
         if (hasTile) {
-          // Rectangle(x, y, 1, 1)
           // See if this tile is blocking any lines of sight
-
           if (
-            intersect([line.startX, line.startY], [line.endX, line.endY], [x, y], [x + 1, y]) ||
-            intersect([line.startX, line.startY], [line.endX, line.endY], [x, y], [x, y + 1]) ||
-            intersect([line.startX, line.startY], [line.endX, line.endY], [x + 1, y], [x + 1, y + 1]) ||
-            intersect([line.startX, line.startY], [line.endX, line.endY], [x, y + 1], [x + 1, y + 1])
+            intersect(line.startX, line.startY, line.endX, line.endY, x + adj, y + adj, x + (1 - adj), y + adj) ||
+            intersect(line.startX, line.startY, line.endX, line.endY, x + adj, y + adj, x + adj, y + (1 - adj)) ||
+            intersect(
+              line.startX,
+              line.startY,
+              line.endX,
+              line.endY,
+              x + (1 - adj),
+              y + adj,
+              x + (1 - adj),
+              y + (1 - adj)
+            ) ||
+            intersect(
+              line.startX,
+              line.startY,
+              line.endX,
+              line.endY,
+              x + adj,
+              y + (1 - adj),
+              x + (1 - adj),
+              y + (1 - adj)
+            )
           ) {
+            // console.log('Blocked', x, y)
             return true
           }
         }
