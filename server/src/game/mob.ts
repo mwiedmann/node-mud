@@ -5,6 +5,7 @@ import { MOBSkills, PlayerProfession, PlayerRace } from './players'
 import { Moved } from './map'
 import { inRange } from './util'
 import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon } from './item'
+import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
@@ -18,22 +19,6 @@ export type MOBItems = {
   bootsItem?: Item
   meleeSpell?: MeleeSpell
   rangedSpell?: RangedSpell
-}
-
-type MOBActivityLevel = 'great' | 'good' | 'neutral' | 'bad' | 'terrible'
-type MOBActivity = {
-  level: MOBActivityLevel
-  message: string
-}
-
-type MOBAttackActivityType = 'ranged'
-type MOBAttackActivity = {
-  type: MOBAttackActivityType
-  fromX: number
-  fromY: number
-  toX: number
-  toY: number
-  hit: boolean
 }
 
 export abstract class MOB implements MOBSkills, MOBItems {
@@ -84,8 +69,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
   physicalDefense = 10
   magicDefense = 10
 
-  activityLog: MOBActivity[] = []
-  attackLog: MOBAttackActivity[] = []
+  activityLog: MOBActivityLog[] = []
+  attackActivityLog: MOBAttackActivityLog[] = []
 
   meleeItem?: MeleeWeapon
   rangedItem?: RangedWeapon
@@ -209,12 +194,12 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.actionPoints = this.maxAtionPoints
   }
 
-  addActivity(activity: MOBActivity): void {
+  addActivity(activity: MOBActivityLog): void {
     this.activityLog.push(activity)
   }
 
-  addAttackActivity(activity: MOBAttackActivity): void {
-    this.attackLog.push(activity)
+  addAttackActivity(activity: MOBAttackActivityLog): void {
+    this.attackActivityLog.push(activity)
   }
 
   meleeAttackRoll(): RollResult {
@@ -407,6 +392,15 @@ export abstract class MOB implements MOBSkills, MOBItems {
           : level.playerInRange(this.x, this.y, this.rangedItem.range, true)
 
       if (mobToAttack) {
+        const attackLogEntry: MOBAttackActivityLog = {
+          type: 'ranged',
+          fromX: this.x,
+          fromY: this.y,
+          toX: mobToAttack.x,
+          toY: mobToAttack.y,
+          hit: false
+        }
+
         const attackResult = this.rangedAttackRoll()
 
         if (attackResult.total >= mobToAttack.physicalDefense) {
@@ -415,6 +409,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
           mobToAttack.takeDamage(dmgRoll)
 
+          attackLogEntry.hit = true
           if (mobToAttack.dead) {
             level.removeMonster(mobToAttack.x, mobToAttack.y)
           }
@@ -423,6 +418,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
           console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
         }
 
+        this.addAttackActivity(attackLogEntry)
         this.actionPoints -= this.actionPointsCostPerRangedAction
         this.lastActionTick = tick
       }
@@ -477,14 +473,14 @@ export abstract class MOB implements MOBSkills, MOBItems {
         hpMax: this.maxHealth,
         dead: this.dead,
         activityLog: this.activityLog,
-        attackLog: this.attackLog,
+        attackActivityLog: this.attackActivityLog,
         visibleRange: this.visibleRange
       }
     })
 
     // Reset the log after the state is gathered
     this.activityLog = []
-    this.attackLog = []
+    this.attackActivityLog = []
 
     if (this.lastState !== state) {
       this.lastState = state

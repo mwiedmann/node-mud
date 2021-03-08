@@ -41,6 +41,7 @@ class ConnectionManager {
           gameState.player.hpMax = message.data.hpMax
           gameState.player.apMax = message.data.apMax
           gameState.player.activityLog = message.data.activityLog
+          gameState.player.attackActivityLog = message.data.attackActivityLog
           gameState.player.visibleRange = message.data.visibleRange
 
           // This is the first update for the player on this level
@@ -74,6 +75,7 @@ class ConnectionManager {
             monster.ap = message.data.ap
             monster.dead = message.data.dead
             monster.activityLog = message.data.activityLog
+            monster.attackActivityLog = message.data.attackActivityLog
           }
           break
 

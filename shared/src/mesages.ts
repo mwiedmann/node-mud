@@ -1,4 +1,4 @@
-import { ActivityLog } from './activity'
+import { MOBActivityLog, MOBAttackActivityLog } from './activity'
 import { SquareType } from './square'
 
 export type MapMessage = {
@@ -20,7 +20,8 @@ export type PlayerMessage = {
     hpMax: number
     ap: number
     apMax: number
-    activityLog: ActivityLog[]
+    activityLog: MOBActivityLog[]
+    attackActivityLog: MOBAttackActivityLog[]
     visibleRange: number
   }
 }
@@ -37,7 +38,8 @@ export type MonsterMessage = {
     hpMax: number
     ap: number
     apMax: number
-    activityLog: ActivityLog[]
+    activityLog: MOBActivityLog[]
+    attackActivityLog: MOBAttackActivityLog[]
   }
 }
 

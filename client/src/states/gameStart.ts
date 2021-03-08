@@ -4,7 +4,7 @@ import { gameSettings } from '../settings'
 import { controls, gameState, sceneUpdate } from '../init'
 import { checkGhostStatus, inRange, setMapTilesSight, tileIsBlocked } from '../mapTiles'
 import { StatusBars } from '../statusbars'
-import { ActivityLogLevel } from 'dng-shared'
+import { MOBActivityLogLevel } from 'dng-shared'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
@@ -19,7 +19,13 @@ let floatingObjects: {
   direction: number
 }[] = []
 
-const activityColors: Record<ActivityLogLevel, string> = {
+let projectiles: {
+  timeStart: number
+  sprite: Phaser.GameObjects.Line
+  delete?: boolean
+}[] = []
+
+const activityColors: Record<MOBActivityLogLevel, string> = {
   great: '#00FF00',
   good: '#00FFAA',
   neutral: '#00DDFF',
@@ -27,7 +33,7 @@ const activityColors: Record<ActivityLogLevel, string> = {
   terrible: '#FF0000'
 }
 
-const activityLogColor = (level: ActivityLogLevel, flip?: boolean) =>
+const activityLogColor = (level: MOBActivityLogLevel, flip?: boolean) =>
   (level === 'great' && !flip) || (level === 'terrible' && flip)
     ? activityColors.great
     : (level === 'good' && !flip) || (level === 'bad' && flip)
@@ -124,6 +130,26 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       offSet += 16
     })
     gameState.player.activityLog = []
+  }
+
+  if (gameState.player.attackActivityLog.length > 0) {
+    gameState.player.attackActivityLog.forEach((a) => {
+      projectiles.push({
+        timeStart: time,
+        sprite: scene.add
+          .line(
+            0,
+            0,
+            gameSettings.screenPosFromMap(a.fromX),
+            gameSettings.screenPosFromMap(a.fromY),
+            gameSettings.screenPosFromMap(a.toX),
+            gameSettings.screenPosFromMap(a.toY),
+            a.hit ? 0x00ff00 : 0x00ffff
+          )
+          .setOrigin(0, 0)
+      })
+    })
+    gameState.player.attackActivityLog = []
   }
 
   if (controls.cursors.left.isDown) {
@@ -322,8 +348,15 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       l.delete = true
     }
   })
-
   floatingObjects = floatingObjects.filter((f) => !f.delete)
+
+  projectiles.forEach((p) => {
+    if (time - p.timeStart >= 200) {
+      p.sprite.destroy()
+      p.delete = true
+    }
+  })
+  projectiles = projectiles.filter((f) => !f.delete)
 }
 
 const cleanup = (scene: Phaser.Scene): void => {

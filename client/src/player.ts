@@ -1,4 +1,4 @@
-import { ActivityLog } from 'dng-shared'
+import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
 import { StatusBars } from './statusbars'
 
 export type Player = {
@@ -12,7 +12,8 @@ export type Player = {
   lastX: number
   lastY: number
   visibleRange: number
-  activityLog: ActivityLog[]
+  activityLog: MOBActivityLog[]
+  attackActivityLog: MOBAttackActivityLog[]
 }
 
 export type Ghost = {
@@ -34,7 +35,8 @@ export type Monster = Ghost & {
   lastX: number
   lastY: number
   dead: boolean
-  activityLog: ActivityLog[]
+  activityLog: MOBActivityLog[]
+  attackActivityLog: MOBAttackActivityLog[]
   statusbars?: StatusBars
 }
 

@@ -36,6 +36,7 @@ export const gameState: {
     lastX: -1,
     lastY: -1,
     activityLog: [],
+    attackActivityLog: [],
     visibleRange: 5
   },
   monsters: new Map(),
