@@ -4,9 +4,9 @@ import { Ghost } from './player'
 import { gameSettings } from './settings'
 import { Mrpas } from 'mrpas'
 
-// const fov = new Mrpas(gameSettings.cellCountX, gameSettings.cellCountY, (x, y) => {
-//   return gameState.map[y][x] > 0
-// })
+const fov = new Mrpas(gameSettings.cellCountX, gameSettings.cellCountY, (x, y) => {
+  return gameState.map[y][x] === 0
+})
 
 export type MapTiles = Map<
   string,
@@ -33,44 +33,36 @@ export const setMapTilesSight = (
 ): void => {
   // Calculate visible spaces
   mapLayer.forEachTile((m: SeenTile) => {
-    const isInRange = inRange(visibleRange, startX, startY, m.x, m.y)
-    let isBlocked = false
-
-    // Is this tile in range?
-    if (isInRange) {
-      isBlocked = tileIsBlocked(startX, startY, m.x, m.y)
-    }
-
-    if (isInRange && !isBlocked) {
+    if (m.seen) {
       m.setVisible(true)
-      m.seen = true
-      m.alpha = 1
-    } else if (m.seen) {
-      m.alpha = gameSettings.hiddenTileAlpha
+      m.setAlpha(gameSettings.hiddenTileAlpha)
     } else {
       m.setVisible(false)
-      m.alpha = 0
+      m.setAlpha(0)
     }
   })
-  // fov.compute(
-  //   startX,
-  //   startY,
-  //   visibleRange,
-  //   (x, y) => {
-  //     const tile = mapLayer.getTileAt(x, y)
-  //     if (!tile) {
-  //       return false
-  //     }
-  //     return tile.alpha > 0
-  //   },
-  //   (x, y) => {
-  //     const tile = mapLayer.getTileAt(x, y)
-  //     if (!tile) {
-  //       return
-  //     }
-  //     tile.alpha = 1
-  //   }
-  // )
+
+  fov.compute(
+    startX,
+    startY,
+    visibleRange,
+    (x, y): boolean => {
+      const tile = mapLayer.getTileAt(x, y)
+      if (!tile) {
+        return false
+      }
+      return tile.visible && tile.alpha === 1
+    },
+    (x, y): void => {
+      const tile = mapLayer.getTileAt(x, y) as SeenTile
+      if (!tile) {
+        return
+      }
+      tile.setVisible(true)
+      tile.setAlpha(1)
+      tile.seen = true
+    }
+  )
 }
 
 export const tileIsBlocked = (startX: number, startY: number, endX: number, endY: number): boolean => {

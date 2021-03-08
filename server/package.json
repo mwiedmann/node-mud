@@ -10,9 +10,11 @@
     "random-dungeon-generator": "1.0.32",
     "ts-node": "9.1.1",
     "ws": "7.4.3",
-    "dng-shared": "1.0.0"
+    "dng-shared": "1.0.0",
+    "mathjs": "9.2.0"
   },
   "devDependencies": {
+    "@types/mathjs": "6.0.11",
     "@types/node": "14.14.31",
     "@types/ws": "7.4.0",
     "@typescript-eslint/eslint-plugin": "4.15.2",

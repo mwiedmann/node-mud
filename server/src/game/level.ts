@@ -4,6 +4,7 @@ import { Consumable } from './consumable'
 import { Item } from './item'
 import { createMapWithMonsters, findOpenSpace, Moved, getPrintableMap } from './map'
 import { MOB, Monster, Player } from './mob'
+import { intersect } from 'mathjs'
 
 export class Level<T> {
   walls: SquareType[][] = []
@@ -111,16 +112,54 @@ export class Level<T> {
     return findOpenSpace(this)
   }
 
-  monsterInRange(x: number, y: number, range: number): Monster | undefined {
+  monsterInRange(x: number, y: number, range: number, checkCanSee?: boolean): Monster | undefined {
     const iterator = this.monsters[Symbol.iterator]()
 
     for (const m of iterator) {
-      if (!m[1].dead && Math.abs(m[1].x - x) <= range && Math.abs(m[1].y - y) <= range) {
+      if (
+        !m[1].dead &&
+        Math.abs(m[1].x - x) <= range &&
+        Math.abs(m[1].y - y) <= range &&
+        (!checkCanSee || range === 1 || !this.tileIsBlocked(x, y, m[1].x, m[1].y))
+      ) {
         return m[1]
       }
     }
 
     return undefined
+  }
+
+  tileIsBlocked(startX: number, startY: number, endX: number, endY: number): boolean {
+    // Can the player see this tile?
+    const line = {
+      startX: startX + 0.5,
+      startY: startY + 0.5,
+      endX: endX + 0.5,
+      endY: endY + 0.5
+    }
+
+    for (let y = Math.min(endY, startY); y <= Math.max(endY, startY); y++) {
+      for (let x = Math.min(endX, startX); x <= Math.max(endX, startX); x++) {
+        const isStart = x === startX && y === startY
+        const isEnd = x === endX && y === endY
+        const hasTile = !isStart && !isEnd && this.walls[y][x] > 0
+        if (hasTile) {
+          // Rectangle(x, y, 1, 1)
+          // See if this tile is blocking any lines of sight
+
+          if (
+            intersect([line.startX, line.startY], [line.endX, line.endY], [x, y], [x + 1, y]) ||
+            intersect([line.startX, line.startY], [line.endX, line.endY], [x, y], [x, y + 1]) ||
+            intersect([line.startX, line.startY], [line.endX, line.endY], [x + 1, y], [x + 1, y + 1]) ||
+            intersect([line.startX, line.startY], [line.endX, line.endY], [x, y + 1], [x + 1, y + 1])
+          ) {
+            return true
+          }
+        }
+      }
+    }
+
+    return false
   }
 
   grabConsumable(player: MOB): Consumable | undefined {
@@ -166,11 +205,16 @@ export class Level<T> {
     return undefined
   }
 
-  playerInRange(x: number, y: number, range: number): Player<unknown> | undefined {
+  playerInRange(x: number, y: number, range: number, checkCanSee?: boolean): Player<unknown> | undefined {
     const iterator = this.players[Symbol.iterator]()
 
     for (const p of iterator) {
-      if (!p[1].dead && Math.abs(p[1].x - x) <= range && Math.abs(p[1].y - y) <= range) {
+      if (
+        !p[1].dead &&
+        Math.abs(p[1].x - x) <= range &&
+        Math.abs(p[1].y - y) <= range &&
+        (range === 1 || !checkCanSee || !this.tileIsBlocked(x, y, p[1].x, p[1].y))
+      ) {
         return p[1]
       }
     }
