@@ -14,7 +14,7 @@ export class Game<T> {
     // addRandomWalls(map, 500)
     // map[0][0] = 0 // Clear starting spot
 
-    const map = randomDungeon()
+    const map = randomDungeon(200, 100)
     level.setWalls(map) // This will also create the map search graph
 
     // Add some level 1 mosnters
@@ -22,7 +22,7 @@ export class Game<T> {
       .filter(([_, value]) => value.level === 1)
       .map(([key]) => key as MonsterType)
       .forEach((monsterName) => {
-        randomMonsters(monsterName, 10, level)
+        randomMonsters(monsterName, 30, level)
       })
 
     randomConsumables('healing', 20, level)

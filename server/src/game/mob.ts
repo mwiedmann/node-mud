@@ -388,8 +388,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
     ) {
       const mobToAttack =
         this.type === 'player'
-          ? level.monsterInRange(this.x, this.y, this.rangedItem.range, true)
-          : level.playerInRange(this.x, this.y, this.rangedItem.range, true)
+          ? level.monsterInRange(this.x, this.y, this.rangedItem.range, 2, true)
+          : level.playerInRange(this.x, this.y, this.rangedItem.range, 2, true)
 
       if (mobToAttack) {
         const attackLogEntry: MOBAttackActivityLog = {

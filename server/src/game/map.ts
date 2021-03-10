@@ -8,9 +8,6 @@ import { Monster } from './mob'
 import { monsterFactory, MonsterType } from './monsters'
 import { SquareType } from 'dng-shared'
 
-const mapWidth = 200
-const mapHeight = 100
-
 export type Moved = {
   fromX: number
   fromY: number
@@ -24,7 +21,7 @@ export const getPrintableMap = (map: SquareType[][]): string => {
   }, '')
 }
 
-export const createEmptyMap = (): SquareType[][] => {
+export const createEmptyMap = (mapWidth: number, mapHeight: number): SquareType[][] => {
   const map: SquareType[][] = new Array(mapHeight)
   for (let y = 0; y < mapHeight; y++) {
     map[y] = new Array(mapWidth).fill(SquareType.Empty)
@@ -34,8 +31,11 @@ export const createEmptyMap = (): SquareType[][] => {
 }
 
 export const createMapWithMonsters = (wallMap: SquareType[][], monsters: Map<number, Monster>): SquareType[][] => {
+  const mapWidth = wallMap[0].length
+  const mapHeight = wallMap.length
+
   // First create a map with the monster locations
-  const monsterMap = createEmptyMap()
+  const monsterMap = createEmptyMap(wallMap[0].length, wallMap.length)
   const monIterator = monsters[Symbol.iterator]()
   for (const m of monIterator) {
     const monster = m[1]
@@ -65,7 +65,7 @@ export const addRandomWalls = (map: SquareType[][], wallCount: number): void => 
   }
 }
 
-export const randomDungeon = (): number[][] => {
+export const randomDungeon = (mapWidth: number, mapHeight: number): number[][] => {
   const options = {
     width: mapWidth,
     height: mapHeight,

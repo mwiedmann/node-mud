@@ -94,11 +94,11 @@ const professionSettings: () => { [K in PlayerProfession]: Partial<MOBSkills> & 
   },
   ranger: {
     meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
-    rangedItem: new RangedWeapon('shortbow', 'Snipe', {}, 6, 'd6')
+    rangedItem: new RangedWeapon('shortbow', 'Snipe', {}, 6, 'd4')
   },
   rogue: {
     meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
-    rangedItem: new RangedWeapon('shortbow', 'Stinger', {}, 6, 'd6')
+    rangedItem: new RangedWeapon('shortbow', 'Stinger', {}, 6, 'd4')
   },
   wizard: {
     meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
