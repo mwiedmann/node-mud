@@ -1,6 +1,6 @@
 import { nextId } from './id'
-import { MeleeWeapon } from './item'
-import { MOBItems, Monster } from './mob'
+import { MeleeWeapon, RangedWeapon, RangedWeaponFactory } from './item'
+import { MOB, MOBItems, Monster } from './mob'
 import { MOBSkills } from './players'
 
 export type MOBType =
@@ -51,12 +51,14 @@ const baseMonsterScores: MOBSkills = {
   maxAtionPoints: 100,
   actionPointsGainedPerTick: 1,
   actionPointCostPerMove: 1,
-  actionPointsCostPerMeleeAction: 20,
-  actionPointsCostPerRangedAction: 30,
-  actionPointsCostPerSpellAction: 20,
+  actionPointsCostPerMeleeAction: 15,
+  actionPointsCostPerRangedAction: 25,
+  actionPointsCostPerSpellAction: 25,
 
   ticksPerMove: 3,
-  ticksPerAction: 5,
+  ticksPerMeleeAction: 7,
+  ticksPerRangedAction: 20,
+  ticksPerSpellAction: 20,
 
   meleeHitBonus: 0,
   meleeDamageBonus: 0,
@@ -82,42 +84,44 @@ export const monsterSettings: {
     maxHealth: 1,
     ticksPerMove: 8,
     physicalDefense: 4,
-    meleeItem: new MeleeWeapon('natural', 'acid', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'acid', {}, 'd2')
   },
   bat: {
     level: 1,
     maxHealth: 2,
     ticksPerMove: 2,
     physicalDefense: 5,
-    meleeItem: new MeleeWeapon('natural', 'bite', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'bite', {}, 'd2')
   },
   snake: {
     level: 1,
     maxHealth: 2,
     ticksPerMove: 4,
     physicalDefense: 4,
-    meleeItem: new MeleeWeapon('natural', 'poisonous bite', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'poisonous bite', {}, 'd2')
   },
   orc: {
     level: 1,
     maxHealth: 3,
     ticksPerMove: 6,
     physicalDefense: 5,
-    meleeItem: new MeleeWeapon('natural', 'short sword', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'shortsword', {}, 'd2'),
+    rangedItem: new RangedWeapon('natural', 'shortbow', {}, 4, 'd2')
   },
   skeleton: {
     level: 1,
     maxHealth: 3,
     ticksPerMove: 4,
     physicalDefense: 5,
-    meleeItem: new MeleeWeapon('natural', 'scimitar', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'scimitar', {}, 'd2')
   },
   goblin: {
     level: 1,
     maxHealth: 4,
     ticksPerMove: 3,
     physicalDefense: 6,
-    meleeItem: new MeleeWeapon('natural', 'mace', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'mace', {}, 'd2'),
+    rangedItem: new RangedWeapon('natural', 'shortbow', {}, 4, 'd2')
   },
 
   // Level 2 - HP: 5-8, DEF: 7-9
@@ -147,14 +151,16 @@ export const monsterSettings: {
     maxHealth: 7,
     ticksPerMove: 4,
     physicalDefense: 8,
-    meleeItem: new MeleeWeapon('natural', 'poisonous bite', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'poisonous bite', {}, 'd4'),
+    rangedItem: new RangedWeapon('natural', 'web', {}, 5, 'd2')
   },
   lizardman: {
     level: 2,
     maxHealth: 7,
     ticksPerMove: 3,
     physicalDefense: 9,
-    meleeItem: new MeleeWeapon('natural', 'trident', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'trident', {}, 'd4'),
+    rangedItem: new RangedWeapon('natural', 'darts', {}, 5, 'd2')
   },
   gnoll: {
     level: 2,
@@ -170,42 +176,44 @@ export const monsterSettings: {
     maxHealth: 9,
     ticksPerMove: 3,
     physicalDefense: 10,
-    meleeItem: new MeleeWeapon('natural', 'club', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'club', {}, 'd6')
   },
   ghoul: {
     level: 3,
     maxHealth: 9,
     ticksPerMove: 5,
     physicalDefense: 11,
-    meleeItem: new MeleeWeapon('natural', 'diseased breath', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'diseased breath', {}, 'd6')
   },
   harpy: {
     level: 3,
     maxHealth: 10,
     ticksPerMove: 2,
     physicalDefense: 10,
-    meleeItem: new MeleeWeapon('natural', 'claws', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'claws', {}, 'd6')
   },
   'insect-swarm': {
     level: 3,
     maxHealth: 11,
     ticksPerMove: 3,
     physicalDefense: 12,
-    meleeItem: new MeleeWeapon('natural', 'stingers', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'stingers', {}, 'd6'),
+    rangedItem: new RangedWeapon('natural', 'stingers', {}, 6, 'd4')
   },
   'gelatinous-cube': {
     level: 3,
     maxHealth: 12,
     ticksPerMove: 6,
     physicalDefense: 12,
-    meleeItem: new MeleeWeapon('natural', 'acidic splash', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'acidic splash', {}, 'd6'),
+    rangedItem: new RangedWeapon('natural', 'acid blob', {}, 6, 'd4')
   },
   troll: {
     level: 3,
     maxHealth: 12,
     ticksPerMove: 4,
     physicalDefense: 12,
-    meleeItem: new MeleeWeapon('natural', 'giant club', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'giant club', {}, 'd6')
   },
   // Level 4 - HO: 13-16, DEF: 13-15
   wraith: {
@@ -213,42 +221,44 @@ export const monsterSettings: {
     maxHealth: 13,
     ticksPerMove: 4,
     physicalDefense: 13,
-    meleeItem: new MeleeWeapon('natural', 'necrotic energy', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'necrotic energy', {}, 'd8')
   },
   yeti: {
     level: 4,
     maxHealth: 13,
     ticksPerMove: 3,
     physicalDefense: 14,
-    meleeItem: new MeleeWeapon('natural', 'claws', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'claws', {}, 'd8')
   },
   centaur: {
     level: 4,
     maxHealth: 14,
     ticksPerMove: 2,
     physicalDefense: 13,
-    meleeItem: new MeleeWeapon('natural', 'kick', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'kick', {}, 'd8'),
+    rangedItem: new RangedWeapon('natural', 'longbow', {}, 7, 'd4')
   },
   elemental: {
     level: 4,
     maxHealth: 14,
     ticksPerMove: 3,
     physicalDefense: 14,
-    meleeItem: new MeleeWeapon('natural', 'fire', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'fire', {}, 'd8'),
+    rangedItem: new RangedWeapon('natural', 'firebolt', {}, 7, 'd4')
   },
   imp: {
     level: 4,
     maxHealth: 15,
     ticksPerMove: 2,
     physicalDefense: 15,
-    meleeItem: new MeleeWeapon('natural', 'stinging tail', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'stinging tail', {}, 'd8')
   },
   banshee: {
     level: 4,
     maxHealth: 16,
     ticksPerMove: 5,
     physicalDefense: 15,
-    meleeItem: new MeleeWeapon('natural', 'necrotic energy', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'necrotic energy', {}, 'd8')
   },
   // Level 5 HP: 17-20, DEF: 16-18
   demon: {
@@ -256,42 +266,44 @@ export const monsterSettings: {
     maxHealth: 17,
     ticksPerMove: 3,
     physicalDefense: 16,
-    meleeItem: new MeleeWeapon('natural', 'flaming sword', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'flaming sword', {}, 'd10')
   },
   giant: {
     level: 5,
     maxHealth: 17,
     ticksPerMove: 5,
     physicalDefense: 18,
-    meleeItem: new MeleeWeapon('natural', 'spiked club', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'spiked club', {}, 'd10'),
+    rangedItem: new RangedWeapon('natural', 'boulder', {}, 8, 'd6')
   },
   mummy: {
     level: 5,
     maxHealth: 18,
     ticksPerMove: 6,
     physicalDefense: 17,
-    meleeItem: new MeleeWeapon('natural', 'rotting flesh', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'rotting flesh', {}, 'd10')
   },
   griffon: {
     level: 5,
     maxHealth: 19,
     ticksPerMove: 2,
     physicalDefense: 16,
-    meleeItem: new MeleeWeapon('natural', 'beak', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'beak', {}, 'd10')
   },
   manticore: {
     level: 5,
     maxHealth: 20,
     ticksPerMove: 2,
     physicalDefense: 17,
-    meleeItem: new MeleeWeapon('natural', 'spiked tail', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'spiked tail', {}, 'd10'),
+    rangedItem: new RangedWeapon('natural', 'spikes', {}, 8, 'd6')
   },
   minotaur: {
     level: 5,
     maxHealth: 20,
     ticksPerMove: 3,
     physicalDefense: 18,
-    meleeItem: new MeleeWeapon('natural', 'horns', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'horns', {}, 'd10')
   },
 
   // Legendary Monsters 20+ 20+
@@ -300,43 +312,58 @@ export const monsterSettings: {
     maxHealth: 25,
     ticksPerMove: 2,
     physicalDefense: 20,
-    meleeItem: new MeleeWeapon('natural', 'fire breath', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'bite and claws', {}, 'd12'),
+    rangedItem: new RangedWeapon('natural', 'fire breath', {}, 10, 'd8')
   },
   lich: {
     level: 6,
     maxHealth: 21,
     ticksPerMove: 4,
     physicalDefense: 21,
-    meleeItem: new MeleeWeapon('natural', 'death magic', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'death magic', {}, 'd12')
   },
   vampire: {
     level: 6,
     maxHealth: 22,
     ticksPerMove: 3,
     physicalDefense: 22,
-    meleeItem: new MeleeWeapon('natural', 'corrupting bite', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'corrupting bite', {}, 'd12')
   },
   beholder: {
     level: 6,
     maxHealth: 21,
     ticksPerMove: 5,
     physicalDefense: 22,
-    meleeItem: new MeleeWeapon('natural', 'death rays', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'death rays', {}, 'd12')
   },
   'mind-flayer': {
     level: 6,
     maxHealth: 20,
     ticksPerMove: 4,
     physicalDefense: 21,
-    meleeItem: new MeleeWeapon('natural', 'mind blast', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'mind blast', {}, 'd12')
   },
   devil: {
     level: 6,
     maxHealth: 24,
     ticksPerMove: 3,
     physicalDefense: 23,
-    meleeItem: new MeleeWeapon('natural', 'evil whip ', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'pitchfork', {}, 'd12'),
+    rangedItem: new RangedWeapon('natural', 'demonic whip', {}, 10, 'd8')
   }
+}
+
+export const xpForKill = (monster: MOB): number => {
+  const xpList: Record<number, number> = {
+    1: 1,
+    2: 2,
+    3: 5,
+    4: 10,
+    5: 20,
+    6: 100
+  }
+
+  return xpList[monster.level] || 1
 }
 
 export const monsterFactory = (type: MonsterType): Monster => {

@@ -1,5 +1,5 @@
 import { nextId } from './id'
-import { MeleeSpell, MeleeWeapon, MeleeWeaponFactory, RangedSpell, RangedWeapon } from './item'
+import { MeleeSpell, MeleeWeapon, MeleeWeaponFactory, RangedSpell, RangedWeapon, RangedWeaponFactory } from './item'
 import { MOBItems, Monster, Player } from './mob'
 
 export type PlayerRace = 'elf' | 'dwarf' | 'human' | 'gnome' | 'giant'
@@ -17,7 +17,9 @@ export type MOBSkills = {
   actionPointsCostPerSpellAction: number
 
   ticksPerMove: number
-  ticksPerAction: number
+  ticksPerMeleeAction: number
+  ticksPerRangedAction: number
+  ticksPerSpellAction: number
 
   meleeHitBonus: number
   meleeDamageBonus: number
@@ -37,12 +39,14 @@ const basePlayerScores: MOBSkills = {
   maxAtionPoints: 100,
   actionPointsGainedPerTick: 1,
   actionPointCostPerMove: 1,
-  actionPointsCostPerMeleeAction: 20,
-  actionPointsCostPerRangedAction: 30,
-  actionPointsCostPerSpellAction: 20,
+  actionPointsCostPerMeleeAction: 15,
+  actionPointsCostPerRangedAction: 25,
+  actionPointsCostPerSpellAction: 25,
 
   ticksPerMove: 3,
-  ticksPerAction: 5,
+  ticksPerMeleeAction: 7,
+  ticksPerRangedAction: 20,
+  ticksPerSpellAction: 20,
 
   meleeHitBonus: 0,
   meleeDamageBonus: 0,
@@ -94,11 +98,11 @@ const professionSettings: () => { [K in PlayerProfession]: Partial<MOBSkills> & 
   },
   ranger: {
     meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
-    rangedItem: new RangedWeapon('shortbow', 'Snipe', {}, 6, 'd4')
+    rangedItem: RangedWeaponFactory('shortbow', 'Snipe')
   },
   rogue: {
     meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
-    rangedItem: new RangedWeapon('shortbow', 'Stinger', {}, 6, 'd4')
+    rangedItem: RangedWeaponFactory('shortbow', 'Stinger')
   },
   wizard: {
     meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
@@ -147,7 +151,7 @@ export const playerFactory = <T>(
   })
 
   // TODO: Remove. Just for testing
-  player.maxHealth = 100
+  // player.maxHealth = 100
 
   player.init()
 

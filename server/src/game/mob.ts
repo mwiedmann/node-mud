@@ -1,9 +1,8 @@
-import { MOBType } from './monsters'
+import { MOBType, xpForKill } from './monsters'
 import { Level } from './level'
 import { Dice, rollDice, RollResult } from './combat'
 import { MOBSkills, PlayerProfession, PlayerRace } from './players'
 import { Moved } from './map'
-import { inRange } from './util'
 import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon } from './item'
 import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
 
@@ -30,6 +29,19 @@ export abstract class MOB implements MOBSkills, MOBItems {
   abstract moveSearchLimit: number
 
   level = 1
+  levelsGained: { level: number; xp: number; gained?: boolean }[] = [
+    { level: 1, xp: 0, gained: true },
+    { level: 2, xp: 5 },
+    { level: 3, xp: 10 },
+    { level: 4, xp: 15 },
+    { level: 5, xp: 20 },
+    { level: 6, xp: 25 },
+    { level: 7, xp: 30 },
+    { level: 8, xp: 35 },
+    { level: 9, xp: 40 },
+    { level: 10, xp: 45 }
+  ]
+
   dead = false
   rangedAttackOn = true
 
@@ -40,18 +52,22 @@ export abstract class MOB implements MOBSkills, MOBItems {
   actionPoints = 100
   actionPointsGainedPerTick = 1
   actionPointCostPerMove = 1
-  actionPointsCostPerMeleeAction = 5
-  actionPointsCostPerRangedAction = 5
-  actionPointsCostPerSpellAction = 5
+  actionPointsCostPerMeleeAction = 15
+  actionPointsCostPerRangedAction = 25
+  actionPointsCostPerSpellAction = 25
 
   mode: 'hunt' | 'move' = 'hunt'
   huntRange = 4
 
   ticksPerMove = 3
-  ticksPerAction = 5
+  ticksPerMeleeAction = 7
+  ticksPerRangedAction = 20
+  ticksPerSpellAction = 20
 
   lastMoveTick = 0
-  lastActionTick = 0
+  lastMeleeActionTick = 0
+  lastRangedActionTick = 0
+  lastSpellActionTick = 0
 
   lastState = ''
 
@@ -83,6 +99,24 @@ export abstract class MOB implements MOBSkills, MOBItems {
   rangedSpell?: RangedSpell
 
   inventory: Item[] = []
+
+  xp = 0
+
+  gainXP(points: number): void {
+    // Only players can gain XP (for now)
+    if (this.type === 'player') {
+      this.xp += points
+
+      this.levelsGained.forEach((l) => {
+        if (!l.gained && this.xp >= l.xp) {
+          l.gained = true
+          this.addActivity({ level: 'great', message: `LEVEL UP!!!` })
+          this.maxHealth += 5
+          this.init()
+        }
+      })
+    }
+  }
 
   removeItem(type: MajorItemType): Item | undefined {
     let item: Item | undefined
@@ -383,7 +417,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     // TODO: REFACTOR - The ranged and melee attacks are the same with a few params/functions
     if (
       this.rangedItem &&
-      tick - this.lastActionTick >= this.ticksPerAction &&
+      tick - this.lastRangedActionTick >= this.ticksPerRangedAction &&
       this.actionPoints >= this.actionPointsCostPerRangedAction
     ) {
       const mobToAttack =
@@ -411,6 +445,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
           attackLogEntry.hit = true
           if (mobToAttack.dead) {
+            this.gainXP(xpForKill(mobToAttack))
             level.removeMonster(mobToAttack.x, mobToAttack.y)
           }
         } else {
@@ -420,12 +455,15 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
         this.addAttackActivity(attackLogEntry)
         this.actionPoints -= this.actionPointsCostPerRangedAction
-        this.lastActionTick = tick
+        this.lastRangedActionTick = tick
       }
     }
 
     // Check melee attack
-    if (tick - this.lastActionTick >= this.ticksPerAction && this.actionPoints >= this.actionPointsCostPerMeleeAction) {
+    if (
+      tick - this.lastMeleeActionTick >= this.ticksPerMeleeAction &&
+      this.actionPoints >= this.actionPointsCostPerMeleeAction
+    ) {
       const mobToAttack =
         this.type === 'player' ? level.monsterInRange(this.x, this.y, 1) : level.playerInRange(this.x, this.y, 1)
 
@@ -439,6 +477,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
           mobToAttack.takeDamage(dmgRoll)
 
           if (mobToAttack.dead) {
+            this.gainXP(xpForKill(mobToAttack))
             level.removeMonster(mobToAttack.x, mobToAttack.y)
           }
         } else {
@@ -447,7 +486,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
         }
 
         this.actionPoints -= this.actionPointsCostPerMeleeAction
-        this.lastActionTick = tick
+        this.lastMeleeActionTick = tick
       }
     }
   }

@@ -111,25 +111,6 @@ export class Level<T> {
     return findOpenSpace(this)
   }
 
-  monsterInRange(x: number, y: number, range: number, minRange?: number, checkCanSee?: boolean): Monster | undefined {
-    const iterator = this.monsters[Symbol.iterator]()
-
-    for (const m of iterator) {
-      if (
-        !m[1].dead && // Not dead...duh
-        Math.abs(m[1].x - x) <= range && // Check ranges
-        Math.abs(m[1].y - y) <= range &&
-        // Min range use to limit how close (e.g. ranged attacks can't be used point blank)
-        (!minRange || Math.abs(m[1].x - x) >= minRange || Math.abs(m[1].y - y) >= minRange) &&
-        (!checkCanSee || range === 1 || !this.tileIsBlocked(x, y, m[1].x, m[1].y))
-      ) {
-        return m[1]
-      }
-    }
-
-    return undefined
-  }
-
   tileIsBlocked(startX: number, startY: number, endX: number, endY: number): boolean {
     // Can the player see this tile?
     const line = {
@@ -224,6 +205,36 @@ export class Level<T> {
     return undefined
   }
 
+  mobInRange<T extends MOB>(
+    mobMap: Map<number, T>,
+    x: number,
+    y: number,
+    range: number,
+    minRange?: number,
+    checkCanSee?: boolean
+  ): T | undefined {
+    const iterator = mobMap[Symbol.iterator]()
+
+    for (const m of iterator) {
+      if (
+        !m[1].dead && // Not dead...duh
+        Math.abs(m[1].x - x) <= range && // Check ranges
+        Math.abs(m[1].y - y) <= range &&
+        // Min range use to limit how close (e.g. ranged attacks can't be used point blank)
+        (!minRange || Math.abs(m[1].x - x) >= minRange || Math.abs(m[1].y - y) >= minRange) &&
+        (!checkCanSee || range === 1 || !this.tileIsBlocked(x, y, m[1].x, m[1].y))
+      ) {
+        return m[1]
+      }
+    }
+
+    return undefined
+  }
+
+  monsterInRange(x: number, y: number, range: number, minRange?: number, checkCanSee?: boolean): Monster | undefined {
+    return this.mobInRange(this.monsters, x, y, range, minRange, checkCanSee)
+  }
+
   playerInRange(
     x: number,
     y: number,
@@ -231,22 +242,7 @@ export class Level<T> {
     minRange?: number,
     checkCanSee?: boolean
   ): Player<unknown> | undefined {
-    const iterator = this.players[Symbol.iterator]()
-
-    for (const p of iterator) {
-      if (
-        !p[1].dead && // Not dead
-        Math.abs(p[1].x - x) <= range && // Check within range
-        Math.abs(p[1].y - y) <= range &&
-        // Min range use to limit how close (e.g. ranged attacks can't be used point blank)
-        (!minRange || Math.abs(p[1].x - x) >= minRange || Math.abs(p[1].y - y) >= minRange) &&
-        (range === 1 || !checkCanSee || !this.tileIsBlocked(x, y, p[1].x, p[1].y))
-      ) {
-        return p[1]
-      }
-    }
-
-    return undefined
+    return this.mobInRange(this.players, x, y, range, minRange, checkCanSee)
   }
 
   locationIsBlocked(x: number, y: number): boolean {

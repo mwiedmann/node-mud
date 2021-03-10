@@ -99,23 +99,23 @@ export class MeleeWeapon extends Item {
 }
 export const MeleeWeaponFactory = (type: MeleeType, name = ''): MeleeWeapon => {
   const weapons: Record<MeleeType, Dice> = {
-    natural: 'd4',
-    dagger: 'd4',
-    staff: 'd4',
-    shortsword: 'd6',
-    spear: 'd6',
-    axe: 'd8',
-    mace: 'd8',
-    broadsword: 'd8',
-    longsword: 'd10',
-    greatsword: 'd12',
-    battleaxe: 'd12'
+    natural: 'd2',
+    dagger: 'd2',
+    staff: 'd2',
+    shortsword: 'd4',
+    spear: 'd4',
+    axe: 'd6',
+    mace: 'd6',
+    broadsword: 'd6',
+    longsword: 'd8',
+    greatsword: 'd10',
+    battleaxe: 'd10'
   }
 
   return new MeleeWeapon(type, name, {}, weapons[type])
 }
 
-export type RangedType = 'shortbow' | 'longbow' | 'crossbow'
+export type RangedType = 'natural' | 'blowgun' | 'shortbow' | 'light-crossbow' | 'longbow' | 'heavy-crossbow'
 export class RangedWeapon extends Item {
   constructor(
     subType: RangedType,
@@ -126,6 +126,23 @@ export class RangedWeapon extends Item {
   ) {
     super('ranged', subType, name, bonuses)
   }
+  getSubTypeDescription(): string {
+    return `(${this.subType} ${this.damageDie})`
+  }
+}
+export const RangedWeaponFactory = (type: RangedType, name = ''): RangedWeapon => {
+  const weapon: Record<RangedType, [range: number, damageDie: Dice]> = {
+    natural: [4, 'd2'],
+    blowgun: [4, 'd2'],
+    shortbow: [5, 'd2'],
+    'light-crossbow': [6, 'd4'],
+    longbow: [8, 'd4'],
+    'heavy-crossbow': [10, 'd6']
+  }
+
+  const selectedWeapon = weapon[type]
+
+  return new RangedWeapon(type, name, {}, selectedWeapon[0], selectedWeapon[1])
 }
 
 export class MeleeSpell extends Item {

@@ -351,7 +351,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
   floatingObjects = floatingObjects.filter((f) => !f.delete)
 
   projectiles.forEach((p) => {
-    if (time - p.timeStart >= 200) {
+    if (time - p.timeStart >= 150) {
       p.sprite.destroy()
       p.delete = true
     }
