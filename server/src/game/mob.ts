@@ -57,12 +57,16 @@ export abstract class MOB implements MOBSkills, MOBItems {
   actionPointsCostPerSpellAction = 25
 
   mode: 'hunt' | 'move' = 'hunt'
-  huntRange = 4
+  huntRange = 1
 
   ticksPerMove = 3
   ticksPerMeleeAction = 7
   ticksPerRangedAction = 20
   ticksPerSpellAction = 20
+
+  ticksPausedAfterMelee = 5
+  ticksPausedAfterRanged = 10
+  ticksPausedAfterSpell = 10
 
   lastMoveTick = 0
   lastMeleeActionTick = 0
@@ -70,6 +74,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
   lastSpellActionTick = 0
 
   lastState = ''
+  tickPausedUntil = 0
 
   moveGraph: number[][] = []
 
@@ -334,6 +339,12 @@ export abstract class MOB implements MOBSkills, MOBItems {
       this.actionPoints = this.maxAtionPoints
     }
 
+    // Combat actions prevent the MOB from taking other actions and moving for a bit
+    if (this.tickPausedUntil > tick) {
+      notes.notes.push('Actions paused')
+      return notes
+    }
+
     this.takeAction(tick, level)
     return this.moveTowardsDestination(tick, level, notes)
   }
@@ -456,6 +467,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
         this.addAttackActivity(attackLogEntry)
         this.actionPoints -= this.actionPointsCostPerRangedAction
         this.lastRangedActionTick = tick
+        this.tickPausedUntil = tick + this.ticksPausedAfterRanged
+        return
       }
     }
 
@@ -487,6 +500,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
         this.actionPoints -= this.actionPointsCostPerMeleeAction
         this.lastMeleeActionTick = tick
+        this.tickPausedUntil = tick + this.ticksPausedAfterMelee
+        return
       }
     }
   }
@@ -534,10 +549,10 @@ export class Monster extends MOB {
   constructor(type: MOBType, team: number, id: number, name?: string) {
     super(type, team, id, name)
 
-    this.huntRange = 5
+    this.huntRange = 9
   }
   moveRange = 5
-  moveSearchLimit = 10
+  moveSearchLimit = 12
   playerRangeToActivate = 30
 
   update(tick: number, level: Level<unknown>): MOBUpdateNotes {
@@ -559,7 +574,7 @@ export class Monster extends MOB {
     if (tick - this.lastMoveTick >= this.ticksPerMove && this.actionPoints >= this.actionPointCostPerMove) {
       notes.notes.push('Looking for player')
       // Look for a close player
-      const player = level.playerInRange(this.x, this.y, this.huntRange)
+      const player = level.playerInRange(this.x, this.y, this.huntRange, undefined, true)
 
       if (player) {
         notes.notes.push('Found close player')

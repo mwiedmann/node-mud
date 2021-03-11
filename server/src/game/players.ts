@@ -21,6 +21,10 @@ export type MOBSkills = {
   ticksPerRangedAction: number
   ticksPerSpellAction: number
 
+  ticksPausedAfterMelee: number
+  ticksPausedAfterRanged: number
+  ticksPausedAfterSpell: number
+
   meleeHitBonus: number
   meleeDamageBonus: number
   rangedHitBonus: number
@@ -47,6 +51,10 @@ const basePlayerScores: MOBSkills = {
   ticksPerMeleeAction: 7,
   ticksPerRangedAction: 20,
   ticksPerSpellAction: 20,
+
+  ticksPausedAfterMelee: 5,
+  ticksPausedAfterRanged: 10,
+  ticksPausedAfterSpell: 10,
 
   meleeHitBonus: 0,
   meleeDamageBonus: 0,

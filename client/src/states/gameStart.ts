@@ -27,9 +27,9 @@ let projectiles: {
 
 const activityColors: Record<MOBActivityLogLevel, string> = {
   great: '#00FF00',
-  good: '#00FFAA',
+  good: '#00FF88',
   neutral: '#00DDFF',
-  bad: '#FFCC00',
+  bad: '#FF6f00',
   terrible: '#FF0000'
 }
 
@@ -195,7 +195,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
             gameSettings.screenPosFromMap(m.x),
             gameSettings.screenPosFromMap(m.y) - (gameSettings.cellSize + offSet),
             a.message,
-            { color: activityLogColor(a.level), align: 'center' }
+            { color: activityLogColor(a.level, true), align: 'center' }
           )
         })
         offSet += 16
