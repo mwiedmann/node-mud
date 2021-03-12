@@ -1,10 +1,11 @@
 import { MOBType, xpForKill } from './monsters'
 import { Level } from './level'
 import { Dice, rollDice, RollResult } from './combat'
-import { MOBSkills, PlayerProfession, PlayerRace } from './players'
 import { Moved } from './map'
 import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon } from './item'
 import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
+import { PlayerProfession } from './characters/professions'
+import { LevelProgression, MOBSkills, PlayerRace } from './characters'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
@@ -21,7 +22,13 @@ export type MOBItems = {
 }
 
 export abstract class MOB implements MOBSkills, MOBItems {
-  constructor(public type: MOBType, public team: number, public id: number, public name?: string) {}
+  constructor(
+    public type: MOBType,
+    public team: number,
+    public id: number,
+    public name?: string,
+    public progression?: LevelProgression[]
+  ) {}
   x = 0
   y = 0
   destinationX = 0
@@ -81,11 +88,11 @@ export abstract class MOB implements MOBSkills, MOBItems {
   defaultMeleeItem = new MeleeWeapon('natural', 'fists', {}, 'd2')
 
   meleeHitBonus = 0
-  meleeDamageDie: Dice = 'd4'
   meleeDamageBonus = 0
   rangedHitBonus = 0
-  rangedDamageDie: Dice = 'd4'
   rangedDamageBonus = 0
+  spellHitBonus = 0
+  spellDamageBonus = 0
 
   physicalDefense = 10
   magicDefense = 10
@@ -615,11 +622,12 @@ export class Player<T> extends MOB {
     name: string,
     public race: PlayerRace,
     public profession: PlayerProfession,
+    progression: LevelProgression[],
     team: number,
     id: number,
     public connection: T
   ) {
-    super('player', team, id, name)
+    super('player', team, id, name, progression)
     this.huntRange = 1
   }
 

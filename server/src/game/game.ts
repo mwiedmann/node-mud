@@ -1,9 +1,9 @@
 import { randomConsumables, randomDungeon, randomMeleeWeapons, randomMonsters } from './map'
 import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './level'
-import { playerFactory } from './players'
 import { performance } from 'perf_hooks'
 import { monsterSettings, MonsterType } from './monsters'
+import { playerFactory } from './characters'
 
 export class Game<T> {
   constructor() {

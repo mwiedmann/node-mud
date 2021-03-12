@@ -1,7 +1,7 @@
+import { MOBSkills } from './characters'
 import { nextId } from './id'
 import { MeleeWeapon, RangedWeapon, RangedWeaponFactory } from './item'
 import { MOB, MOBItems, Monster } from './mob'
-import { MOBSkills } from './players'
 
 export type MOBType =
   | 'player'
@@ -68,6 +68,8 @@ const baseMonsterScores: MOBSkills = {
   meleeDamageBonus: 0,
   rangedHitBonus: 0,
   rangedDamageBonus: 0,
+  spellHitBonus: 0,
+  spellDamageBonus: 0,
 
   physicalDefense: 10,
   magicDefense: 10

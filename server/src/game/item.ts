@@ -1,6 +1,6 @@
+import { MOBSkills } from './characters'
 import { Dice } from './combat'
 import { nextId } from './id'
-import { MOBSkills } from './players'
 
 export type MajorItemType =
   | 'melee'

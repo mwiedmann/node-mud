@@ -1,9 +1,14 @@
-import { nextId } from './id'
-import { MeleeSpell, MeleeWeapon, MeleeWeaponFactory, RangedSpell, RangedWeapon, RangedWeaponFactory } from './item'
-import { MOBItems, Monster, Player } from './mob'
+import { nextId } from '../id'
+import { MOBItems, Player } from '../mob'
+import { PlayerProfession, professionProgression, professionSettings } from './professions'
+import { PlayerRace, raceSettings } from './races'
+export * from './professions'
+export * from './races'
 
-export type PlayerRace = 'elf' | 'dwarf' | 'human' | 'gnome' | 'giant'
-export type PlayerProfession = 'warrior' | 'barbarian' | 'rogue' | 'wizard' | 'illusionist' | 'ranger' | 'cleric'
+export type LevelProgression = {
+  level: number
+  upgrades?: Partial<MOBSkills>
+}
 
 export type MOBSkills = {
   level: number
@@ -29,12 +34,12 @@ export type MOBSkills = {
   meleeDamageBonus: number
   rangedHitBonus: number
   rangedDamageBonus: number
+  spellHitBonus: number
+  spellDamageBonus: number
 
   physicalDefense: number
   magicDefense: number
 }
-
-type MOBSKillsAndItemsKeys = keyof MOBSkills & keyof MOBItems
 
 const basePlayerScores: MOBSkills = {
   level: 1,
@@ -60,71 +65,14 @@ const basePlayerScores: MOBSkills = {
   meleeDamageBonus: 0,
   rangedHitBonus: 0,
   rangedDamageBonus: 0,
+  spellHitBonus: 0,
+  spellDamageBonus: 0,
 
   physicalDefense: 10,
   magicDefense: 10
 }
 
-const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () => ({
-  elf: {
-    maxHealth: 16,
-    ticksPerMove: 2,
-    meleeHitBonus: 1,
-    rangedHitBonus: 2,
-    visibleRange: 9
-  },
-  dwarf: {
-    maxHealth: 24,
-    meleeHitBonus: 1,
-    meleeDamageBonus: 1,
-    visibleRange: 10
-  },
-  giant: {
-    maxHealth: 28,
-    ticksPerMove: 4,
-    meleeHitBonus: 2,
-    meleeDamageBonus: 2,
-    visibleRange: 7
-  },
-  gnome: {
-    maxHealth: 12,
-    meleeDamageBonus: -1,
-    visibleRange: 9
-  },
-  human: {
-    maxHealth: 20,
-    visibleRange: 8
-  }
-})
-
-const professionSettings: () => { [K in PlayerProfession]: Partial<MOBSkills> & Partial<MOBItems> } = () => ({
-  barbarian: {
-    meleeItem: MeleeWeaponFactory('axe', 'Fury')
-  },
-  warrior: {
-    meleeItem: MeleeWeaponFactory('broadsword', 'Vengence')
-  },
-  ranger: {
-    meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
-    rangedItem: RangedWeaponFactory('shortbow', 'Snipe')
-  },
-  rogue: {
-    meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
-    rangedItem: RangedWeaponFactory('shortbow', 'Stinger')
-  },
-  wizard: {
-    meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
-    rangedSpell: new RangedSpell('energy blast', {}, 'd10')
-  },
-  illusionist: {
-    meleeItem: MeleeWeaponFactory('staff', 'Willow'),
-    rangedSpell: new RangedSpell('energy blast', {}, 'd10')
-  },
-  cleric: {
-    meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
-    meleeSpell: new MeleeSpell('divine smite', {}, 'd10')
-  }
-})
+type MOBSKillsAndItemsKeys = keyof MOBSkills & keyof MOBItems
 
 export const playerFactory = <T>(
   race: PlayerRace,
@@ -135,8 +83,9 @@ export const playerFactory = <T>(
 ): Player<T> => {
   const raceStartingValues = raceSettings()[race]
   const professionStartingValues = professionSettings()[profession]
+  const progression = professionProgression[profession]
 
-  const player = new Player<T>(name, race, profession, team, nextId(), connection)
+  const player = new Player<T>(name, race, profession, progression, team, nextId(), connection)
 
   const startingSettings: MOBSkills = { ...basePlayerScores, ...raceStartingValues }
 
