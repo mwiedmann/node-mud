@@ -2,7 +2,7 @@ import { MOBType, xpForKill } from './monsters'
 import { Level } from './level'
 import { Dice, rollDice, RollResult } from './combat'
 import { Moved } from './map'
-import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon } from './item'
+import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon, Weapon } from './item'
 import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
 import { PlayerProfession } from './characters/professions'
 import { LevelProgression, MOBSkills, PlayerRace } from './characters'
@@ -22,13 +22,7 @@ export type MOBItems = {
 }
 
 export abstract class MOB implements MOBSkills, MOBItems {
-  constructor(
-    public type: MOBType,
-    public team: number,
-    public id: number,
-    public name?: string,
-    public progression?: LevelProgression[]
-  ) {}
+  constructor(public type: MOBType, public team: number, public id: number, public name?: string) {}
   x = 0
   y = 0
   destinationX = 0
@@ -36,19 +30,6 @@ export abstract class MOB implements MOBSkills, MOBItems {
   abstract moveSearchLimit: number
 
   level = 1
-  levelsGained: { level: number; xp: number; gained?: boolean }[] = [
-    { level: 1, xp: 0, gained: true },
-    { level: 2, xp: 5 },
-    { level: 3, xp: 10 },
-    { level: 4, xp: 15 },
-    { level: 5, xp: 20 },
-    { level: 6, xp: 25 },
-    { level: 7, xp: 30 },
-    { level: 8, xp: 35 },
-    { level: 9, xp: 40 },
-    { level: 10, xp: 45 }
-  ]
-
   dead = false
   rangedAttackOn = true
 
@@ -114,21 +95,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   xp = 0
 
-  gainXP(points: number): void {
-    // Only players can gain XP (for now)
-    if (this.type === 'player') {
-      this.xp += points
-
-      this.levelsGained.forEach((l) => {
-        if (!l.gained && this.xp >= l.xp) {
-          l.gained = true
-          this.addActivity({ level: 'great', message: `LEVEL UP!!!` })
-          this.maxHealth += 5
-          this.init()
-        }
-      })
-    }
-  }
+  gainXP(points: number): void {}
 
   removeItem(type: MajorItemType): Item | undefined {
     let item: Item | undefined
@@ -248,58 +215,64 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.attackActivityLog.push(activity)
   }
 
-  meleeAttackRoll(): RollResult {
-    const weapon = this.bestMeleeItem()
-    return rollDice(
-      weapon.getShortDescription(),
-      'd20',
-      1,
-      this.getBonusFromItems('meleeHitBonus') + this.meleeHitBonus
-    )
-  }
-
-  bestMeleeItem(): MeleeWeapon {
+  bestMeleeWeapon(): MeleeWeapon {
     return this.meleeItem || this.defaultMeleeItem
   }
-
-  meleeDamageRoll(): RollResult {
-    const weapon = this.bestMeleeItem()
-    return rollDice(
-      weapon.getShortDescription(),
-      weapon.damageDie,
-      1,
-      this.getBonusFromItems('meleeDamageBonus') + this.meleeDamageBonus
-    )
-  }
-
   bestRangedWeapon(): RangedWeapon | undefined {
     return this.rangedItem
   }
-
-  rangedAttackRoll(): RollResult {
-    const weapon = this.bestRangedWeapon()
-    if (weapon) {
-      return rollDice(
-        weapon.getShortDescription(),
-        'd20',
-        1,
-        this.getBonusFromItems('rangedHitBonus') + this.rangedHitBonus
-      )
-    }
-    throw new Error('rangedAttackRoll called without a ranged weapon')
+  bestMeleeSpellWeapon(): MeleeSpell | undefined {
+    return this.meleeSpell
+  }
+  bestRangedSpellWeapon(): RangedSpell | undefined {
+    return this.rangedSpell
   }
 
-  rangedDamageRoll(): RollResult {
-    const weapon = this.bestRangedWeapon()
+  attackRoll(bestWeapon: () => Weapon | undefined, hitBonus: keyof MOBSkills): RollResult {
+    const weapon = bestWeapon()
+    if (weapon) {
+      return rollDice(weapon.getShortDescription(), 'd20', 1, this.getBonusFromItems(hitBonus) + this[hitBonus])
+    }
+    throw new Error(`attackRoll called without a weapon. Hitbonus ${hitBonus}`)
+  }
+
+  meleeAttackRoll(): RollResult {
+    return this.attackRoll(this.bestMeleeWeapon.bind(this), 'meleeHitBonus')
+  }
+  rangedAttackRoll(): RollResult {
+    return this.attackRoll(this.bestRangedWeapon.bind(this), 'rangedHitBonus')
+  }
+  meleeSpellAttackRoll(): RollResult {
+    return this.attackRoll(this.bestMeleeSpellWeapon.bind(this), 'spellHitBonus')
+  }
+  rangedSpellAttackRoll(): RollResult {
+    return this.attackRoll(this.bestRangedSpellWeapon.bind(this), 'spellHitBonus')
+  }
+
+  damageRoll(bestWeapon: () => Weapon | undefined, damageBonus: keyof MOBSkills): RollResult {
+    const weapon = bestWeapon()
     if (weapon) {
       return rollDice(
         weapon.getShortDescription(),
         weapon.damageDie,
         1,
-        this.getBonusFromItems('rangedDamageBonus') + this.rangedDamageBonus
+        this.getBonusFromItems(damageBonus) + this[damageBonus]
       )
     }
-    throw new Error('rangedDamageRoll called without a ranged weapon')
+    throw new Error(`damageRoll called without a weapon. Hitbonus ${damageBonus}`)
+  }
+
+  meleeDamageRoll(): RollResult {
+    return this.damageRoll(this.bestMeleeWeapon.bind(this), 'meleeDamageBonus')
+  }
+  rangedDamageRoll(): RollResult {
+    return this.damageRoll(this.bestRangedWeapon.bind(this), 'rangedDamageBonus')
+  }
+  meleeSpellDamageRoll(): RollResult {
+    return this.damageRoll(this.bestMeleeSpellWeapon.bind(this), 'spellDamageBonus')
+  }
+  rangedSpellDamageRoll(): RollResult {
+    return this.damageRoll(this.bestRangedSpellWeapon.bind(this), 'spellDamageBonus')
   }
 
   heal(amount: number): void {
@@ -433,15 +406,16 @@ export abstract class MOB implements MOBSkills, MOBItems {
   takeAction(tick: number, level: Level<unknown>): void {
     // Check if a ranged attack is possible
     // TODO: REFACTOR - The ranged and melee attacks are the same with a few params/functions
+    const selectedRangedItem = this.bestRangedWeapon()
     if (
-      this.rangedItem &&
+      selectedRangedItem &&
       tick - this.lastRangedActionTick >= this.ticksPerRangedAction &&
       this.actionPoints >= this.actionPointsCostPerRangedAction
     ) {
       const mobToAttack =
         this.type === 'player'
-          ? level.monsterInRange(this.x, this.y, this.rangedItem.range, 2, true)
-          : level.playerInRange(this.x, this.y, this.rangedItem.range, 2, true)
+          ? level.monsterInRange(this.x, this.y, selectedRangedItem.range, 2, true)
+          : level.playerInRange(this.x, this.y, selectedRangedItem.range, 2, true)
 
       if (mobToAttack) {
         const attackLogEntry: MOBAttackActivityLog = {
@@ -467,7 +441,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
             level.removeMonster(mobToAttack.x, mobToAttack.y)
           }
         } else {
-          mobToAttack.addActivity({ level: 'good', message: 'Dodged ranged attack' })
+          mobToAttack.addActivity({ level: 'good', message: 'Dodged attack' })
           console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
         }
 
@@ -479,8 +453,57 @@ export abstract class MOB implements MOBSkills, MOBItems {
       }
     }
 
+    // Check ranged spells
+    const selectedRangedSpellItem = this.bestRangedSpellWeapon()
+    if (
+      selectedRangedSpellItem &&
+      tick - this.lastSpellActionTick >= this.ticksPerSpellAction &&
+      this.actionPoints >= this.actionPointsCostPerSpellAction
+    ) {
+      const mobToAttack =
+        this.type === 'player'
+          ? level.monsterInRange(this.x, this.y, selectedRangedSpellItem.range, 2, true)
+          : level.playerInRange(this.x, this.y, selectedRangedSpellItem.range, 2, true)
+
+      if (mobToAttack) {
+        const attackLogEntry: MOBAttackActivityLog = {
+          type: 'spell',
+          fromX: this.x,
+          fromY: this.y,
+          toX: mobToAttack.x,
+          toY: mobToAttack.y,
+          hit: false
+        }
+
+        const attackResult = this.rangedSpellAttackRoll()
+
+        if (attackResult.total >= mobToAttack.magicDefense) {
+          const dmgRoll = this.rangedSpellDamageRoll()
+          console.log(this.name, 'spell hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
+
+          mobToAttack.takeDamage(dmgRoll)
+
+          attackLogEntry.hit = true
+          if (mobToAttack.dead) {
+            this.gainXP(xpForKill(mobToAttack))
+            level.removeMonster(mobToAttack.x, mobToAttack.y)
+          }
+        } else {
+          mobToAttack.addActivity({ level: 'good', message: 'Dodged spell' })
+          console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
+        }
+
+        this.addAttackActivity(attackLogEntry)
+        this.actionPoints -= this.actionPointsCostPerSpellAction
+        this.lastSpellActionTick = tick
+        this.tickPausedUntil = tick + this.ticksPausedAfterSpell
+        return
+      }
+    }
+
     // Check melee attack
     if (
+      this.bestMeleeWeapon() &&
       tick - this.lastMeleeActionTick >= this.ticksPerMeleeAction &&
       this.actionPoints >= this.actionPointsCostPerMeleeAction
     ) {
@@ -508,6 +531,40 @@ export abstract class MOB implements MOBSkills, MOBItems {
         this.actionPoints -= this.actionPointsCostPerMeleeAction
         this.lastMeleeActionTick = tick
         this.tickPausedUntil = tick + this.ticksPausedAfterMelee
+        return
+      }
+    }
+
+    // Check melee spell attack
+    if (
+      this.bestMeleeSpellWeapon() &&
+      tick - this.lastSpellActionTick >= this.ticksPerSpellAction &&
+      this.actionPoints >= this.actionPointsCostPerSpellAction
+    ) {
+      const mobToAttack =
+        this.type === 'player' ? level.monsterInRange(this.x, this.y, 1) : level.playerInRange(this.x, this.y, 1)
+
+      if (mobToAttack) {
+        const attackResult = this.meleeSpellAttackRoll()
+
+        if (attackResult.total >= mobToAttack.magicDefense) {
+          const dmgRoll = this.meleeSpellDamageRoll()
+          console.log(this.name, 'spell hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
+
+          mobToAttack.takeDamage(dmgRoll)
+
+          if (mobToAttack.dead) {
+            this.gainXP(xpForKill(mobToAttack))
+            level.removeMonster(mobToAttack.x, mobToAttack.y)
+          }
+        } else {
+          mobToAttack.addActivity({ level: 'good', message: 'Dodged spell' })
+          console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
+        }
+
+        this.actionPoints -= this.actionPointsCostPerSpellAction
+        this.lastSpellActionTick = tick
+        this.tickPausedUntil = tick + this.ticksPausedAfterSpell
         return
       }
     }
@@ -622,17 +679,68 @@ export class Player<T> extends MOB {
     name: string,
     public race: PlayerRace,
     public profession: PlayerProfession,
-    progression: LevelProgression[],
+    public professionProgression: LevelProgression[],
+    public raceProgression: LevelProgression[],
     team: number,
     id: number,
     public connection: T
   ) {
-    super('player', team, id, name, progression)
+    super('player', team, id, name)
     this.huntRange = 1
   }
 
   moveSearchLimit = 20
   lastTickReceivedState = 0
+
+  levelsGained: { level: number; xp: number; gained?: boolean }[] = [
+    { level: 1, xp: 0, gained: true },
+    { level: 2, xp: 5 },
+    { level: 3, xp: 10 },
+    { level: 4, xp: 15 },
+    { level: 5, xp: 20 },
+    { level: 6, xp: 25 },
+    { level: 7, xp: 30 },
+    { level: 8, xp: 35 },
+    { level: 9, xp: 40 },
+    { level: 10, xp: 45 }
+  ]
+
+  gainXP(points: number): void {
+    // Only players can gain XP (for now)
+    this.xp += points
+
+    this.levelsGained.forEach((l) => {
+      if (!l.gained && this.xp >= l.xp) {
+        l.gained = true
+        this.addActivity({ level: 'great', message: `LEVEL UP!!!` })
+
+        // Get and apply the upgrades for this level for the character's profession
+        console.log('Profession Upgrades')
+        const professionUpgrade = this.professionProgression.find((p) => p.level === l.level)
+        this.applyLevelProgression(professionUpgrade?.upgrades)
+
+        // Get and apply the upgrades for this level for the character's race
+        console.log('Race Upgrades')
+        const raceUpgrade = this.raceProgression.find((p) => p.level === l.level)
+        this.applyLevelProgression(raceUpgrade?.upgrades)
+
+        this.init()
+      }
+    })
+  }
+
+  applyLevelProgression(upgrades?: Partial<MOBSkills>): void {
+    // If there are upgrades for the level, apply each one
+    // Each upgrade is a number added to an existing MOBSkill
+    if (upgrades) {
+      Object.entries(upgrades).forEach(([key, value]) => {
+        console.log('Upgrading', key, value)
+        console.log('Before', this[key as keyof MOBSkills])
+        this[key as keyof MOBSkills] += value as number
+        console.log('After', this[key as keyof MOBSkills])
+      })
+    }
+  }
 
   moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
     const notes: MOBUpdateNotes = { notes: [], moved: undefined }

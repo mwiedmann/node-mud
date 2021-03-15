@@ -30,11 +30,11 @@ export const professionSettings: () => {
   },
   wizard: {
     meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
-    rangedSpell: new RangedSpell('energy blast', {}, 'd10')
+    rangedSpell: new RangedSpell('energy blast', {}, 6, 'd10')
   },
   illusionist: {
     meleeItem: MeleeWeaponFactory('staff', 'Willow'),
-    rangedSpell: new RangedSpell('energy blast', {}, 'd10')
+    rangedSpell: new RangedSpell('energy blast', {}, 6, 'd10')
   },
   cleric: {
     meleeItem: MeleeWeaponFactory('mace', 'Atonement'),

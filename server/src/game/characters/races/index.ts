@@ -1,4 +1,9 @@
-import { MOBSkills } from '..'
+import { LevelProgression, MOBSkills } from '..'
+import { dwarfProgression } from './dwarf'
+import { elfProgression } from './elf'
+import { giantProgression } from './giant'
+import { gnomeProgression } from './gnome'
+import { humanProgression } from './human'
 
 export type PlayerRace = 'elf' | 'dwarf' | 'human' | 'gnome' | 'giant'
 
@@ -47,3 +52,13 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     visibleRange: 8
   }
 })
+
+export const raceProgression: {
+  [K in PlayerRace]: LevelProgression[]
+} = {
+  elf: elfProgression,
+  dwarf: dwarfProgression,
+  giant: giantProgression,
+  gnome: gnomeProgression,
+  human: humanProgression
+}

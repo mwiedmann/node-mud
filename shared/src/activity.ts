@@ -5,7 +5,7 @@ export type MOBActivityLog = {
   message: string
 }
 
-export type MOBAttackActivityLogType = 'ranged'
+export type MOBAttackActivityLogType = 'ranged' | 'spell'
 export type MOBAttackActivityLog = {
   type: MOBAttackActivityLogType
   fromX: number

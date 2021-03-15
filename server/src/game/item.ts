@@ -77,6 +77,12 @@ export class Item {
   }
 }
 
+export class Weapon extends Item {
+  constructor(type: MajorItemType, subType: string, name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
+    super(type, subType, name, bonuses)
+  }
+}
+
 export type MeleeType =
   | 'natural'
   | 'dagger'
@@ -89,9 +95,9 @@ export type MeleeType =
   | 'battleaxe'
   | 'mace'
   | 'spear'
-export class MeleeWeapon extends Item {
-  constructor(subType: MeleeType, name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
-    super('melee', subType, name, bonuses)
+export class MeleeWeapon extends Weapon {
+  constructor(subType: MeleeType, name: string, bonuses: Partial<MOBSkills>, damageDie: Dice) {
+    super('melee', subType, name, bonuses, damageDie)
   }
   getSubTypeDescription(): string {
     return `(${this.subType} ${this.damageDie})`
@@ -116,15 +122,9 @@ export const MeleeWeaponFactory = (type: MeleeType, name = ''): MeleeWeapon => {
 }
 
 export type RangedType = 'natural' | 'blowgun' | 'shortbow' | 'light-crossbow' | 'longbow' | 'heavy-crossbow'
-export class RangedWeapon extends Item {
-  constructor(
-    subType: RangedType,
-    name: string,
-    bonuses: Partial<MOBSkills>,
-    public range: number,
-    public damageDie: Dice
-  ) {
-    super('ranged', subType, name, bonuses)
+export class RangedWeapon extends Weapon {
+  constructor(subType: RangedType, name: string, bonuses: Partial<MOBSkills>, public range: number, damageDie: Dice) {
+    super('ranged', subType, name, bonuses, damageDie)
   }
   getSubTypeDescription(): string {
     return `(${this.subType} ${this.damageDie})`
@@ -145,14 +145,14 @@ export const RangedWeaponFactory = (type: RangedType, name = ''): RangedWeapon =
   return new RangedWeapon(type, name, {}, selectedWeapon[0], selectedWeapon[1])
 }
 
-export class MeleeSpell extends Item {
-  constructor(name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
-    super('melee-spell', '', name, bonuses)
+export class MeleeSpell extends Weapon {
+  constructor(name: string, bonuses: Partial<MOBSkills>, damageDie: Dice) {
+    super('melee-spell', '', name, bonuses, damageDie)
   }
 }
 
-export class RangedSpell extends Item {
-  constructor(name: string, bonuses: Partial<MOBSkills>, public damageDie: Dice) {
-    super('ranged-spell', '', name, bonuses)
+export class RangedSpell extends Weapon {
+  constructor(name: string, bonuses: Partial<MOBSkills>, public range: number, damageDie: Dice) {
+    super('ranged-spell', '', name, bonuses, damageDie)
   }
 }

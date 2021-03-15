@@ -1,7 +1,7 @@
 import { nextId } from '../id'
 import { MOBItems, Player } from '../mob'
 import { PlayerProfession, professionProgression, professionSettings } from './professions'
-import { PlayerRace, raceSettings } from './races'
+import { PlayerRace, raceProgression, raceSettings } from './races'
 export * from './professions'
 export * from './races'
 
@@ -83,9 +83,10 @@ export const playerFactory = <T>(
 ): Player<T> => {
   const raceStartingValues = raceSettings()[race]
   const professionStartingValues = professionSettings()[profession]
-  const progression = professionProgression[profession]
+  const progressionUpgrades = professionProgression[profession]
+  const raceUpgrades = raceProgression[race]
 
-  const player = new Player<T>(name, race, profession, progression, team, nextId(), connection)
+  const player = new Player<T>(name, race, profession, progressionUpgrades, raceUpgrades, team, nextId(), connection)
 
   const startingSettings: MOBSkills = { ...basePlayerScores, ...raceStartingValues }
 
