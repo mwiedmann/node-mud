@@ -38,6 +38,10 @@ export const startServer = (): void => {
               getItem(ws, obj)
               break
 
+            case 'setSpecialAbilityLocation':
+              setSpecialAbilityLocation(ws, obj)
+              break
+
             default:
               console.error('Invalid message type')
           }
@@ -137,13 +141,24 @@ type MessageSetDestination = {
   y: number
 }
 
+type MessageSetSpecialAbilityLocation = {
+  type: 'setSpecialAbilityLocation'
+  x: number
+  y: number
+}
+
 type MessageGetItem = {
   type: 'getItem'
   x: number
   y: number
 }
 
-type MessageBase = MessageLogin | MessageLogout | MessageSetDestination | MessageGetItem
+type MessageBase =
+  | MessageLogin
+  | MessageLogout
+  | MessageSetDestination
+  | MessageGetItem
+  | MessageSetSpecialAbilityLocation
 
 type PlayerConnection = {
   id: number
@@ -176,6 +191,10 @@ const logoutPlayer = (ws: WebSocket) => {
 
 const setDestination = (ws: WebSocket, { x, y }: MessageSetDestination) => {
   game.setDestination(ws, x, y)
+}
+
+const setSpecialAbilityLocation = (ws: WebSocket, { x, y }: MessageSetSpecialAbilityLocation) => {
+  game.setSpecialAbilityLocation(ws, x, y)
 }
 
 const getItem = (ws: WebSocket, { x, y }: MessageGetItem) => {

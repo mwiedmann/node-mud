@@ -12,6 +12,7 @@ export let controls: {
   zoomIn: Phaser.Input.Keyboard.Key
   zoomOut: Phaser.Input.Keyboard.Key
   getItem: Phaser.Input.Keyboard.Key
+  special: Phaser.Input.Keyboard.Key
 }
 
 export const gameState: {
@@ -131,7 +132,8 @@ function sceneCreate(this: Phaser.Scene) {
     quit: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS),
     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS),
-    getItem: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G)
+    getItem: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G),
+    special: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
   }
 }
 

@@ -6,6 +6,7 @@ import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon
 import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
 import { PlayerProfession } from './characters/professions'
 import { LevelProgression, MOBSkills, PlayerRace } from './characters'
+import { inRange } from './util'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
@@ -27,6 +28,9 @@ export abstract class MOB implements MOBSkills, MOBItems {
   y = 0
   destinationX = 0
   destinationY = 0
+  specialAbilityX? = 0
+  specialAbilityY? = 0
+
   abstract moveSearchLimit: number
 
   level = 1
@@ -51,6 +55,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
   ticksPerMeleeAction = 7
   ticksPerRangedAction = 20
   ticksPerSpellAction = 20
+  ticksPerSpecialAbility = 30
 
   ticksPausedAfterMelee = 5
   ticksPausedAfterRanged = 10
@@ -60,6 +65,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
   lastMeleeActionTick = 0
   lastRangedActionTick = 0
   lastSpellActionTick = 0
+  lastSpecialAbilityTick = 0
 
   lastState = ''
   tickPausedUntil = 0
@@ -325,7 +331,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
       return notes
     }
 
-    this.takeAction(tick, level)
+    this.takeAction(tick, level, notes)
     return this.moveTowardsDestination(tick, level, notes)
   }
 
@@ -403,7 +409,12 @@ export abstract class MOB implements MOBSkills, MOBItems {
     return notes
   }
 
-  takeAction(tick: number, level: Level<unknown>): void {
+  abstract specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void
+
+  takeAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+    // Check Special Abilities
+    this.specialAbilityAction(tick, level, notes)
+
     // Check if a ranged attack is possible
     // TODO: REFACTOR - The ranged and melee attacks are the same with a few params/functions
     const selectedRangedItem = this.bestRangedWeapon()
@@ -577,6 +588,11 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.moveGraph = []
   }
 
+  setSpecialAbilityLocation(x: number, y: number): void {
+    this.specialAbilityX = x
+    this.specialAbilityY = y
+  }
+
   getState(): string | undefined {
     const state = JSON.stringify({
       type: this.type === 'player' ? 'player' : 'monster',
@@ -618,6 +634,10 @@ export class Monster extends MOB {
   moveRange = 5
   moveSearchLimit = 12
   playerRangeToActivate = 30
+
+  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+    // No specials for Monsters yet
+  }
 
   update(tick: number, level: Level<unknown>): MOBUpdateNotes {
     if (this.dead) {
@@ -739,6 +759,29 @@ export class Player<T> extends MOB {
         this[key as keyof MOBSkills] += value as number
         console.log('After', this[key as keyof MOBSkills])
       })
+    }
+  }
+
+  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+    if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+      // Check the wizard's teleport
+      if (
+        // this.profession === 'wizard' &&
+        this.specialAbilityX &&
+        this.specialAbilityY &&
+        !level.locationIsBlocked(this.specialAbilityX, this.specialAbilityY) &&
+        inRange(this.visibleRange, this.x, this.y, this.specialAbilityX, this.specialAbilityY)
+      ) {
+        console.log('Teleporting')
+        // Simply teleport the wizard there.
+        this.x = this.specialAbilityX
+        this.y = this.specialAbilityY
+        this.setDestination(this.x, this.y)
+        this.lastSpecialAbilityTick = tick
+        this.specialAbilityX = undefined
+        this.specialAbilityY = undefined
+        notes.notes.push('Wizard teleporting')
+      }
     }
   }
 

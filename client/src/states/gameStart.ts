@@ -67,6 +67,13 @@ const init = (scene: Phaser.Scene): void => {
   controls.getItem.on('up', () => {
     connectionManager.getItem(gameState.player.x, gameState.player.y)
   })
+
+  controls.special.on('up', () => {
+    connectionManager.setSpecialAbilityLocation(
+      gameSettings.cellFromScreenPos(scene.input.activePointer.worldX),
+      gameSettings.cellFromScreenPos(scene.input.activePointer.worldY)
+    )
+  })
 }
 
 // const isTileVisible = (startX: number, startY: number, endX: number, endY: number, )

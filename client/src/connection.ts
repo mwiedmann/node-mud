@@ -134,6 +134,10 @@ class ConnectionManager {
     this.connection.send(JSON.stringify({ type: 'setDestination', x, y }))
   }
 
+  setSpecialAbilityLocation(x: number, y: number) {
+    this.connection.send(JSON.stringify({ type: 'setSpecialAbilityLocation', x, y }))
+  }
+
   getItem(x: number, y: number) {
     this.connection.send(JSON.stringify({ type: 'getItem', x, y }))
   }
