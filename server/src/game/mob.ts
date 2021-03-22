@@ -7,6 +7,7 @@ import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
 import { PlayerProfession } from './characters/professions'
 import { LevelProgression, MOBSkills, PlayerRace } from './characters'
 import { inRange } from './util'
+import { runInThisContext } from 'node:vm'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
@@ -30,6 +31,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
   destinationY = 0
   specialAbilityX? = 0
   specialAbilityY? = 0
+  specialAbilityActivate = false
+  invisible = false
 
   abstract moveSearchLimit: number
 
@@ -83,6 +86,9 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   physicalDefense = 10
   magicDefense = 10
+
+  hitBonusWhenInvisible = 0
+  damageBonusWhenInvisible = 0
 
   activityLog: MOBActivityLog[] = []
   attackActivityLog: MOBAttackActivityLog[] = []
@@ -234,10 +240,24 @@ export abstract class MOB implements MOBSkills, MOBItems {
     return this.rangedSpell
   }
 
+  invisibleHitBonus(): number {
+    return this.invisible ? this.hitBonusWhenInvisible : 0
+  }
+
+  invisibleDamageBonus(): number {
+    return this.invisible ? this.damageBonusWhenInvisible : 0
+  }
+
   attackRoll(bestWeapon: () => Weapon | undefined, hitBonus: keyof MOBSkills): RollResult {
     const weapon = bestWeapon()
     if (weapon) {
-      return rollDice(weapon.getShortDescription(), 'd20', 1, this.getBonusFromItems(hitBonus) + this[hitBonus])
+      return rollDice(
+        weapon.getShortDescription(),
+        'd20',
+        1,
+        this.getBonusFromItems(hitBonus) + this[hitBonus],
+        this.invisibleHitBonus()
+      )
     }
     throw new Error(`attackRoll called without a weapon. Hitbonus ${hitBonus}`)
   }
@@ -262,7 +282,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
         weapon.getShortDescription(),
         weapon.damageDie,
         1,
-        this.getBonusFromItems(damageBonus) + this[damageBonus]
+        this.getBonusFromItems(damageBonus) + this[damageBonus],
+        this.invisibleDamageBonus()
       )
     }
     throw new Error(`damageRoll called without a weapon. Hitbonus ${damageBonus}`)
@@ -304,6 +325,9 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.health -= roll.total
 
     this.addActivity({ level: 'bad', message: `${roll.total} damage from ${roll.description}` })
+    if (roll.stealthBonus) {
+      this.addActivity({ level: 'bad', message: `${roll.stealthBonus} sneak attack damage` })
+    }
 
     if (this.health <= 0) {
       this.addActivity({ level: 'terrible', message: 'DEAD' })
@@ -335,7 +359,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     return this.moveTowardsDestination(tick, level, notes)
   }
 
-  checkDestinationBounds(level: Level<unknown>): void {
+  moveDestinationInBounds(level: Level<unknown>): void {
     // Make sure the requested cell is in bounds
     if (this.destinationX >= level.wallsAndMobs[0].length) {
       this.destinationX = level.wallsAndMobs[0].length - 1
@@ -355,7 +379,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     const startX = this.x
     const startY = this.y
 
-    this.checkDestinationBounds(level)
+    this.moveDestinationInBounds(level)
 
     if (
       (this.destinationX !== this.x || this.destinationY !== this.y) &&
@@ -460,6 +484,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
         this.actionPoints -= this.actionPointsCostPerRangedAction
         this.lastRangedActionTick = tick
         this.tickPausedUntil = tick + this.ticksPausedAfterRanged
+        this.invisible = false
         return
       }
     }
@@ -508,6 +533,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
         this.actionPoints -= this.actionPointsCostPerSpellAction
         this.lastSpellActionTick = tick
         this.tickPausedUntil = tick + this.ticksPausedAfterSpell
+        this.invisible = false
         return
       }
     }
@@ -542,6 +568,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
         this.actionPoints -= this.actionPointsCostPerMeleeAction
         this.lastMeleeActionTick = tick
         this.tickPausedUntil = tick + this.ticksPausedAfterMelee
+        this.invisible = false
         return
       }
     }
@@ -576,6 +603,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
         this.actionPoints -= this.actionPointsCostPerSpellAction
         this.lastSpellActionTick = tick
         this.tickPausedUntil = tick + this.ticksPausedAfterSpell
+        this.invisible = false
         return
       }
     }
@@ -588,9 +616,10 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.moveGraph = []
   }
 
-  setSpecialAbilityLocation(x: number, y: number): void {
+  setSpecialAbility(x?: number, y?: number): void {
     this.specialAbilityX = x
     this.specialAbilityY = y
+    this.specialAbilityActivate = true
   }
 
   getState(): string | undefined {
@@ -608,7 +637,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
         dead: this.dead,
         activityLog: this.activityLog,
         attackActivityLog: this.attackActivityLog,
-        visibleRange: this.visibleRange
+        visibleRange: this.visibleRange,
+        invisible: this.invisible
       }
     })
 
@@ -765,22 +795,54 @@ export class Player<T> extends MOB {
   specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
     if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
       // Check the wizard's teleport
-      if (
-        // this.profession === 'wizard' &&
-        this.specialAbilityX &&
-        this.specialAbilityY &&
-        !level.locationIsBlocked(this.specialAbilityX, this.specialAbilityY) &&
-        inRange(this.visibleRange, this.x, this.y, this.specialAbilityX, this.specialAbilityY)
-      ) {
-        console.log('Teleporting')
-        // Simply teleport the wizard there.
-        this.x = this.specialAbilityX
-        this.y = this.specialAbilityY
-        this.setDestination(this.x, this.y)
+      if (this.profession === 'wizard' && this.specialAbilityX && this.specialAbilityY) {
+        if (
+          !level.locationIsBlocked(this.specialAbilityX, this.specialAbilityY) &&
+          inRange(this.visibleRange, this.x, this.y, this.specialAbilityX, this.specialAbilityY)
+        ) {
+          notes.notes.push('Teleporting')
+          // Simply teleport the wizard there.
+          this.x = this.specialAbilityX
+          this.y = this.specialAbilityY
+          this.setDestination(this.x, this.y)
+          this.lastSpecialAbilityTick = tick
+          this.specialAbilityX = undefined
+          this.specialAbilityY = undefined
+          this.specialAbilityActivate = false
+          notes.notes.push('Wizard teleporting')
+        } else {
+          notes.notes.push('Teleporting was blocked or out of range')
+          this.specialAbilityX = undefined
+          this.specialAbilityY = undefined
+        }
+      }
+      // The illusionist can turn invisible
+      else if (this.profession === 'illusionist' && this.specialAbilityActivate) {
+        this.invisible = true
+        this.specialAbilityActivate = false
         this.lastSpecialAbilityTick = tick
-        this.specialAbilityX = undefined
-        this.specialAbilityY = undefined
-        notes.notes.push('Wizard teleporting')
+      }
+    }
+
+    // The rogue can camouflage into nearby walls.
+    // The more walls, the better
+    if (this.profession === 'rogue') {
+      // If the rogue is not currently camouflaged, see if he can hide.
+      // Ability must be off coooldown, rogue must be near a wall, and not in sight of any monsters
+      if (!this.invisible && tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+        const wallCount = level.surroundingWallsCount(this.x, this.y)
+        if (wallCount > 0 && !level.playerIsSpotted(this)) {
+          this.invisible = true
+          this.lastSpecialAbilityTick = tick
+        }
+      } // If currently camouflaged, check if still near a wall
+      else if (this.invisible) {
+        this.lastSpecialAbilityTick = tick
+        const wallCount = level.surroundingWallsCount(this.x, this.y)
+        if (wallCount === 0) {
+          // Not near any walls, camouflage is removed
+          this.invisible = false
+        }
       }
     }
   }

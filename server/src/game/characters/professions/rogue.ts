@@ -6,7 +6,8 @@ export const rogueProgression: LevelProgression[] = [
     upgrades: {
       rangedHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -14,7 +15,8 @@ export const rogueProgression: LevelProgression[] = [
     upgrades: {
       rangedDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -23,7 +25,8 @@ export const rogueProgression: LevelProgression[] = [
       meleeHitBonus: 1,
       meleeDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -31,7 +34,8 @@ export const rogueProgression: LevelProgression[] = [
     upgrades: {
       rangedHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -39,7 +43,8 @@ export const rogueProgression: LevelProgression[] = [
     upgrades: {
       rangedDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -48,7 +53,8 @@ export const rogueProgression: LevelProgression[] = [
       meleeHitBonus: 1,
       meleeDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -56,7 +62,8 @@ export const rogueProgression: LevelProgression[] = [
     upgrades: {
       rangedHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -64,7 +71,8 @@ export const rogueProgression: LevelProgression[] = [
     upgrades: {
       rangedDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -75,7 +83,8 @@ export const rogueProgression: LevelProgression[] = [
       rangedHitBonus: 1,
       rangedDamageBonus: 1,
       maxHealth: 2,
-      maxAtionPoints: 8
+      maxAtionPoints: 8,
+      damageBonusWhenInvisible: 1
     }
   }
 ]

@@ -34,6 +34,7 @@ export const gameState: {
     hpMax: 0,
     ap: 0,
     apMax: 0,
+    invisible: false,
     lastX: -1,
     lastY: -1,
     activityLog: [],

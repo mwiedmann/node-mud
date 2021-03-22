@@ -6,7 +6,8 @@ export const illusionistProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      hitBonusWhenInvisible: 1
     }
   },
   {
@@ -14,7 +15,8 @@ export const illusionistProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellDamageBonus: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -22,7 +24,8 @@ export const illusionistProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      hitBonusWhenInvisible: 1
     }
   },
   {
@@ -30,7 +33,8 @@ export const illusionistProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellDamageBonus: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -38,7 +42,8 @@ export const illusionistProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      hitBonusWhenInvisible: 1
     }
   },
   {
@@ -46,7 +51,8 @@ export const illusionistProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellDamageBonus: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -54,7 +60,8 @@ export const illusionistProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      hitBonusWhenInvisible: 1
     }
   },
   {
@@ -62,7 +69,8 @@ export const illusionistProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellDamageBonus: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      damageBonusWhenInvisible: 1
     }
   },
   {
@@ -70,7 +78,8 @@ export const illusionistProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      hitBonusWhenInvisible: 1
     }
   },
   {
@@ -79,7 +88,9 @@ export const illusionistProgression: LevelProgression[] = [
       maxHealth: 2,
       spellHitBonus: 1,
       spellDamageBonus: 1,
-      maxAtionPoints: 8
+      maxAtionPoints: 8,
+      hitBonusWhenInvisible: 1,
+      damageBonusWhenInvisible: 1
     }
   }
 ]

@@ -5,6 +5,7 @@ export type RollResult = {
   total: number
   rollTotal: number
   bonus: number
+  stealthBonus: number
   rolls: { type: Dice; roll: number }[]
 }
 
@@ -19,13 +20,20 @@ const diceRange = (type: Dice) =>
     d20: { min: 1, max: 20 }
   }[type])
 
-export const rollDice = (description: string, type: Dice, count: number, bonus: number): RollResult => {
+export const rollDice = (
+  description: string,
+  type: Dice,
+  count: number,
+  bonus: number,
+  stealthBonus: number
+): RollResult => {
   const range = diceRange(type)
   const result: RollResult = {
     description,
     total: 0,
     rollTotal: 0,
     bonus,
+    stealthBonus,
     rolls: []
   }
 
@@ -34,7 +42,7 @@ export const rollDice = (description: string, type: Dice, count: number, bonus: 
   }
 
   const rollTotal = result.rolls.reduce((total, next) => total + next.roll, 0)
-  result.total = rollTotal + bonus
+  result.total = rollTotal + bonus + stealthBonus
   result.rollTotal = rollTotal
 
   return result

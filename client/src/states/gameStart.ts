@@ -109,6 +109,9 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
     setMapTilesSight(mapLayer, gameState.player.visibleRange, gameState.player.x, gameState.player.y)
   }
 
+  // Dim invisible players
+  guy.setAlpha(gameState.player.invisible ? 0.3 : 1)
+
   if (statusbars) {
     statusbars.set(
       guy.x,

@@ -86,7 +86,7 @@ export class Game<T> {
 
   login(name: string, connection: T): Player<T> {
     const level = this.getFirstLevel()
-    const player = playerFactory('human', 'ranger', name, 1, connection)
+    const player = playerFactory('human', 'rogue', name, 1, connection)
 
     const startingLocation = level.findOpenLocation()
     player.x = startingLocation.x
@@ -134,7 +134,7 @@ export class Game<T> {
       return
     }
 
-    player.setSpecialAbilityLocation(x, y)
+    player.setSpecialAbility(x, y)
   }
 
   getItem(connection: T, x: number, y: number): void {

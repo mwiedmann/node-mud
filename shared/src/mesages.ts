@@ -20,6 +20,7 @@ export type PlayerMessage = {
     hpMax: number
     ap: number
     apMax: number
+    invisible: boolean
     activityLog: MOBActivityLog[]
     attackActivityLog: MOBAttackActivityLog[]
     visibleRange: number
@@ -38,6 +39,7 @@ export type MonsterMessage = {
     hpMax: number
     ap: number
     apMax: number
+    invisible: boolean
     activityLog: MOBActivityLog[]
     attackActivityLog: MOBAttackActivityLog[]
   }

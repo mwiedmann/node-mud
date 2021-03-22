@@ -72,7 +72,10 @@ const baseMonsterScores: MOBSkills = {
   spellDamageBonus: 0,
 
   physicalDefense: 10,
-  magicDefense: 10
+  magicDefense: 10,
+
+  hitBonusWhenInvisible: 0,
+  damageBonusWhenInvisible: 0
 }
 
 /*

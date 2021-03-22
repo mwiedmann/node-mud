@@ -26,7 +26,9 @@ export const professionSettings: () => {
   },
   rogue: {
     meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
-    rangedItem: RangedWeaponFactory('shortbow', 'Stinger')
+    rangedItem: RangedWeaponFactory('shortbow', 'Stinger'),
+    hitBonusWhenInvisible: 4,
+    damageBonusWhenInvisible: 1
   },
   wizard: {
     meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
@@ -34,7 +36,9 @@ export const professionSettings: () => {
   },
   illusionist: {
     meleeItem: MeleeWeaponFactory('staff', 'Willow'),
-    rangedSpell: new RangedSpell('energy blast', {}, 6, 'd10')
+    rangedSpell: new RangedSpell('energy blast', {}, 6, 'd10'),
+    hitBonusWhenInvisible: 5,
+    damageBonusWhenInvisible: 1
   },
   cleric: {
     meleeItem: MeleeWeaponFactory('mace', 'Atonement'),

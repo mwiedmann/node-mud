@@ -40,6 +40,7 @@ class ConnectionManager {
           gameState.player.ap = message.data.ap
           gameState.player.hpMax = message.data.hpMax
           gameState.player.apMax = message.data.apMax
+          gameState.player.invisible = message.data.invisible
           gameState.player.activityLog = message.data.activityLog
           gameState.player.attackActivityLog = message.data.attackActivityLog
           gameState.player.visibleRange = message.data.visibleRange
@@ -74,6 +75,7 @@ class ConnectionManager {
             monster.hp = message.data.hp
             monster.ap = message.data.ap
             monster.dead = message.data.dead
+            monster.invisible = message.data.invisible
             monster.activityLog = message.data.activityLog
             monster.attackActivityLog = message.data.attackActivityLog
           }

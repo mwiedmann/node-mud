@@ -9,6 +9,7 @@ export type Player = {
   hpMax: number
   ap: number
   apMax: number
+  invisible: boolean
   lastX: number
   lastY: number
   visibleRange: number
@@ -32,6 +33,7 @@ export type Monster = Ghost & {
   hpMax: number
   ap: number
   apMax: number
+  invisible: boolean
   lastX: number
   lastY: number
   dead: boolean

@@ -216,23 +216,63 @@ export class Level<T> {
     const iterator = mobMap[Symbol.iterator]()
 
     for (const m of iterator) {
+      const mob = m[1]
       if (
-        !m[1].dead && // Not dead...duh
-        Math.abs(m[1].x - x) <= range && // Check ranges
-        Math.abs(m[1].y - y) <= range &&
+        !mob.dead && // Not dead...duh
+        !mob.invisible && // Not in range if you can't see it
+        Math.abs(mob.x - x) <= range && // Check ranges
+        Math.abs(mob.y - y) <= range &&
         // Min range use to limit how close (e.g. ranged attacks can't be used point blank)
-        (!minRange || Math.abs(m[1].x - x) >= minRange || Math.abs(m[1].y - y) >= minRange) &&
-        (!checkCanSee || range === 1 || !this.tileIsBlocked(x, y, m[1].x, m[1].y))
+        (!minRange || Math.abs(mob.x - x) >= minRange || Math.abs(mob.y - y) >= minRange) &&
+        (!checkCanSee || range === 1 || !this.tileIsBlocked(x, y, mob.x, mob.y))
       ) {
-        return m[1]
+        return mob
       }
     }
 
     return undefined
   }
 
+  locationIsSpotted<T extends MOB>(mobMap: Map<number, T>, x: number, y: number): boolean {
+    const iterator = mobMap[Symbol.iterator]()
+
+    for (const m of iterator) {
+      const mob = m[1]
+      if (
+        !mob.dead && // Not dead...duh
+        Math.abs(mob.x - x) <= mob.visibleRange && // Check site range before trying more expensive "tileIsBlocked" calc
+        Math.abs(mob.y - y) <= mob.visibleRange &&
+        !this.tileIsBlocked(mob.x, mob.y, x, y) // Can the MOB actually "see" the spot
+      ) {
+        return true
+      }
+    }
+    return false
+  }
+
+  playerIsSpotted(player: Player<unknown>): boolean {
+    return this.locationIsSpotted(this.monsters, player.x, player.y)
+  }
+
+  locationInBounds(x: number, y: number): boolean {
+    // Make sure the requested cell is in bounds
+    return x < this.wallsAndMobs[0].length && x >= 0 && y < this.wallsAndMobs.length && y >= 0
+  }
+
   monsterInRange(x: number, y: number, range: number, minRange?: number, checkCanSee?: boolean): Monster | undefined {
     return this.mobInRange(this.monsters, x, y, range, minRange, checkCanSee)
+  }
+
+  surroundingWallsCount(centerX: number, centerY: number): number {
+    let count = 0
+    for (let y = -1; y <= 1; y++) {
+      for (let x = -1; x <= 1; x++) {
+        if (this.locationInBounds(centerX + x, centerY + y) && this.walls[centerY + y][centerX + x] > 0) {
+          count++
+        }
+      }
+    }
+    return count
   }
 
   playerInRange(
