@@ -205,7 +205,19 @@ export class Level<T> {
     return undefined
   }
 
-  mobInRange<T extends MOB>(
+  isMobInRange(mob: MOB, x: number, y: number, range: number, minRange?: number, checkCanSee?: boolean): boolean {
+    return (
+      !mob.dead && // Not dead...duh
+      !mob.invisible && // Not in range if you can't see it
+      Math.abs(mob.x - x) <= range && // Check ranges
+      Math.abs(mob.y - y) <= range &&
+      // Min range use to limit how close (e.g. ranged attacks can't be used point blank)
+      (!minRange || Math.abs(mob.x - x) >= minRange || Math.abs(mob.y - y) >= minRange) &&
+      (!checkCanSee || range === 1 || !this.tileIsBlocked(x, y, mob.x, mob.y))
+    )
+  }
+
+  findMobInRange<T extends MOB>(
     mobMap: Map<number, T>,
     x: number,
     y: number,
@@ -217,20 +229,33 @@ export class Level<T> {
 
     for (const m of iterator) {
       const mob = m[1]
-      if (
-        !mob.dead && // Not dead...duh
-        !mob.invisible && // Not in range if you can't see it
-        Math.abs(mob.x - x) <= range && // Check ranges
-        Math.abs(mob.y - y) <= range &&
-        // Min range use to limit how close (e.g. ranged attacks can't be used point blank)
-        (!minRange || Math.abs(mob.x - x) >= minRange || Math.abs(mob.y - y) >= minRange) &&
-        (!checkCanSee || range === 1 || !this.tileIsBlocked(x, y, mob.x, mob.y))
-      ) {
+      if (this.isMobInRange(mob, x, y, range, minRange, checkCanSee)) {
         return mob
       }
     }
 
     return undefined
+  }
+
+  allMobsInRange<T extends MOB>(
+    mobMap: Map<number, T>,
+    x: number,
+    y: number,
+    range: number,
+    minRange?: number,
+    checkCanSee?: boolean
+  ): T[] {
+    const mobList: T[] = []
+    const iterator = mobMap[Symbol.iterator]()
+
+    for (const m of iterator) {
+      const mob = m[1]
+      if (this.isMobInRange(mob, x, y, range, minRange, checkCanSee)) {
+        mobList.push(mob)
+      }
+    }
+
+    return mobList
   }
 
   locationIsSpotted<T extends MOB>(mobMap: Map<number, T>, x: number, y: number): boolean {
@@ -260,7 +285,7 @@ export class Level<T> {
   }
 
   monsterInRange(x: number, y: number, range: number, minRange?: number, checkCanSee?: boolean): Monster | undefined {
-    return this.mobInRange(this.monsters, x, y, range, minRange, checkCanSee)
+    return this.findMobInRange(this.monsters, x, y, range, minRange, checkCanSee)
   }
 
   surroundingWallsCount(centerX: number, centerY: number): number {
@@ -282,7 +307,7 @@ export class Level<T> {
     minRange?: number,
     checkCanSee?: boolean
   ): Player<unknown> | undefined {
-    return this.mobInRange(this.players, x, y, range, minRange, checkCanSee)
+    return this.findMobInRange(this.players, x, y, range, minRange, checkCanSee)
   }
 
   locationIsBlocked(x: number, y: number): boolean {

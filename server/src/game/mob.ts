@@ -31,6 +31,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
   destinationY = 0
   specialAbilityX? = 0
   specialAbilityY? = 0
+  specialAbilityLength = 10
   specialAbilityActivate = false
   invisible = false
 
@@ -435,6 +436,127 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   abstract specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void
 
+  makeRangedAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+    const attackLogEntry: MOBAttackActivityLog = {
+      type: 'ranged',
+      fromX: this.x,
+      fromY: this.y,
+      toX: mobToAttack.x,
+      toY: mobToAttack.y,
+      hit: false
+    }
+
+    const attackResult = this.rangedAttackRoll()
+
+    if (attackResult.total >= mobToAttack.physicalDefense) {
+      const dmgRoll = this.rangedDamageRoll()
+      console.log(this.name, 'ranged hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
+
+      mobToAttack.takeDamage(dmgRoll)
+
+      attackLogEntry.hit = true
+      if (mobToAttack.dead) {
+        this.gainXP(xpForKill(mobToAttack))
+        level.removeMonster(mobToAttack.x, mobToAttack.y)
+      }
+    } else {
+      mobToAttack.addActivity({ level: 'good', message: 'Dodged attack' })
+      console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
+    }
+
+    this.addAttackActivity(attackLogEntry)
+    this.actionPoints -= this.actionPointsCostPerRangedAction
+    this.lastRangedActionTick = tick
+    this.tickPausedUntil = tick + this.ticksPausedAfterRanged
+    this.invisible = false
+  }
+
+  makeRangedSpellAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+    const attackLogEntry: MOBAttackActivityLog = {
+      type: 'spell',
+      fromX: this.x,
+      fromY: this.y,
+      toX: mobToAttack.x,
+      toY: mobToAttack.y,
+      hit: false
+    }
+
+    const attackResult = this.rangedSpellAttackRoll()
+
+    if (attackResult.total >= mobToAttack.magicDefense) {
+      const dmgRoll = this.rangedSpellDamageRoll()
+      console.log(this.name, 'spell hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
+
+      mobToAttack.takeDamage(dmgRoll)
+
+      attackLogEntry.hit = true
+      if (mobToAttack.dead) {
+        this.gainXP(xpForKill(mobToAttack))
+        level.removeMonster(mobToAttack.x, mobToAttack.y)
+      }
+    } else {
+      mobToAttack.addActivity({ level: 'good', message: 'Dodged spell' })
+      console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
+    }
+
+    this.addAttackActivity(attackLogEntry)
+    this.actionPoints -= this.actionPointsCostPerSpellAction
+    this.lastSpellActionTick = tick
+    this.tickPausedUntil = tick + this.ticksPausedAfterSpell
+    this.invisible = false
+  }
+
+  makeMeleeAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes, hasCost = true): void {
+    const attackResult = this.meleeAttackRoll()
+
+    if (attackResult.total >= mobToAttack.physicalDefense) {
+      const dmgRoll = this.meleeDamageRoll()
+      console.log(this.name, 'melee hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
+
+      mobToAttack.takeDamage(dmgRoll)
+
+      if (mobToAttack.dead) {
+        this.gainXP(xpForKill(mobToAttack))
+        level.removeMonster(mobToAttack.x, mobToAttack.y)
+      }
+    } else {
+      mobToAttack.addActivity({ level: 'good', message: 'Dodged attack' })
+      console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
+    }
+
+    // Some special abilities make extra attacks at no cost
+    if (hasCost) {
+      this.actionPoints -= this.actionPointsCostPerMeleeAction
+      this.lastMeleeActionTick = tick
+      this.tickPausedUntil = tick + this.ticksPausedAfterMelee
+      this.invisible = false
+    }
+  }
+
+  makeMeleeSpellAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+    const attackResult = this.meleeSpellAttackRoll()
+
+    if (attackResult.total >= mobToAttack.magicDefense) {
+      const dmgRoll = this.meleeSpellDamageRoll()
+      console.log(this.name, 'spell hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
+
+      mobToAttack.takeDamage(dmgRoll)
+
+      if (mobToAttack.dead) {
+        this.gainXP(xpForKill(mobToAttack))
+        level.removeMonster(mobToAttack.x, mobToAttack.y)
+      }
+    } else {
+      mobToAttack.addActivity({ level: 'good', message: 'Dodged spell' })
+      console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
+    }
+
+    this.actionPoints -= this.actionPointsCostPerSpellAction
+    this.lastSpellActionTick = tick
+    this.tickPausedUntil = tick + this.ticksPausedAfterSpell
+    this.invisible = false
+  }
+
   takeAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
     // Check Special Abilities
     this.specialAbilityAction(tick, level, notes)
@@ -453,39 +575,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
           : level.playerInRange(this.x, this.y, selectedRangedItem.range, 2, true)
 
       if (mobToAttack) {
-        const attackLogEntry: MOBAttackActivityLog = {
-          type: 'ranged',
-          fromX: this.x,
-          fromY: this.y,
-          toX: mobToAttack.x,
-          toY: mobToAttack.y,
-          hit: false
-        }
-
-        const attackResult = this.rangedAttackRoll()
-
-        if (attackResult.total >= mobToAttack.physicalDefense) {
-          const dmgRoll = this.rangedDamageRoll()
-          console.log(this.name, 'ranged hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
-
-          mobToAttack.takeDamage(dmgRoll)
-
-          attackLogEntry.hit = true
-          if (mobToAttack.dead) {
-            this.gainXP(xpForKill(mobToAttack))
-            level.removeMonster(mobToAttack.x, mobToAttack.y)
-          }
-        } else {
-          mobToAttack.addActivity({ level: 'good', message: 'Dodged attack' })
-          console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
-        }
-
-        this.addAttackActivity(attackLogEntry)
-        this.actionPoints -= this.actionPointsCostPerRangedAction
-        this.lastRangedActionTick = tick
-        this.tickPausedUntil = tick + this.ticksPausedAfterRanged
-        this.invisible = false
-        return
+        this.makeRangedAttack(mobToAttack, tick, level, notes)
       }
     }
 
@@ -502,39 +592,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
           : level.playerInRange(this.x, this.y, selectedRangedSpellItem.range, 2, true)
 
       if (mobToAttack) {
-        const attackLogEntry: MOBAttackActivityLog = {
-          type: 'spell',
-          fromX: this.x,
-          fromY: this.y,
-          toX: mobToAttack.x,
-          toY: mobToAttack.y,
-          hit: false
-        }
-
-        const attackResult = this.rangedSpellAttackRoll()
-
-        if (attackResult.total >= mobToAttack.magicDefense) {
-          const dmgRoll = this.rangedSpellDamageRoll()
-          console.log(this.name, 'spell hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
-
-          mobToAttack.takeDamage(dmgRoll)
-
-          attackLogEntry.hit = true
-          if (mobToAttack.dead) {
-            this.gainXP(xpForKill(mobToAttack))
-            level.removeMonster(mobToAttack.x, mobToAttack.y)
-          }
-        } else {
-          mobToAttack.addActivity({ level: 'good', message: 'Dodged spell' })
-          console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
-        }
-
-        this.addAttackActivity(attackLogEntry)
-        this.actionPoints -= this.actionPointsCostPerSpellAction
-        this.lastSpellActionTick = tick
-        this.tickPausedUntil = tick + this.ticksPausedAfterSpell
-        this.invisible = false
-        return
+        this.makeRangedSpellAttack(mobToAttack, tick, level, notes)
       }
     }
 
@@ -548,28 +606,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
         this.type === 'player' ? level.monsterInRange(this.x, this.y, 1) : level.playerInRange(this.x, this.y, 1)
 
       if (mobToAttack) {
-        const attackResult = this.meleeAttackRoll()
-
-        if (attackResult.total >= mobToAttack.physicalDefense) {
-          const dmgRoll = this.meleeDamageRoll()
-          console.log(this.name, 'melee hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
-
-          mobToAttack.takeDamage(dmgRoll)
-
-          if (mobToAttack.dead) {
-            this.gainXP(xpForKill(mobToAttack))
-            level.removeMonster(mobToAttack.x, mobToAttack.y)
-          }
-        } else {
-          mobToAttack.addActivity({ level: 'good', message: 'Dodged attack' })
-          console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
-        }
-
-        this.actionPoints -= this.actionPointsCostPerMeleeAction
-        this.lastMeleeActionTick = tick
-        this.tickPausedUntil = tick + this.ticksPausedAfterMelee
-        this.invisible = false
-        return
+        this.makeMeleeAttack(mobToAttack, tick, level, notes)
       }
     }
 
@@ -583,28 +620,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
         this.type === 'player' ? level.monsterInRange(this.x, this.y, 1) : level.playerInRange(this.x, this.y, 1)
 
       if (mobToAttack) {
-        const attackResult = this.meleeSpellAttackRoll()
-
-        if (attackResult.total >= mobToAttack.magicDefense) {
-          const dmgRoll = this.meleeSpellDamageRoll()
-          console.log(this.name, 'spell hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
-
-          mobToAttack.takeDamage(dmgRoll)
-
-          if (mobToAttack.dead) {
-            this.gainXP(xpForKill(mobToAttack))
-            level.removeMonster(mobToAttack.x, mobToAttack.y)
-          }
-        } else {
-          mobToAttack.addActivity({ level: 'good', message: 'Dodged spell' })
-          console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
-        }
-
-        this.actionPoints -= this.actionPointsCostPerSpellAction
-        this.lastSpellActionTick = tick
-        this.tickPausedUntil = tick + this.ticksPausedAfterSpell
-        this.invisible = false
-        return
+        this.makeMeleeSpellAttack(mobToAttack, tick, level, notes)
       }
     }
   }
@@ -822,6 +838,28 @@ export class Player<T> extends MOB {
         this.specialAbilityActivate = false
         this.lastSpecialAbilityTick = tick
       }
+      // The barbarian charges towards a spot
+      else if (
+        this.profession === 'barbarian' &&
+        this.specialAbilityActivate &&
+        this.specialAbilityX &&
+        this.specialAbilityY
+      ) {
+        // Calculate a path towards the spot
+        this.moveGraph = level.findPath(
+          { x: this.x, y: this.y },
+          { x: this.specialAbilityX, y: this.specialAbilityY },
+          this.moveSearchLimit
+        )
+
+        // Limit to a number of steps
+        if (this.moveGraph.length > this.specialAbilityLength) {
+          this.moveGraph = this.moveGraph.slice(0, this.specialAbilityLength)
+        }
+        this.specialAbilityX = undefined
+        this.specialAbilityY = undefined
+        this.lastSpecialAbilityTick = tick
+      }
     }
 
     // The rogue can camouflage into nearby walls.
@@ -843,6 +881,47 @@ export class Player<T> extends MOB {
           // Not near any walls, camouflage is removed
           this.invisible = false
         }
+      }
+    }
+
+    // Barbarians charge and hit everything in their path
+    if (
+      this.profession === 'barbarian' &&
+      this.specialAbilityActivate &&
+      !this.specialAbilityX &&
+      !this.specialAbilityY
+    ) {
+      // Still spaces to move?
+      if (this.moveGraph.length > 0) {
+        const moveToX = this.moveGraph[0][0]
+        const moveToY = this.moveGraph[0][1]
+
+        // Only move if the location is open
+        if (!level.locationIsBlocked(moveToX, moveToY)) {
+          // Set the next x/y from the path
+          this.x = moveToX
+          this.y = moveToY
+          this.destinationX = moveToX
+          this.destinationY = moveToY
+
+          level.grabConsumable(this)
+
+          // Find any monsters in melee range and attack for free
+          const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, 1)
+          mobsInRange.forEach((m) => {
+            console.log('Barbarian charge attack')
+            this.makeMeleeAttack(m, tick, level, notes, false)
+          })
+          // Remove the move just made
+          this.moveGraph.shift()
+        } else {
+          // Blocked. Just end the move for now
+          // Maybe should recalc to reach location?
+          this.moveGraph = []
+          this.specialAbilityActivate = false
+        }
+      } else {
+        this.specialAbilityActivate = false
       }
     }
   }
