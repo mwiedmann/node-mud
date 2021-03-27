@@ -1,13 +1,12 @@
 import { MOBType, xpForKill } from './monsters'
 import { Level } from './level'
-import { Dice, rollDice, RollResult } from './combat'
+import { rollDice, RollResult } from './combat'
 import { Moved } from './map'
 import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon, Weapon } from './item'
 import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
 import { PlayerProfession } from './characters/professions'
 import { LevelProgression, MOBSkills, PlayerRace } from './characters'
 import { inRange } from './util'
-import { runInThisContext } from 'node:vm'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
@@ -90,6 +89,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   hitBonusWhenInvisible = 0
   damageBonusWhenInvisible = 0
+  isUnholy = 0
 
   activityLog: MOBActivityLog[] = []
   attackActivityLog: MOBAttackActivityLog[] = []
@@ -352,6 +352,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
     // Combat actions prevent the MOB from taking other actions and moving for a bit
     if (this.tickPausedUntil > tick) {
+      // Special Abilities still work when player is paused
+      this.specialAbilityAction(tick, level, notes)
       notes.notes.push('Actions paused')
       return notes
     }
@@ -533,7 +535,13 @@ export abstract class MOB implements MOBSkills, MOBItems {
     }
   }
 
-  makeMeleeSpellAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+  makeMeleeSpellAttack(
+    mobToAttack: MOB,
+    tick: number,
+    level: Level<unknown>,
+    notes: MOBUpdateNotes,
+    hasCost = true
+  ): void {
     const attackResult = this.meleeSpellAttackRoll()
 
     if (attackResult.total >= mobToAttack.magicDefense) {
@@ -551,10 +559,13 @@ export abstract class MOB implements MOBSkills, MOBItems {
       console.log(this.name, 'missed', mobToAttack.name, 'roll:', attackResult.total)
     }
 
-    this.actionPoints -= this.actionPointsCostPerSpellAction
-    this.lastSpellActionTick = tick
-    this.tickPausedUntil = tick + this.ticksPausedAfterSpell
-    this.invisible = false
+    // Some special abilities make extra attacks at no cost
+    if (hasCost) {
+      this.actionPoints -= this.actionPointsCostPerSpellAction
+      this.lastSpellActionTick = tick
+      this.tickPausedUntil = tick + this.ticksPausedAfterSpell
+      this.invisible = false
+    }
   }
 
   takeAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
@@ -860,6 +871,21 @@ export class Player<T> extends MOB {
         this.specialAbilityY = undefined
         this.lastSpecialAbilityTick = tick
       }
+      // A Cleric's Divine Aura smites all enemies he can see.
+      // Unholy enemies are attacked twice at no cost to the Cleric.
+      else if (this.profession === 'cleric' && this.specialAbilityActivate) {
+        const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, this.visibleRange, undefined, true)
+        mobsInRange.forEach((m) => {
+          if (m.isUnholy) {
+            this.makeMeleeSpellAttack(m, tick, level, notes, false)
+            this.makeMeleeSpellAttack(m, tick, level, notes, false)
+          } else {
+            this.makeMeleeSpellAttack(m, tick, level, notes)
+          }
+        })
+        this.lastSpecialAbilityTick = tick
+        this.specialAbilityActivate = false
+      }
     }
 
     // The rogue can camouflage into nearby walls.
@@ -895,6 +921,8 @@ export class Player<T> extends MOB {
       if (this.moveGraph.length > 0) {
         const moveToX = this.moveGraph[0][0]
         const moveToY = this.moveGraph[0][1]
+        // Remove the move just made
+        this.moveGraph.shift()
 
         // Only move if the location is open
         if (!level.locationIsBlocked(moveToX, moveToY)) {
@@ -912,13 +940,23 @@ export class Player<T> extends MOB {
             console.log('Barbarian charge attack')
             this.makeMeleeAttack(m, tick, level, notes, false)
           })
-          // Remove the move just made
-          this.moveGraph.shift()
         } else {
-          // Blocked. Just end the move for now
-          // Maybe should recalc to reach location?
-          this.moveGraph = []
-          this.specialAbilityActivate = false
+          console.log('Barbarian locationIsBlocked')
+          // Blocked. Recalc a new path to the end
+          // If the end spot is unreachable, the charge ends.
+          if (this.moveGraph.length > 0) {
+            // Calculate a path towards the spot
+            const lastSpot = this.moveGraph.pop() as [number, number]
+            console.log('Barbarian recalc to', lastSpot)
+            this.moveGraph = level.findPath(
+              { x: this.x, y: this.y },
+              { x: lastSpot[0], y: lastSpot[1] },
+              this.moveSearchLimit
+            )
+          } else {
+            this.moveGraph = []
+            this.specialAbilityActivate = false
+          }
         }
       } else {
         this.specialAbilityActivate = false

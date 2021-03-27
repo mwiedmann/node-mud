@@ -42,6 +42,7 @@ export type MOBSkills = {
 
   hitBonusWhenInvisible: number
   damageBonusWhenInvisible: number
+  isUnholy: number
 }
 
 const basePlayerScores: MOBSkills = {
@@ -75,7 +76,8 @@ const basePlayerScores: MOBSkills = {
   magicDefense: 10,
 
   hitBonusWhenInvisible: 0,
-  damageBonusWhenInvisible: 0
+  damageBonusWhenInvisible: 0,
+  isUnholy: 0
 }
 
 type MOBSKillsAndItemsKeys = keyof MOBSkills & keyof MOBItems

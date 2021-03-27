@@ -75,7 +75,8 @@ const baseMonsterScores: MOBSkills = {
   magicDefense: 10,
 
   hitBonusWhenInvisible: 0,
-  damageBonusWhenInvisible: 0
+  damageBonusWhenInvisible: 0,
+  isUnholy: 0
 }
 
 /*
@@ -122,7 +123,8 @@ export const monsterSettings: {
     maxHealth: 3,
     ticksPerMove: 4,
     physicalDefense: 7,
-    meleeItem: new MeleeWeapon('natural', 'scimitar', {}, 'd2')
+    meleeItem: new MeleeWeapon('natural', 'scimitar', {}, 'd2'),
+    isUnholy: 1
   },
   goblin: {
     level: 1,
@@ -139,7 +141,8 @@ export const monsterSettings: {
     maxHealth: 5,
     ticksPerMove: 5,
     physicalDefense: 9,
-    meleeItem: new MeleeWeapon('natural', 'rotting claws', {}, 'd4')
+    meleeItem: new MeleeWeapon('natural', 'rotting claws', {}, 'd4'),
+    isUnholy: 1
   },
   kobold: {
     level: 2,
@@ -192,7 +195,8 @@ export const monsterSettings: {
     maxHealth: 9,
     ticksPerMove: 5,
     physicalDefense: 13,
-    meleeItem: new MeleeWeapon('natural', 'diseased breath', {}, 'd6')
+    meleeItem: new MeleeWeapon('natural', 'diseased breath', {}, 'd6'),
+    isUnholy: 1
   },
   harpy: {
     level: 3,
@@ -230,7 +234,8 @@ export const monsterSettings: {
     maxHealth: 13,
     ticksPerMove: 4,
     physicalDefense: 15,
-    meleeItem: new MeleeWeapon('natural', 'necrotic energy', {}, 'd8')
+    meleeItem: new MeleeWeapon('natural', 'necrotic energy', {}, 'd8'),
+    isUnholy: 1
   },
   yeti: {
     level: 4,
@@ -260,14 +265,16 @@ export const monsterSettings: {
     maxHealth: 15,
     ticksPerMove: 2,
     physicalDefense: 17,
-    meleeItem: new MeleeWeapon('natural', 'stinging tail', {}, 'd8')
+    meleeItem: new MeleeWeapon('natural', 'stinging tail', {}, 'd8'),
+    isUnholy: 1
   },
   banshee: {
     level: 4,
     maxHealth: 16,
     ticksPerMove: 5,
     physicalDefense: 17,
-    meleeItem: new MeleeWeapon('natural', 'necrotic energy', {}, 'd8')
+    meleeItem: new MeleeWeapon('natural', 'necrotic energy', {}, 'd8'),
+    isUnholy: 1
   },
   // Level 5 HP: 17-20, DEF: 16-18
   demon: {
@@ -275,7 +282,8 @@ export const monsterSettings: {
     maxHealth: 17,
     ticksPerMove: 3,
     physicalDefense: 18,
-    meleeItem: new MeleeWeapon('natural', 'flaming sword', {}, 'd10')
+    meleeItem: new MeleeWeapon('natural', 'flaming sword', {}, 'd10'),
+    isUnholy: 1
   },
   giant: {
     level: 5,
@@ -290,7 +298,8 @@ export const monsterSettings: {
     maxHealth: 18,
     ticksPerMove: 6,
     physicalDefense: 19,
-    meleeItem: new MeleeWeapon('natural', 'rotting flesh', {}, 'd10')
+    meleeItem: new MeleeWeapon('natural', 'rotting flesh', {}, 'd10'),
+    isUnholy: 1
   },
   griffon: {
     level: 5,
@@ -329,14 +338,16 @@ export const monsterSettings: {
     maxHealth: 21,
     ticksPerMove: 4,
     physicalDefense: 23,
-    meleeItem: new MeleeWeapon('natural', 'death magic', {}, 'd12')
+    meleeItem: new MeleeWeapon('natural', 'death magic', {}, 'd12'),
+    isUnholy: 1
   },
   vampire: {
     level: 6,
     maxHealth: 22,
     ticksPerMove: 3,
     physicalDefense: 24,
-    meleeItem: new MeleeWeapon('natural', 'corrupting bite', {}, 'd12')
+    meleeItem: new MeleeWeapon('natural', 'corrupting bite', {}, 'd12'),
+    isUnholy: 1
   },
   beholder: {
     level: 6,
@@ -358,7 +369,8 @@ export const monsterSettings: {
     ticksPerMove: 3,
     physicalDefense: 25,
     meleeItem: new MeleeWeapon('natural', 'pitchfork', {}, 'd12'),
-    rangedItem: new RangedWeapon('natural', 'demonic whip', {}, 10, 'd8')
+    rangedItem: new RangedWeapon('natural', 'demonic whip', {}, 10, 'd8'),
+    isUnholy: 1
   }
 }
 
