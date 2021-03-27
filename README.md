@@ -1,6 +1,6 @@
-# Node based
+# Dungeon - An online multiplayer roguelike
 
-This is an online multiplayer roguelike based on NodeJS for the server and a Phaser 3 front-end client.
+This is an online multiplayer roguelike based on NodeJS for the server and a Phaser 3 front-end client all coded in TypeScript.
 
 ## Overview
 
