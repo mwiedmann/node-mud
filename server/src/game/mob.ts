@@ -771,15 +771,15 @@ export class Player<T> extends MOB {
 
   levelsGained: { level: number; xp: number; gained?: boolean }[] = [
     { level: 1, xp: 0, gained: true },
-    { level: 2, xp: 5 },
-    { level: 3, xp: 10 },
-    { level: 4, xp: 15 },
-    { level: 5, xp: 20 },
-    { level: 6, xp: 25 },
-    { level: 7, xp: 30 },
-    { level: 8, xp: 35 },
-    { level: 9, xp: 40 },
-    { level: 10, xp: 45 }
+    { level: 2, xp: 20 }, // 20: 1
+    { level: 3, xp: 60 }, // 25: 1,2
+    { level: 4, xp: 120 }, // 30: 2
+    { level: 5, xp: 250 }, // 35: 2,3
+    { level: 6, xp: 450 }, // 40: 3
+    { level: 7, xp: 800 }, // 45: 3,4
+    { level: 8, xp: 1300 }, // 50: 4
+    { level: 9, xp: 2200 }, // 55: 4,5
+    { level: 10, xp: 4000 } // 75: 5
   ]
 
   gainXP(points: number): void {
@@ -937,17 +937,14 @@ export class Player<T> extends MOB {
           // Find any monsters in melee range and attack for free
           const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, 1)
           mobsInRange.forEach((m) => {
-            console.log('Barbarian charge attack')
             this.makeMeleeAttack(m, tick, level, notes, false)
           })
         } else {
-          console.log('Barbarian locationIsBlocked')
           // Blocked. Recalc a new path to the end
           // If the end spot is unreachable, the charge ends.
           if (this.moveGraph.length > 0) {
             // Calculate a path towards the spot
             const lastSpot = this.moveGraph.pop() as [number, number]
-            console.log('Barbarian recalc to', lastSpot)
             this.moveGraph = level.findPath(
               { x: this.x, y: this.y },
               { x: lastSpot[0], y: lastSpot[1] },
