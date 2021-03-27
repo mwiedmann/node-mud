@@ -1,4 +1,3 @@
-import { idText } from 'typescript'
 import { nextId } from './id'
 import { MOB } from './mob'
 
