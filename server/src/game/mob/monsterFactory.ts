@@ -1,7 +1,6 @@
-import { MOBSkills } from './characters'
-import { nextId } from './id'
-import { MeleeWeapon, RangedWeapon, RangedWeaponFactory } from './item'
-import { MOB, MOBItems, Monster } from './mob'
+import { nextId } from '../id'
+import { MeleeWeapon, RangedWeapon, RangedWeaponFactory } from '../item'
+import { MOB, MOBItems, MOBSkills, Monster } from '.'
 
 export type MOBType =
   | 'player'
@@ -59,10 +58,11 @@ const baseMonsterScores: MOBSkills = {
   ticksPerMeleeAction: 7,
   ticksPerRangedAction: 20,
   ticksPerSpellAction: 20,
+  ticksPerSpecialAbility: 30,
 
-  ticksPausedAfterMelee: 5,
-  ticksPausedAfterRanged: 10,
-  ticksPausedAfterSpell: 10,
+  ticksPausedAfterMelee: 7,
+  ticksPausedAfterRanged: 12,
+  ticksPausedAfterSpell: 15,
 
   meleeHitBonus: 0,
   meleeDamageBonus: 0,
@@ -374,7 +374,7 @@ export const monsterSettings: {
   }
 }
 
-export const xpForKill = (monster: MOB): number => {
+export const xpForKill = (attackingMobLevel: number, monster: MOB): number => {
   const xpList: Record<number, number> = {
     1: 1,
     2: 2,
@@ -384,7 +384,19 @@ export const xpForKill = (monster: MOB): number => {
     6: 100
   }
 
-  return xpList[monster.level] || 1
+  let xp = xpList[monster.level] || 1
+  const levelDifference = attackingMobLevel - monster.level
+
+  // Only 1/2 XP if the attacker is 2 levels higher than the target
+  if (levelDifference === 2) {
+    xp = Math.ceil(xp / 2)
+  }
+  // 0 XP if the attacker more than 2 levels higher than the target
+  else if (levelDifference > 2) {
+    xp = 0
+  }
+
+  return xp
 }
 
 export const monsterFactory = (type: MonsterType): Monster => {

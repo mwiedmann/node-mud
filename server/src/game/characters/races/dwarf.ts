@@ -12,7 +12,8 @@ export const dwarfProgression: LevelProgression[] = [
     level: 3,
     upgrades: {
       maxHealth: 3,
-      maxAtionPoints: 1
+      maxAtionPoints: 1,
+      meleeHitBonus: 1
     }
   },
   {
@@ -26,7 +27,8 @@ export const dwarfProgression: LevelProgression[] = [
     level: 5,
     upgrades: {
       maxHealth: 3,
-      maxAtionPoints: 1
+      maxAtionPoints: 1,
+      meleeDamageBonus: 1
     }
   },
   {
@@ -40,7 +42,8 @@ export const dwarfProgression: LevelProgression[] = [
     level: 7,
     upgrades: {
       maxHealth: 3,
-      maxAtionPoints: 1
+      maxAtionPoints: 1,
+      meleeHitBonus: 1
     }
   },
   {
@@ -54,14 +57,17 @@ export const dwarfProgression: LevelProgression[] = [
     level: 9,
     upgrades: {
       maxHealth: 3,
-      maxAtionPoints: 1
+      maxAtionPoints: 1,
+      meleeDamageBonus: 1
     }
   },
   {
     level: 10,
     upgrades: {
       maxHealth: 3,
-      maxAtionPoints: 1
+      maxAtionPoints: 1,
+      meleeHitBonus: 1,
+      meleeDamageBonus: 1
     }
   }
 ]

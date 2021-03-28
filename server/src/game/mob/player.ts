@@ -1,8 +1,9 @@
 import { Level } from '../level'
-import { LevelProgression, MOBSkills } from '../characters'
+import { LevelProgression } from '../characters'
 import { inRange } from '../util'
 import { MOB, MOBUpdateNotes } from './mob'
 import { PlayerProfession, PlayerRace } from 'dng-shared'
+import { MOBSkills } from '.'
 
 export class Player<T> extends MOB {
   constructor(
@@ -96,8 +97,8 @@ export class Player<T> extends MOB {
           this.specialAbilityY = undefined
         }
       }
-      // The illusionist can turn invisible
-      else if (this.profession === 'illusionist' && this.specialAbilityActivate) {
+      // The illusionist can turn invisible if he not currently spotted
+      else if (this.profession === 'illusionist' && this.specialAbilityActivate && !level.playerIsSpotted(this)) {
         this.invisible = true
         this.specialAbilityActivate = false
         this.lastSpecialAbilityTick = tick

@@ -1,10 +1,10 @@
-import { MOBType, xpForKill } from '../monsters'
+import { MOBType, xpForKill } from './monsterFactory'
 import { Level } from '../level'
 import { rollDice, RollResult } from '../combat'
 import { Moved } from '../map'
 import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon, Weapon } from '../item'
 import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
-import { MOBSkills } from '../characters'
+import { MOBSkills } from '.'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
@@ -58,9 +58,9 @@ export abstract class MOB implements MOBSkills, MOBItems {
   ticksPerSpellAction = 20
   ticksPerSpecialAbility = 30
 
-  ticksPausedAfterMelee = 5
-  ticksPausedAfterRanged = 10
-  ticksPausedAfterSpell = 10
+  ticksPausedAfterMelee = 7
+  ticksPausedAfterRanged = 12
+  ticksPausedAfterSpell = 15
 
   lastMoveTick = 0
   lastMeleeActionTick = 0
@@ -456,7 +456,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
       attackLogEntry.hit = true
       if (mobToAttack.dead) {
-        this.gainXP(xpForKill(mobToAttack))
+        this.gainXP(xpForKill(this.level, mobToAttack))
         level.removeMonster(mobToAttack.x, mobToAttack.y)
       }
     } else {
@@ -491,7 +491,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
       attackLogEntry.hit = true
       if (mobToAttack.dead) {
-        this.gainXP(xpForKill(mobToAttack))
+        this.gainXP(xpForKill(this.level, mobToAttack))
         level.removeMonster(mobToAttack.x, mobToAttack.y)
       }
     } else {
@@ -516,7 +516,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
       mobToAttack.takeDamage(dmgRoll)
 
       if (mobToAttack.dead) {
-        this.gainXP(xpForKill(mobToAttack))
+        this.gainXP(xpForKill(this.level, mobToAttack))
         level.removeMonster(mobToAttack.x, mobToAttack.y)
       }
     } else {
@@ -549,7 +549,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
       mobToAttack.takeDamage(dmgRoll)
 
       if (mobToAttack.dead) {
-        this.gainXP(xpForKill(mobToAttack))
+        this.gainXP(xpForKill(this.level, mobToAttack))
         level.removeMonster(mobToAttack.x, mobToAttack.y)
       }
     } else {

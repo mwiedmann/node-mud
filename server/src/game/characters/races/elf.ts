@@ -12,7 +12,8 @@ export const elfProgression: LevelProgression[] = [
     level: 3,
     upgrades: {
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      rangedHitBonus: 1
     }
   },
   {
@@ -26,7 +27,8 @@ export const elfProgression: LevelProgression[] = [
     level: 5,
     upgrades: {
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      rangedDamageBonus: 1
     }
   },
   {
@@ -40,7 +42,8 @@ export const elfProgression: LevelProgression[] = [
     level: 7,
     upgrades: {
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      rangedHitBonus: 1
     }
   },
   {
@@ -54,14 +57,17 @@ export const elfProgression: LevelProgression[] = [
     level: 9,
     upgrades: {
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      rangedDamageBonus: 1
     }
   },
   {
     level: 10,
     upgrades: {
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      rangedHitBonus: 1,
+      rangedDamageBonus: 1
     }
   }
 ]

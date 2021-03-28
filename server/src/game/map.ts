@@ -5,7 +5,7 @@ import { Consumable, ConsumableTypes } from './consumable'
 import { MajorItemType, MeleeType, MeleeWeapon, MeleeWeaponFactory } from './item'
 import { Level } from './level'
 import { Monster } from './mob'
-import { monsterFactory, MonsterType } from './monsters'
+import { monsterFactory, MonsterType } from './mob/monsterFactory'
 import { SquareType } from 'dng-shared'
 
 export type Moved = {

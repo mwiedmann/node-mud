@@ -1,4 +1,4 @@
-import { MOBType } from '../monsters'
+import { MOBType } from './monsterFactory'
 import { Level } from '../level'
 import { MOB, MOBUpdateNotes } from './mob'
 

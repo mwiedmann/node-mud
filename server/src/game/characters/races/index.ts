@@ -1,4 +1,4 @@
-import { LevelProgression, MOBSkills } from '..'
+import { LevelProgression } from '..'
 import { dwarfProgression } from './dwarf'
 import { elfProgression } from './elf'
 import { giantProgression } from './giant'
@@ -6,6 +6,7 @@ import { gnomeProgression } from './gnome'
 import { humanProgression } from './human'
 import { halflingProgression } from './halfling'
 import { PlayerRace } from 'dng-shared'
+import { MOBSkills } from '../../mob'
 
 export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () => ({
   dwarf: {

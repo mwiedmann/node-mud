@@ -2,7 +2,7 @@ import { randomConsumables, randomDungeon, randomMeleeWeapons, randomMonsters } 
 import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './level'
 import { performance } from 'perf_hooks'
-import { monsterSettings, MonsterType } from './monsters'
+import { monsterSettings, MonsterType } from './mob/monsterFactory'
 import { playerFactory } from './characters'
 import { PlayerProfession, PlayerRace } from 'dng-shared'
 

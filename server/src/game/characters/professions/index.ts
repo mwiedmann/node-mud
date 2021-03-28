@@ -1,6 +1,6 @@
-import { LevelProgression, MOBSkills } from '..'
+import { LevelProgression } from '..'
 import { MeleeSpell, MeleeWeaponFactory, RangedSpell, RangedWeaponFactory } from '../../item'
-import { MOBItems } from '../../mob'
+import { MOBItems, MOBSkills } from '../../mob'
 import { barbarianProgression } from './barbarian'
 import { clericProgression } from './cleric'
 import { illusionistProgression } from './illusionist'
@@ -14,34 +14,69 @@ export const professionSettings: () => {
   [K in PlayerProfession]: Partial<MOBSkills> & Partial<MOBItems>
 } = () => ({
   barbarian: {
-    meleeItem: MeleeWeaponFactory('axe', 'Fury')
+    meleeItem: MeleeWeaponFactory('axe', 'Fury'),
+    ticksPerMeleeAction: 5,
+    ticksPerRangedAction: 25,
+    ticksPerSpellAction: 30,
+    ticksPerSpecialAbility: 100, // 10 seconds per charge
+    ticksPausedAfterMelee: 4,
+    ticksPausedAfterRanged: 20,
+    ticksPausedAfterSpell: 20
   },
   warrior: {
-    meleeItem: MeleeWeaponFactory('broadsword', 'Vengence')
+    meleeItem: MeleeWeaponFactory('broadsword', 'Vengence'),
+    ticksPerMeleeAction: 5,
+    ticksPerSpellAction: 30,
+    ticksPerSpecialAbility: 100, // 10 seconds per ???
+    ticksPausedAfterMelee: 5
   },
   ranger: {
     meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
-    rangedItem: RangedWeaponFactory('shortbow', 'Snipe')
+    rangedItem: RangedWeaponFactory('shortbow', 'Snipe'),
+    ticksPerRangedAction: 15,
+    ticksPerSpecialAbility: 100, // 10 seconds per ranged flurry
+    ticksPausedAfterMelee: 6,
+    ticksPausedAfterRanged: 8
   },
   rogue: {
     meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
     rangedItem: RangedWeaponFactory('shortbow', 'Stinger'),
+    ticksPerRangedAction: 17,
+    ticksPerSpecialAbility: 20,
+    ticksPausedAfterRanged: 10,
     hitBonusWhenInvisible: 4,
     damageBonusWhenInvisible: 1
+    // 2 seconds per camouflage
+    // If not currently spotted, the rogue only needs a few seconds to hide
   },
   wizard: {
     meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
-    rangedSpell: new RangedSpell('energy blast', {}, 6, 'd10')
+    ticksPerMeleeAction: 10,
+    ticksPerRangedAction: 25,
+    ticksPerSpellAction: 15,
+    ticksPerSpecialAbility: 60, // 6 seconds per teleport
+    ticksPausedAfterMelee: 12,
+    ticksPausedAfterRanged: 15,
+    rangedSpell: new RangedSpell('Energy Blast', {}, 6, 'd6')
   },
   illusionist: {
     meleeItem: MeleeWeaponFactory('staff', 'Willow'),
-    rangedSpell: new RangedSpell('energy blast', {}, 6, 'd10'),
+    rangedSpell: new RangedSpell('energy blast', {}, 6, 'd6'),
+    ticksPerMeleeAction: 10,
+    ticksPerRangedAction: 25,
+    ticksPerSpellAction: 15,
+    ticksPerSpecialAbility: 60, // 6 seconds per invisible
+    ticksPausedAfterMelee: 12,
+    ticksPausedAfterRanged: 15,
     hitBonusWhenInvisible: 5,
     damageBonusWhenInvisible: 1
   },
   cleric: {
     meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
-    meleeSpell: new MeleeSpell('divine smite', {}, 'd10')
+    meleeSpell: new MeleeSpell('divine smite', {}, 'd6'),
+    ticksPerRangedAction: 25,
+    ticksPerSpecialAbility: 100, // 10 seconds per Divine Smites
+    ticksPausedAfterRanged: 15
   }
 })
 

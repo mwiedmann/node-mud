@@ -1,6 +1,6 @@
 import { PlayerProfession, PlayerRace } from 'dng-shared'
 import { nextId } from '../id'
-import { MOBItems, Player } from '../mob'
+import { MOBItems, MOBSkills, Player } from '../mob'
 import { professionProgression, professionSettings } from './professions'
 import { raceProgression, raceSettings } from './races'
 export * from './professions'
@@ -9,41 +9,6 @@ export * from './races'
 export type LevelProgression = {
   level: number
   upgrades?: Partial<MOBSkills>
-}
-
-export type MOBSkills = {
-  level: number
-  visibleRange: number
-  maxHealth: number
-  maxAtionPoints: number
-  actionPointsGainedPerTick: number
-  actionPointCostPerMove: number
-  actionPointsCostPerMeleeAction: number
-  actionPointsCostPerRangedAction: number
-  actionPointsCostPerSpellAction: number
-
-  ticksPerMove: number
-  ticksPerMeleeAction: number
-  ticksPerRangedAction: number
-  ticksPerSpellAction: number
-
-  ticksPausedAfterMelee: number
-  ticksPausedAfterRanged: number
-  ticksPausedAfterSpell: number
-
-  meleeHitBonus: number
-  meleeDamageBonus: number
-  rangedHitBonus: number
-  rangedDamageBonus: number
-  spellHitBonus: number
-  spellDamageBonus: number
-
-  physicalDefense: number
-  magicDefense: number
-
-  hitBonusWhenInvisible: number
-  damageBonusWhenInvisible: number
-  isUnholy: number
 }
 
 const basePlayerScores: MOBSkills = {
@@ -61,10 +26,11 @@ const basePlayerScores: MOBSkills = {
   ticksPerMeleeAction: 7,
   ticksPerRangedAction: 20,
   ticksPerSpellAction: 20,
+  ticksPerSpecialAbility: 30,
 
-  ticksPausedAfterMelee: 5,
-  ticksPausedAfterRanged: 10,
-  ticksPausedAfterSpell: 10,
+  ticksPausedAfterMelee: 7,
+  ticksPausedAfterRanged: 12,
+  ticksPausedAfterSpell: 15,
 
   meleeHitBonus: 0,
   meleeDamageBonus: 0,
