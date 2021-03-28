@@ -1,8 +1,8 @@
 import { Level } from '../level'
-import { PlayerProfession } from '../characters/professions'
-import { LevelProgression, MOBSkills, PlayerRace } from '../characters'
+import { LevelProgression, MOBSkills } from '../characters'
 import { inRange } from '../util'
 import { MOB, MOBUpdateNotes } from './mob'
+import { PlayerProfession, PlayerRace } from 'dng-shared'
 
 export class Player<T> extends MOB {
   constructor(

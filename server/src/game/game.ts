@@ -4,6 +4,7 @@ import { Level } from './level'
 import { performance } from 'perf_hooks'
 import { monsterSettings, MonsterType } from './monsters'
 import { playerFactory } from './characters'
+import { PlayerProfession, PlayerRace } from 'dng-shared'
 
 export class Game<T> {
   constructor() {
@@ -84,9 +85,9 @@ export class Game<T> {
     return level
   }
 
-  login(name: string, connection: T): Player<T> {
+  login(name: string, race: PlayerRace, profession: PlayerProfession, connection: T): Player<T> {
     const level = this.getFirstLevel()
-    const player = playerFactory('human', 'cleric', name, 1, connection)
+    const player = playerFactory(race, profession, name, 1, connection)
 
     const startingLocation = level.findOpenLocation()
     player.x = startingLocation.x

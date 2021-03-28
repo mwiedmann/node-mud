@@ -4,31 +4,33 @@ import { elfProgression } from './elf'
 import { giantProgression } from './giant'
 import { gnomeProgression } from './gnome'
 import { humanProgression } from './human'
-
-export type PlayerRace = 'elf' | 'dwarf' | 'human' | 'gnome' | 'giant'
+import { halflingProgression } from './halfling'
+import { PlayerRace } from 'dng-shared'
 
 export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () => ({
-  elf: {
-    maxHealth: 16,
-    ticksPerMove: 2,
-    rangedHitBonus: 2,
-    rangedDamageBonus: 1,
-    spellHitBonus: 1,
-    visibleRange: 9
-  },
   dwarf: {
     maxHealth: 24,
     ticksPerMove: 4,
-    meleeHitBonus: 1,
+    meleeHitBonus: 2,
     meleeDamageBonus: 2,
     rangedHitBonus: -1,
     spellHitBonus: -1,
     visibleRange: 10
   },
+  elf: {
+    maxHealth: 16,
+    ticksPerMove: 2,
+    meleeHitBonus: -1,
+    rangedHitBonus: 3,
+    rangedDamageBonus: 1,
+    spellHitBonus: 1,
+    spellDamageBonus: 1,
+    visibleRange: 9
+  },
   giant: {
     maxHealth: 28,
     ticksPerMove: 5,
-    meleeHitBonus: 2,
+    meleeHitBonus: 3,
     meleeDamageBonus: 3,
     rangedHitBonus: -2,
     spellHitBonus: -2,
@@ -37,11 +39,20 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
   gnome: {
     maxHealth: 12,
     ticksPerMove: 3,
-    meleeHitBonus: -1,
+    meleeHitBonus: -2,
     rangedHitBonus: 1,
     spellHitBonus: 2,
     spellDamageBonus: 2,
     visibleRange: 9
+  },
+  halfling: {
+    maxHealth: 14,
+    ticksPerMove: 3,
+    meleeHitBonus: 1,
+    meleeDamageBonus: 1,
+    rangedHitBonus: 2,
+    rangedDamageBonus: 1,
+    visibleRange: 8
   },
   human: {
     maxHealth: 20,
@@ -60,5 +71,6 @@ export const raceProgression: {
   dwarf: dwarfProgression,
   giant: giantProgression,
   gnome: gnomeProgression,
+  halfling: halflingProgression,
   human: humanProgression
 }

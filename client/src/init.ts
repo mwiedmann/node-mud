@@ -2,7 +2,7 @@ import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
 import { stateFunctions, States } from './states'
 import { Consumable, Item, Monster, Player } from './player'
-import { SquareType } from 'dng-shared'
+import { PlayerProfession, PlayerRace, SquareType } from 'dng-shared'
 
 export let controls: {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
@@ -19,12 +19,16 @@ export const gameState: {
   phase: States
   map: SquareType[][]
   mapUpdate: boolean
+  race: PlayerRace
+  profession: PlayerProfession
   player: Player
   monsters: Map<number, Monster>
   items: Map<number, Consumable | Item>
 } = {
   phase: 'init',
   map: [[SquareType.Empty]],
+  race: 'human',
+  profession: 'barbarian',
   mapUpdate: true,
   player: {
     loggedIn: false,
@@ -47,10 +51,12 @@ export const gameState: {
 
 function scenePreload(this: Phaser.Scene) {
   // Images
-  this.load.image('title', 'images/title.png')
+  this.load.image('title', 'images/screens/title.png')
+  this.load.image('race', 'images/screens/choose-race.png')
+  this.load.image('profession', 'images/screens/choose-profession.png')
+
   this.load.image('maptiles', 'images/maptiles.png')
 
-  this.load.image('wall', 'images/wall.png')
   this.load.image('guy', 'images/players/warrior.png')
 
   // Monsters

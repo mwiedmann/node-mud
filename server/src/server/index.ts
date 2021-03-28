@@ -3,6 +3,7 @@ import { createGame, Game } from '../game'
 import { Player } from '../game/mob'
 import { tickSettings } from './tick'
 import { performance } from 'perf_hooks'
+import { PlayerProfession, PlayerRace } from 'dng-shared'
 
 let game: Game<WebSocket>
 
@@ -129,6 +130,8 @@ const updateGame = () => {
 type MessageLogin = {
   type: 'login'
   name: string
+  race: PlayerRace
+  profession: PlayerProfession
 }
 
 type MessageLogout = {
@@ -166,8 +169,8 @@ type PlayerConnection = {
   ws: WebSocket
 }
 
-const loginPlayer = (ws: WebSocket, { name }: MessageLogin) => {
-  const player = game.login(name, ws)
+const loginPlayer = (ws: WebSocket, { name, race, profession }: MessageLogin) => {
+  const player = game.login(name, race, profession, ws)
   console.log(`Logged in player: ${name}, id: ${player.id}`)
   ws.send(JSON.stringify({ name, id: player.id }))
   ws.send(

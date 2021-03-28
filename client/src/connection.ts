@@ -15,7 +15,9 @@ class ConnectionManager {
     this.connection.onopen = () => {
       console.log('Connection Opened!')
 
-      this.connection.send(JSON.stringify({ type: 'login', name: 'Joe Blow' }))
+      this.connection.send(
+        JSON.stringify({ type: 'login', name: 'Joe Blow', race: gameState.race, profession: gameState.profession })
+      )
     }
 
     this.connection.onerror = (error) => {

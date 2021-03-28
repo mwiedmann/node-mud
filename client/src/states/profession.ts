@@ -5,10 +5,10 @@ import { controls, gameState } from '../init'
 let screen: Phaser.GameObjects.Image
 
 const init = (scene: Phaser.Scene): void => {
-  screen = scene.add.image(gameSettings.screenWidthMid, gameSettings.screenHeightMid, 'title')
+  screen = scene.add.image(gameSettings.screenWidthMid, gameSettings.screenHeightMid, 'profession')
 
   controls.next.on('up', () => {
-    gameState.phase = 'race'
+    gameState.phase = 'gameStart'
   })
 }
 

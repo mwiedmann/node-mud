@@ -8,8 +8,7 @@ import { rangerProgression } from './ranger'
 import { rogueProgression } from './rogue'
 import { warriorProgression } from './warrior'
 import { wizardProgression } from './wizard'
-
-export type PlayerProfession = 'warrior' | 'barbarian' | 'rogue' | 'wizard' | 'illusionist' | 'ranger' | 'cleric'
+import { PlayerProfession } from 'dng-shared'
 
 export const professionSettings: () => {
   [K in PlayerProfession]: Partial<MOBSkills> & Partial<MOBItems>

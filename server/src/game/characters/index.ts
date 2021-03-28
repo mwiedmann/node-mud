@@ -1,7 +1,8 @@
+import { PlayerProfession, PlayerRace } from 'dng-shared'
 import { nextId } from '../id'
 import { MOBItems, Player } from '../mob'
-import { PlayerProfession, professionProgression, professionSettings } from './professions'
-import { PlayerRace, raceProgression, raceSettings } from './races'
+import { professionProgression, professionSettings } from './professions'
+import { raceProgression, raceSettings } from './races'
 export * from './professions'
 export * from './races'
 
