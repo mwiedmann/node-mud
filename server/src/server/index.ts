@@ -171,7 +171,7 @@ type PlayerConnection = {
 
 const loginPlayer = (ws: WebSocket, { name, race, profession }: MessageLogin) => {
   const player = game.login(name, race, profession, ws)
-  console.log(`Logged in player: ${name}, id: ${player.id}`)
+  console.log(`Logged in player: ${name}, id: ${player.id}`, race, profession)
   ws.send(JSON.stringify({ name, id: player.id }))
   ws.send(
     JSON.stringify({

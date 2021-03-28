@@ -11,7 +11,10 @@ let statusbars: StatusBars | undefined
 let tileMap: Phaser.Tilemaps.Tilemap
 let mapLayer: Phaser.Tilemaps.TilemapLayer
 
-let pointerCallback: (p: Phaser.Input.Pointer) => void
+const pointerCallback = (p: Phaser.Input.Pointer) => {
+  connectionManager.setDestination(gameSettings.cellFromScreenPos(p.worldX), gameSettings.cellFromScreenPos(p.worldY))
+}
+
 let floatingObjects: {
   timeStart: number
   text: Phaser.GameObjects.Text
@@ -57,10 +60,6 @@ const init = (scene: Phaser.Scene): void => {
   scene.cameras.main.startFollow(guy, true, 0.03, 0.03)
   scene.cameras.main.setDeadzone(gameSettings.cellSize * 2, gameSettings.cellSize * 2)
   scene.cameras.main.setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
-
-  const pointerCallback = (p: Phaser.Input.Pointer) => {
-    connectionManager.setDestination(gameSettings.cellFromScreenPos(p.worldX), gameSettings.cellFromScreenPos(p.worldY))
-  }
 
   scene.input.on('pointerup', pointerCallback)
 
