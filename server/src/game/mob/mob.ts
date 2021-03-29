@@ -82,7 +82,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
   spellHitBonus = 0
   spellDamageBonus = 0
 
-  physicalDefense = 10
+  meleeDefense = 10
+  rangedDefense = 10
   magicDefense = 10
 
   hitBonusWhenInvisible = 0
@@ -436,19 +437,20 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   abstract specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void
 
-  makeRangedAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+  makeRangedAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes, hasCost = true): void {
     const attackLogEntry: MOBAttackActivityLog = {
       type: 'ranged',
       fromX: this.x,
       fromY: this.y,
       toX: mobToAttack.x,
       toY: mobToAttack.y,
-      hit: false
+      hit: false,
+      targetId: mobToAttack.id
     }
 
     const attackResult = this.rangedAttackRoll()
 
-    if (attackResult.total >= mobToAttack.physicalDefense) {
+    if (attackResult.total >= mobToAttack.rangedDefense) {
       const dmgRoll = this.rangedDamageRoll()
       console.log(this.name, 'ranged hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 
@@ -465,10 +467,14 @@ export abstract class MOB implements MOBSkills, MOBItems {
     }
 
     this.addAttackActivity(attackLogEntry)
-    this.actionPoints -= this.actionPointsCostPerRangedAction
-    this.lastRangedActionTick = tick
-    this.tickPausedUntil = tick + this.ticksPausedAfterRanged
-    this.invisible = false
+
+    // Some special abilities make extra attacks at no cost
+    if (hasCost) {
+      this.actionPoints -= this.actionPointsCostPerRangedAction
+      this.lastRangedActionTick = tick
+      this.tickPausedUntil = tick + this.ticksPausedAfterRanged
+      this.invisible = false
+    }
   }
 
   makeRangedSpellAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
@@ -478,7 +484,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
       fromY: this.y,
       toX: mobToAttack.x,
       toY: mobToAttack.y,
-      hit: false
+      hit: false,
+      targetId: mobToAttack.id
     }
 
     const attackResult = this.rangedSpellAttackRoll()
@@ -509,7 +516,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
   makeMeleeAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes, hasCost = true): void {
     const attackResult = this.meleeAttackRoll()
 
-    if (attackResult.total >= mobToAttack.physicalDefense) {
+    if (attackResult.total >= mobToAttack.meleeDefense) {
       const dmgRoll = this.meleeDamageRoll()
       console.log(this.name, 'melee hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 

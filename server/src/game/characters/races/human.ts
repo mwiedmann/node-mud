@@ -15,14 +15,20 @@ export const humanProgression: LevelProgression[] = [
       maxAtionPoints: 2,
       meleeHitBonus: 1,
       rangedHitBonus: 1,
-      spellHitBonus: 1
+      spellHitBonus: 1,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
     level: 4,
     upgrades: {
       maxHealth: 2,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -39,7 +45,10 @@ export const humanProgression: LevelProgression[] = [
     level: 6,
     upgrades: {
       maxHealth: 2,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -49,7 +58,10 @@ export const humanProgression: LevelProgression[] = [
       maxAtionPoints: 2,
       meleeHitBonus: 1,
       rangedHitBonus: 1,
-      spellHitBonus: 1
+      spellHitBonus: 1,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -66,7 +78,10 @@ export const humanProgression: LevelProgression[] = [
       maxAtionPoints: 2,
       meleeDamageBonus: 1,
       rangedDamageBonus: 1,
-      spellDamageBonus: 1
+      spellDamageBonus: 1,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -79,7 +94,10 @@ export const humanProgression: LevelProgression[] = [
       spellHitBonus: 1,
       meleeDamageBonus: 1,
       rangedDamageBonus: 1,
-      spellDamageBonus: 1
+      spellDamageBonus: 1,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   }
 ]

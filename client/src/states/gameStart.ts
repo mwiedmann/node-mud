@@ -212,6 +212,24 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       m.activityLog = []
     }
 
+    m.attackActivityLog.forEach((a) => {
+      projectiles.push({
+        timeStart: time,
+        sprite: scene.add
+          .line(
+            0,
+            0,
+            gameSettings.screenPosFromMap(a.fromX),
+            gameSettings.screenPosFromMap(a.fromY),
+            gameSettings.screenPosFromMap(a.toX),
+            gameSettings.screenPosFromMap(a.toY),
+            a.hit ? 0xff0000 : 0x77ff77
+          )
+          .setOrigin(0, 0)
+      })
+    })
+    m.attackActivityLog = []
+
     // If the monster is dead, destroy any sprite
     // We could remove from the list, but we might want to leave a body behind
     if (m.dead) {
@@ -360,6 +378,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
   floatingObjects = floatingObjects.filter((f) => !f.delete)
 
   projectiles.forEach((p) => {
+    p.sprite.alpha = p.sprite.alpha - delta / 100
     if (time - p.timeStart >= 150) {
       p.sprite.destroy()
       p.delete = true

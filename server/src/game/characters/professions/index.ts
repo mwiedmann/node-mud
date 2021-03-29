@@ -21,47 +21,24 @@ export const professionSettings: () => {
     ticksPerSpecialAbility: 100, // 10 seconds per charge
     ticksPausedAfterMelee: 4,
     ticksPausedAfterRanged: 20,
-    ticksPausedAfterSpell: 20
+    ticksPausedAfterSpell: 20,
+    meleeDefense: 4,
+    rangedDefense: 3,
+    magicDefense: 3
   },
-  warrior: {
-    meleeItem: MeleeWeaponFactory('broadsword', 'Vengence'),
-    ticksPerMeleeAction: 5,
-    ticksPerSpellAction: 30,
-    ticksPerSpecialAbility: 100, // 10 seconds per ???
-    ticksPausedAfterMelee: 5
-  },
-  ranger: {
-    meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
-    rangedItem: RangedWeaponFactory('shortbow', 'Snipe'),
-    ticksPerRangedAction: 15,
-    ticksPerSpecialAbility: 100, // 10 seconds per ranged flurry
-    ticksPausedAfterMelee: 6,
-    ticksPausedAfterRanged: 8
-  },
-  rogue: {
-    meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
-    rangedItem: RangedWeaponFactory('shortbow', 'Stinger'),
-    ticksPerRangedAction: 17,
-    ticksPerSpecialAbility: 20,
-    ticksPausedAfterRanged: 10,
-    hitBonusWhenInvisible: 4,
-    damageBonusWhenInvisible: 1
-    // 2 seconds per camouflage
-    // If not currently spotted, the rogue only needs a few seconds to hide
-  },
-  wizard: {
-    meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
-    ticksPerMeleeAction: 10,
+  cleric: {
+    meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
+    meleeSpell: new MeleeSpell('divine smite', {}, 'd6'),
     ticksPerRangedAction: 25,
-    ticksPerSpellAction: 15,
-    ticksPerSpecialAbility: 60, // 6 seconds per teleport
-    ticksPausedAfterMelee: 12,
+    ticksPerSpecialAbility: 100, // 10 seconds per Divine Smites
     ticksPausedAfterRanged: 15,
-    rangedSpell: new RangedSpell('Energy Blast', {}, 6, 'd6')
+    meleeDefense: 4,
+    rangedDefense: 4,
+    magicDefense: 4
   },
   illusionist: {
     meleeItem: MeleeWeaponFactory('staff', 'Willow'),
-    rangedSpell: new RangedSpell('energy blast', {}, 6, 'd6'),
+    rangedSpell: new RangedSpell('mind strike', {}, 6, 'd6'),
     ticksPerMeleeAction: 10,
     ticksPerRangedAction: 25,
     ticksPerSpellAction: 15,
@@ -69,14 +46,58 @@ export const professionSettings: () => {
     ticksPausedAfterMelee: 12,
     ticksPausedAfterRanged: 15,
     hitBonusWhenInvisible: 5,
-    damageBonusWhenInvisible: 1
+    damageBonusWhenInvisible: 1,
+    meleeDefense: 3,
+    rangedDefense: 4,
+    magicDefense: 5
   },
-  cleric: {
-    meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
-    meleeSpell: new MeleeSpell('divine smite', {}, 'd6'),
+  ranger: {
+    meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
+    rangedItem: RangedWeaponFactory('shortbow', 'Snipe'),
+    ticksPerRangedAction: 15,
+    ticksPerSpecialAbility: 100, // 10 seconds per ranged flurry
+    ticksPausedAfterMelee: 6,
+    ticksPausedAfterRanged: 8,
+    meleeDefense: 4,
+    rangedDefense: 5,
+    magicDefense: 3
+  },
+  rogue: {
+    meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
+    rangedItem: RangedWeaponFactory('shortbow', 'Stinger'),
+    ticksPerRangedAction: 17,
+    // 2 seconds per camouflage
+    // If not currently spotted, the rogue only needs a few seconds to hide
+    ticksPerSpecialAbility: 20,
+    ticksPausedAfterRanged: 10,
+    hitBonusWhenInvisible: 4,
+    damageBonusWhenInvisible: 1,
+    meleeDefense: 4,
+    rangedDefense: 5,
+    magicDefense: 4
+  },
+  warrior: {
+    meleeItem: MeleeWeaponFactory('broadsword', 'Vengence'),
+    ticksPerMeleeAction: 5,
+    ticksPerSpellAction: 30,
+    ticksPerSpecialAbility: 100, // 10 seconds per ???
+    ticksPausedAfterMelee: 5,
+    meleeDefense: 5,
+    rangedDefense: 5,
+    magicDefense: 4
+  },
+  wizard: {
+    meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
+    rangedSpell: new RangedSpell('energy blast', {}, 6, 'd6'),
+    ticksPerMeleeAction: 10,
     ticksPerRangedAction: 25,
-    ticksPerSpecialAbility: 100, // 10 seconds per Divine Smites
-    ticksPausedAfterRanged: 15
+    ticksPerSpellAction: 15,
+    ticksPerSpecialAbility: 60, // 6 seconds per teleport
+    ticksPausedAfterMelee: 12,
+    ticksPausedAfterRanged: 15,
+    meleeDefense: 3,
+    rangedDefense: 3,
+    magicDefense: 5
   }
 })
 

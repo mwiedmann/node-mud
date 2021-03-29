@@ -30,7 +30,8 @@ export type MOBSkills = {
   spellHitBonus: number
   spellDamageBonus: number
 
-  physicalDefense: number
+  meleeDefense: number
+  rangedDefense: number
   magicDefense: number
 
   hitBonusWhenInvisible: number

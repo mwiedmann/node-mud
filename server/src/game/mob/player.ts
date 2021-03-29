@@ -143,9 +143,9 @@ export class Player<T> extends MOB {
       // The Ranger can shoot all enemies he can see.
       else if (this.profession === 'ranger' && this.specialAbilityActivate) {
         const range = this.bestRangedWeapon()?.range || 0
-        const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, range, undefined, true)
+        const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, range, 2, true)
         mobsInRange.forEach((m) => {
-          this.makeMeleeSpellAttack(m, tick, level, notes, false)
+          this.makeRangedAttack(m, tick, level, notes, false)
         })
         this.lastSpecialAbilityTick = tick
         this.specialAbilityActivate = false

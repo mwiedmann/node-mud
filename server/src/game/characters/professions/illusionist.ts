@@ -5,18 +5,10 @@ export const illusionistProgression: LevelProgression[] = [
     level: 2,
     upgrades: {
       maxHealth: 1,
-      spellHitBonus: 1,
-      maxAtionPoints: 4,
-      hitBonusWhenInvisible: 1
-    }
-  },
-  {
-    level: 2,
-    upgrades: {
-      maxHealth: 1,
       spellDamageBonus: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      magicDefense: 1
     }
   },
   {
@@ -25,7 +17,9 @@ export const illusionistProgression: LevelProgression[] = [
       maxHealth: 1,
       spellHitBonus: 1,
       maxAtionPoints: 4,
-      hitBonusWhenInvisible: 1
+      hitBonusWhenInvisible: 1,
+      magicDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -34,7 +28,10 @@ export const illusionistProgression: LevelProgression[] = [
       maxHealth: 1,
       spellDamageBonus: 1,
       maxAtionPoints: 2,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      magicDefense: 1,
+      rangedDefense: 1,
+      meleeDefense: 1
     }
   },
   {
@@ -43,7 +40,8 @@ export const illusionistProgression: LevelProgression[] = [
       maxHealth: 1,
       spellHitBonus: 1,
       maxAtionPoints: 4,
-      hitBonusWhenInvisible: 1
+      hitBonusWhenInvisible: 1,
+      magicDefense: 1
     }
   },
   {
@@ -52,7 +50,9 @@ export const illusionistProgression: LevelProgression[] = [
       maxHealth: 1,
       spellDamageBonus: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      magicDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -61,7 +61,10 @@ export const illusionistProgression: LevelProgression[] = [
       maxHealth: 1,
       spellHitBonus: 1,
       maxAtionPoints: 4,
-      hitBonusWhenInvisible: 1
+      hitBonusWhenInvisible: 1,
+      magicDefense: 1,
+      rangedDefense: 1,
+      meleeDefense: 1
     }
   },
   {
@@ -70,7 +73,8 @@ export const illusionistProgression: LevelProgression[] = [
       maxHealth: 1,
       spellDamageBonus: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      magicDefense: 1
     }
   },
   {
@@ -79,7 +83,9 @@ export const illusionistProgression: LevelProgression[] = [
       maxHealth: 1,
       spellHitBonus: 1,
       maxAtionPoints: 4,
-      hitBonusWhenInvisible: 1
+      hitBonusWhenInvisible: 1,
+      magicDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -90,7 +96,10 @@ export const illusionistProgression: LevelProgression[] = [
       spellDamageBonus: 1,
       maxAtionPoints: 8,
       hitBonusWhenInvisible: 1,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   }
 ]

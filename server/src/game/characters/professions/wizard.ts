@@ -6,16 +6,9 @@ export const wizardProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 2
-    }
-  },
-  {
-    level: 2,
-    upgrades: {
-      maxHealth: 1,
-      spellHitBonus: 1,
       spellDamageBonus: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      magicDefense: 1
     }
   },
   {
@@ -23,7 +16,8 @@ export const wizardProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      magicDefense: 1
     }
   },
   {
@@ -32,7 +26,10 @@ export const wizardProgression: LevelProgression[] = [
       maxHealth: 1,
       spellHitBonus: 1,
       spellDamageBonus: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      magicDefense: 1,
+      meleeDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -40,7 +37,8 @@ export const wizardProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      magicDefense: 1
     }
   },
   {
@@ -49,7 +47,8 @@ export const wizardProgression: LevelProgression[] = [
       maxHealth: 1,
       spellHitBonus: 1,
       spellDamageBonus: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      magicDefense: 1
     }
   },
   {
@@ -57,7 +56,10 @@ export const wizardProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      magicDefense: 1,
+      meleeDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -66,7 +68,8 @@ export const wizardProgression: LevelProgression[] = [
       maxHealth: 1,
       spellHitBonus: 1,
       spellDamageBonus: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      magicDefense: 1
     }
   },
   {
@@ -74,7 +77,8 @@ export const wizardProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       spellHitBonus: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      magicDefense: 1
     }
   },
   {
@@ -83,7 +87,10 @@ export const wizardProgression: LevelProgression[] = [
       maxHealth: 2,
       spellHitBonus: 2,
       spellDamageBonus: 2,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      magicDefense: 1,
+      meleeDefense: 1,
+      rangedDefense: 1
     }
   }
 ]

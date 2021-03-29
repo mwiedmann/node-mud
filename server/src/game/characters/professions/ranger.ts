@@ -6,7 +6,8 @@ export const rangerProgression: LevelProgression[] = [
     upgrades: {
       rangedHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      rangedDefense: 1
     }
   },
   {
@@ -14,7 +15,9 @@ export const rangerProgression: LevelProgression[] = [
     upgrades: {
       rangedDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      rangedDefense: 1,
+      meleeDefense: 1
     }
   },
   {
@@ -25,7 +28,10 @@ export const rangerProgression: LevelProgression[] = [
       rangedHitBonus: 1,
       rangedDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      rangedDefense: 1,
+      meleeDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -33,7 +39,8 @@ export const rangerProgression: LevelProgression[] = [
     upgrades: {
       rangedHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      rangedDefense: 1
     }
   },
   {
@@ -41,7 +48,9 @@ export const rangerProgression: LevelProgression[] = [
     upgrades: {
       rangedDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      rangedDefense: 1,
+      meleeDefense: 1
     }
   },
   {
@@ -52,7 +61,10 @@ export const rangerProgression: LevelProgression[] = [
       rangedHitBonus: 1,
       rangedDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      rangedDefense: 1,
+      meleeDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -60,7 +72,8 @@ export const rangerProgression: LevelProgression[] = [
     upgrades: {
       rangedHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      rangedDefense: 1
     }
   },
   {
@@ -68,7 +81,9 @@ export const rangerProgression: LevelProgression[] = [
     upgrades: {
       rangedDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 2
+      maxAtionPoints: 2,
+      rangedDefense: 1,
+      meleeDefense: 1
     }
   },
   {
@@ -79,7 +94,10 @@ export const rangerProgression: LevelProgression[] = [
       rangedHitBonus: 2,
       rangedDamageBonus: 2,
       maxHealth: 2,
-      maxAtionPoints: 4
+      maxAtionPoints: 4,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   }
 ]

@@ -5,7 +5,8 @@ export const gnomeProgression: LevelProgression[] = [
     level: 2,
     upgrades: {
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      magicDefense: 1
     }
   },
   {
@@ -13,7 +14,9 @@ export const gnomeProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       maxAtionPoints: 3,
-      spellHitBonus: 1
+      spellHitBonus: 1,
+      magicDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -21,7 +24,10 @@ export const gnomeProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       maxAtionPoints: 3,
-      rangedHitBonus: 1
+      rangedHitBonus: 1,
+      magicDefense: 1,
+      rangedDefense: 1,
+      meleeDefense: 1
     }
   },
   {
@@ -29,7 +35,8 @@ export const gnomeProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       maxAtionPoints: 3,
-      spellDamageBonus: 1
+      spellDamageBonus: 1,
+      magicDefense: 1
     }
   },
   {
@@ -37,7 +44,9 @@ export const gnomeProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       maxAtionPoints: 3,
-      spellHitBonus: 1
+      spellHitBonus: 1,
+      magicDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -45,7 +54,10 @@ export const gnomeProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       maxAtionPoints: 3,
-      rangedHitBonus: 1
+      rangedHitBonus: 1,
+      magicDefense: 1,
+      rangedDefense: 1,
+      meleeDefense: 1
     }
   },
   {
@@ -53,7 +65,8 @@ export const gnomeProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       maxAtionPoints: 3,
-      spellDamageBonus: 1
+      spellDamageBonus: 1,
+      magicDefense: 1
     }
   },
   {
@@ -61,7 +74,9 @@ export const gnomeProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 1,
       maxAtionPoints: 3,
-      rangedDamageBonus: 1
+      rangedDamageBonus: 1,
+      magicDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -70,7 +85,10 @@ export const gnomeProgression: LevelProgression[] = [
       maxHealth: 1,
       maxAtionPoints: 3,
       spellHitBonus: 1,
-      spellDamageBonus: 1
+      spellDamageBonus: 1,
+      magicDefense: 1,
+      rangedDefense: 1,
+      meleeDefense: 1
     }
   }
 ]

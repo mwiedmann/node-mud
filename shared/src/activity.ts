@@ -13,4 +13,5 @@ export type MOBAttackActivityLog = {
   toX: number
   toY: number
   hit: boolean
+  targetId: number
 }

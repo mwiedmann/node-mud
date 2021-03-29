@@ -7,7 +7,8 @@ export const rogueProgression: LevelProgression[] = [
       rangedHitBonus: 1,
       maxHealth: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -16,7 +17,10 @@ export const rogueProgression: LevelProgression[] = [
       rangedDamageBonus: 1,
       maxHealth: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      rangedDefense: 1,
+      meleeDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -26,7 +30,10 @@ export const rogueProgression: LevelProgression[] = [
       meleeDamageBonus: 1,
       maxHealth: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      rangedDefense: 1,
+      meleeDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -35,7 +42,8 @@ export const rogueProgression: LevelProgression[] = [
       rangedHitBonus: 1,
       maxHealth: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -44,7 +52,10 @@ export const rogueProgression: LevelProgression[] = [
       rangedDamageBonus: 1,
       maxHealth: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      rangedDefense: 1,
+      meleeDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -54,7 +65,10 @@ export const rogueProgression: LevelProgression[] = [
       meleeDamageBonus: 1,
       maxHealth: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      rangedDefense: 1,
+      meleeDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -63,7 +77,8 @@ export const rogueProgression: LevelProgression[] = [
       rangedHitBonus: 1,
       maxHealth: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -72,7 +87,10 @@ export const rogueProgression: LevelProgression[] = [
       rangedDamageBonus: 1,
       maxHealth: 1,
       maxAtionPoints: 4,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      rangedDefense: 1,
+      meleeDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -84,7 +102,10 @@ export const rogueProgression: LevelProgression[] = [
       rangedDamageBonus: 1,
       maxHealth: 2,
       maxAtionPoints: 8,
-      damageBonusWhenInvisible: 1
+      damageBonusWhenInvisible: 1,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   }
 ]

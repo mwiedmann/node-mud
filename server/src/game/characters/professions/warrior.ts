@@ -6,7 +6,9 @@ export const warriorProgression: LevelProgression[] = [
     upgrades: {
       meleeHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      meleeDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -15,7 +17,10 @@ export const warriorProgression: LevelProgression[] = [
       meleeHitBonus: 1,
       meleeDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -23,7 +28,10 @@ export const warriorProgression: LevelProgression[] = [
     upgrades: {
       meleeHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -32,7 +40,9 @@ export const warriorProgression: LevelProgression[] = [
       meleeHitBonus: 1,
       meleeDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      meleeDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -40,7 +50,10 @@ export const warriorProgression: LevelProgression[] = [
     upgrades: {
       meleeHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -49,7 +62,10 @@ export const warriorProgression: LevelProgression[] = [
       meleeHitBonus: 1,
       meleeDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -57,7 +73,9 @@ export const warriorProgression: LevelProgression[] = [
     upgrades: {
       meleeHitBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      meleeDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -66,7 +84,10 @@ export const warriorProgression: LevelProgression[] = [
       meleeHitBonus: 1,
       meleeDamageBonus: 1,
       maxHealth: 1,
-      maxAtionPoints: 3
+      maxAtionPoints: 3,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -75,7 +96,10 @@ export const warriorProgression: LevelProgression[] = [
       meleeHitBonus: 2,
       meleeDamageBonus: 2,
       maxHealth: 2,
-      maxAtionPoints: 6
+      maxAtionPoints: 6,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   }
 ]

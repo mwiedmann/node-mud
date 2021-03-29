@@ -13,14 +13,19 @@ export const giantProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 3,
       maxAtionPoints: 1,
-      meleeDamageBonus: 1
+      meleeDamageBonus: 1,
+      meleeDefense: 1,
+      rangedDefense: 1
     }
   },
   {
     level: 4,
     upgrades: {
       maxHealth: 3,
-      maxAtionPoints: 1
+      maxAtionPoints: 1,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -35,7 +40,9 @@ export const giantProgression: LevelProgression[] = [
     level: 6,
     upgrades: {
       maxHealth: 3,
-      maxAtionPoints: 1
+      maxAtionPoints: 1,
+      meleeDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -43,7 +50,10 @@ export const giantProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 3,
       maxAtionPoints: 1,
-      meleeDamageBonus: 1
+      meleeDamageBonus: 1,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -58,7 +68,9 @@ export const giantProgression: LevelProgression[] = [
     upgrades: {
       maxHealth: 3,
       maxAtionPoints: 1,
-      meleeHitBonus: 1
+      meleeHitBonus: 1,
+      meleeDefense: 1,
+      rangedDefense: 1
     }
   },
   {
@@ -67,7 +79,10 @@ export const giantProgression: LevelProgression[] = [
       maxHealth: 3,
       maxAtionPoints: 1,
       meleeHitBonus: 1,
-      meleeDamageBonus: 1
+      meleeDamageBonus: 1,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   }
 ]

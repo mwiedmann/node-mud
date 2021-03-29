@@ -16,7 +16,10 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     meleeDamageBonus: 2,
     rangedHitBonus: -1,
     spellHitBonus: -1,
-    visibleRange: 10
+    visibleRange: 10,
+    meleeDefense: 5,
+    rangedDefense: 4,
+    magicDefense: 3
   },
   elf: {
     maxHealth: 16,
@@ -26,7 +29,10 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     rangedDamageBonus: 1,
     spellHitBonus: 1,
     spellDamageBonus: 1,
-    visibleRange: 9
+    visibleRange: 9,
+    meleeDefense: 3,
+    rangedDefense: 5,
+    magicDefense: 4
   },
   giant: {
     maxHealth: 28,
@@ -35,7 +41,10 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     meleeDamageBonus: 3,
     rangedHitBonus: -2,
     spellHitBonus: -2,
-    visibleRange: 7
+    visibleRange: 7,
+    meleeDefense: 4,
+    rangedDefense: 4,
+    magicDefense: 3
   },
   gnome: {
     maxHealth: 12,
@@ -44,7 +53,10 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     rangedHitBonus: 1,
     spellHitBonus: 2,
     spellDamageBonus: 2,
-    visibleRange: 9
+    visibleRange: 9,
+    meleeDefense: 3,
+    rangedDefense: 4,
+    magicDefense: 5
   },
   halfling: {
     maxHealth: 14,
@@ -53,7 +65,10 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     meleeDamageBonus: 1,
     rangedHitBonus: 2,
     rangedDamageBonus: 1,
-    visibleRange: 8
+    visibleRange: 8,
+    meleeDefense: 3,
+    rangedDefense: 5,
+    magicDefense: 4
   },
   human: {
     maxHealth: 20,
@@ -61,7 +76,10 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     meleeHitBonus: 1,
     rangedHitBonus: 1,
     spellHitBonus: 1,
-    visibleRange: 8
+    visibleRange: 8,
+    meleeDefense: 4,
+    rangedDefense: 4,
+    magicDefense: 4
   }
 })
 

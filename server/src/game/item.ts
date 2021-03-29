@@ -44,7 +44,7 @@ export class Item {
       this.getSubTypeDescription(),
       getBonusesDescription(this.bonuses.meleeHitBonus, 'hit'),
       getBonusesDescription(this.bonuses.meleeDamageBonus, 'dmg'),
-      getBonusesDescription(this.bonuses.physicalDefense, 'AC')
+      getBonusesDescription(this.bonuses.meleeDefense, 'AC')
     ]
       .filter((d) => d)
       .join(' ')

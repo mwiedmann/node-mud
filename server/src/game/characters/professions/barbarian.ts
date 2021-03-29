@@ -15,7 +15,8 @@ export const barbarianProgression: LevelProgression[] = [
       meleeHitBonus: 1,
       meleeDamageBonus: 1,
       maxHealth: 2,
-      maxAtionPoints: 5
+      maxAtionPoints: 5,
+      meleeDefense: 1
     }
   },
   {
@@ -23,7 +24,10 @@ export const barbarianProgression: LevelProgression[] = [
     upgrades: {
       meleeDamageBonus: 1,
       maxHealth: 2,
-      maxAtionPoints: 5
+      maxAtionPoints: 5,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -40,7 +44,8 @@ export const barbarianProgression: LevelProgression[] = [
     upgrades: {
       meleeDamageBonus: 1,
       maxHealth: 2,
-      maxAtionPoints: 5
+      maxAtionPoints: 5,
+      meleeDefense: 1
     }
   },
   {
@@ -49,7 +54,10 @@ export const barbarianProgression: LevelProgression[] = [
       meleeHitBonus: 1,
       meleeDamageBonus: 1,
       maxHealth: 2,
-      maxAtionPoints: 5
+      maxAtionPoints: 5,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   },
   {
@@ -66,7 +74,8 @@ export const barbarianProgression: LevelProgression[] = [
       meleeHitBonus: 1,
       meleeDamageBonus: 1,
       maxHealth: 2,
-      maxAtionPoints: 5
+      maxAtionPoints: 5,
+      meleeDefense: 1
     }
   },
   {
@@ -75,7 +84,10 @@ export const barbarianProgression: LevelProgression[] = [
       meleeHitBonus: 2,
       meleeDamageBonus: 2,
       maxHealth: 4,
-      maxAtionPoints: 10
+      maxAtionPoints: 10,
+      meleeDefense: 1,
+      rangedDefense: 1,
+      magicDefense: 1
     }
   }
 ]
