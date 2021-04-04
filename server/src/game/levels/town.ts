@@ -10,11 +10,11 @@ const height = 10
 export const createTownLevel = <T>(stairsDown: Stairs): Level<T> => {
   const level = new Level<T>(nextId())
 
-  const map = createEmptyMap(10, 10)
+  const map = createEmptyMap(10, 10, 8, 8)
 
-  addBorderToMap(map, { x: 0, y: 0 }, { x: width - 1, y: height - 1 })
+  addBorderToMap(map, { x: 0, y: 0 }, { x: width - 1, y: height - 1 }, 96, 8)
 
-  level.setWalls(map, SquareType.Wall)
+  level.setWalls(map)
 
   // Create the town stairs down into the dungeon
   const townStairs: Stairs = {

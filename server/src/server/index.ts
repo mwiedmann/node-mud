@@ -82,7 +82,7 @@ const updateGame = () => {
           p.connection.send(
             JSON.stringify({
               type: 'map',
-              data: l.walls
+              data: l.detailedMap
             })
           )
           p.movedLevels = false
@@ -187,7 +187,7 @@ const loginPlayer = (ws: WebSocket, { name, race, profession }: MessageLogin) =>
   ws.send(
     JSON.stringify({
       type: 'map',
-      data: level.walls
+      data: level.detailedMap
     })
   )
 }

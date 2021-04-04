@@ -12,8 +12,8 @@ import { Stairs } from './levels/stairs'
 export class Game<T> {
   constructor() {
     const level = new Level<T>(nextId())
-    const map = randomDungeon(200, 100)
-    level.setWalls(map, SquareType.Wall) // This will also create the map search graph
+    const map = randomDungeon(200, 100, 8, 8, 64, 4)
+    level.setWalls(map) // This will also create the map search graph
 
     // Create a stairway back up to town in the middle of the level (town will connect when it is created)
     const stairs: Stairs = {

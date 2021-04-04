@@ -17,29 +17,35 @@ export type Moved = {
 
 export const getPrintableMap = (map: SquareType[][]): string => {
   return map.reduce((prev, next) => {
-    return prev + next.join('') + '\n'
+    return prev + next.join(' ') + '\n'
   }, '')
 }
 
-export const createEmptyMap = (mapWidth: number, mapHeight: number): SquareType[][] => {
+export const createEmptyMap = (
+  mapWidth: number,
+  mapHeight: number,
+  floorTileStart: number,
+  floorTypeCount: number
+): number[][] => {
   const map: SquareType[][] = new Array(mapHeight)
   for (let y = 0; y < mapHeight; y++) {
-    map[y] = new Array(mapWidth).fill(SquareType.Empty)
+    map[y] = new Array(mapWidth).fill(0).map((_) => floorTileStart + Math.floor(Math.random() * floorTypeCount))
   }
 
   return map
 }
 
 export const addBorderToMap = (
-  map: SquareType[][],
+  map: number[][],
   start: { x: number; y: number },
   end: { x: number; y: number },
-  borderPiece = SquareType.Wall
+  borderPieceTileStart: number,
+  borderPieceTypeCount: number
 ): void => {
   for (let y = start.y; y <= end.y; y++) {
     for (let x = start.x; x <= end.x; x++) {
       if (x === start.x || x === end.x || y === start.y || y === end.y) {
-        map[y][x] = borderPiece
+        map[y][x] = borderPieceTileStart + Math.floor(Math.random() * borderPieceTypeCount)
       }
     }
   }
@@ -50,7 +56,7 @@ export const createMapWithMonsters = (wallMap: SquareType[][], monsters: Map<num
   const mapHeight = wallMap.length
 
   // First create a map with the monster locations
-  const monsterMap = createEmptyMap(wallMap[0].length, wallMap.length)
+  const monsterMap = createEmptyMap(wallMap[0].length, wallMap.length, 0, 1)
   const monIterator = monsters[Symbol.iterator]()
   for (const m of monIterator) {
     const monster = m[1]
@@ -80,7 +86,14 @@ export const addRandomWalls = (map: SquareType[][], wallCount: number): void => 
   }
 }
 
-export const randomDungeon = (mapWidth: number, mapHeight: number): number[][] => {
+export const randomDungeon = (
+  mapWidth: number,
+  mapHeight: number,
+  floorTileStart: number,
+  floorTypeCount: number,
+  wallTileStart: number,
+  wallTypeCount: number
+): number[][] => {
   const options = {
     width: mapWidth,
     height: mapHeight,
@@ -91,9 +104,10 @@ export const randomDungeon = (mapWidth: number, mapHeight: number): number[][] =
 
   for (let y = 0; y < dungeon.length; y++) {
     for (let x = 0; x < dungeon[y].length; x++) {
-      if (dungeon[y][x] > 1) {
-        dungeon[y][x] = 0
-      }
+      dungeon[y][x] =
+        dungeon[y][x] === 1
+          ? wallTileStart + Math.floor(Math.random() * wallTypeCount)
+          : floorTileStart + Math.floor(Math.random() * floorTypeCount)
     }
   }
 

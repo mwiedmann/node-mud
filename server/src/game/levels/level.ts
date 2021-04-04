@@ -9,6 +9,7 @@ import { Stairs } from './stairs'
 export class Level<T> {
   constructor(public id: number) {}
 
+  detailedMap: number[][] = []
   walls: SquareType[][] = []
   wallsAndMobs: SquareType[][] = []
   players: Map<number, Player<T>> = new Map()
@@ -86,16 +87,20 @@ export class Level<T> {
     this.wallsAndMobs[y][x] = this.walls[y][x]
   }
 
-  setWalls(map: number[][], minWallValue: number): void {
+  setWalls(map: number[][]): void {
+    const wallTilesStartIndex = 64
     const mapWidth = map[0].length
     const mapHeight = map.length
 
-    // Create a wall map of 0/1 for navigation
+    // This map is sent to the client because it has the exact tiles
+    this.detailedMap = map
+
+    // Create a simple wall map of 0/1 for navigation
     this.walls = new Array(mapHeight)
     for (let y = 0; y < mapHeight; y++) {
       this.walls[y] = new Array(mapWidth).fill(SquareType.Empty)
       for (let x = 0; x < mapWidth; x++) {
-        this.walls[y][x] = map[y][x] >= minWallValue ? SquareType.Wall : SquareType.Empty
+        this.walls[y][x] = map[y][x] >= wallTilesStartIndex ? SquareType.Wall : SquareType.Empty
       }
     }
 

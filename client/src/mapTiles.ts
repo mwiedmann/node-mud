@@ -5,7 +5,7 @@ import { gameSettings } from './settings'
 import { Mrpas } from 'mrpas'
 
 const fov = new Mrpas(gameSettings.cellCountX, gameSettings.cellCountY, (x, y) => {
-  return gameState.map[y][x] === 0
+  return gameState.map[y][x] < gameSettings.wallTilesStartIndex
 })
 
 export type MapTiles = Map<
@@ -88,7 +88,7 @@ export const tileIsBlocked = (startX: number, startY: number, endX: number, endY
     for (let x = Math.min(endX, startX); x <= Math.max(endX, startX) && !isBlocked; x++) {
       const isStart = x === startX && y === startY
       const isEnd = x === endX && y === endY
-      const hasTile = !isStart && !isEnd && gameState.map[y][x] > 0
+      const hasTile = !isStart && !isEnd && gameState.map[y][x] >= gameSettings.wallTilesStartIndex
       if (hasTile) {
         const rect = new Phaser.Geom.Rectangle(x, y, 1, 1)
         // See if this tile is blocking any lines of sight

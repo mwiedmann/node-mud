@@ -20,6 +20,8 @@ class GameSettings {
   ghostAlpha = 0.4
   hiddenTileAlpha = 0.3
 
+  wallTilesStartIndex = 64
+
   halfCell: number
   fieldWidth: number
   fieldHeight: number
