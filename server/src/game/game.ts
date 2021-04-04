@@ -4,7 +4,7 @@ import { Level } from './levels/level'
 import { performance } from 'perf_hooks'
 import { monsterSettings, MonsterType } from './mob/monsterFactory'
 import { playerFactory } from './characters'
-import { PlayerProfession, PlayerRace } from 'dng-shared'
+import { PlayerProfession, PlayerRace, SquareType } from 'dng-shared'
 import { nextId } from './id'
 import { createTownLevel } from './levels/town'
 import { Stairs } from './levels/stairs'
@@ -13,7 +13,7 @@ export class Game<T> {
   constructor() {
     const level = new Level<T>(nextId())
     const map = randomDungeon(200, 100)
-    level.setWalls(map) // This will also create the map search graph
+    level.setWalls(map, SquareType.Wall) // This will also create the map search graph
 
     // Create a stairway back up to town in the middle of the level (town will connect when it is created)
     const stairs: Stairs = {

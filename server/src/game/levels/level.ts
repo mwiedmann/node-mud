@@ -86,8 +86,19 @@ export class Level<T> {
     this.wallsAndMobs[y][x] = this.walls[y][x]
   }
 
-  setWalls(map: SquareType[][]): void {
-    this.walls = map
+  setWalls(map: number[][], minWallValue: number): void {
+    const mapWidth = map[0].length
+    const mapHeight = map.length
+
+    // Create a wall map of 0/1 for navigation
+    this.walls = new Array(mapHeight)
+    for (let y = 0; y < mapHeight; y++) {
+      this.walls[y] = new Array(mapWidth).fill(SquareType.Empty)
+      for (let x = 0; x < mapWidth; x++) {
+        this.walls[y][x] = map[y][x] >= minWallValue ? SquareType.Wall : SquareType.Empty
+      }
+    }
+
     this.updateGraph()
   }
 
