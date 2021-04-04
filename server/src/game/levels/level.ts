@@ -1,16 +1,20 @@
 import { AStarFinder } from 'astar-typescript'
 import { intersect, SquareType } from 'dng-shared'
-import { Consumable } from './consumable'
-import { Item } from './item'
-import { createMapWithMonsters, findOpenSpace, Moved, getPrintableMap } from './map'
-import { MOB, Monster, Player } from './mob'
+import { Consumable } from '../consumable'
+import { Item } from '../item'
+import { createMapWithMonsters, findOpenSpace, Moved, getPrintableMap } from '../map'
+import { MOB, Monster, Player } from '../mob'
+import { Stairs } from './stairs'
 
 export class Level<T> {
+  constructor(public id: number) {}
+
   walls: SquareType[][] = []
   wallsAndMobs: SquareType[][] = []
   players: Map<number, Player<T>> = new Map()
   monsters: Map<number, Monster> = new Map()
   items: Map<string, Consumable | Item> = new Map()
+  stairs: Map<number, Stairs> = new Map()
 
   private createMapWithRangeBlockers(
     start: { x: number; y: number },
@@ -324,5 +328,16 @@ export class Level<T> {
     }
 
     return false
+  }
+
+  stairsCheck(x: number, y: number): Stairs | undefined {
+    const iterator = this.stairs[Symbol.iterator]()
+
+    for (const s of iterator) {
+      const stairs = s[1]
+      if (stairs.x === x && stairs.y === y) {
+        return stairs
+      }
+    }
   }
 }

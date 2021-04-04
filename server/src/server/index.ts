@@ -77,6 +77,17 @@ const updateGame = () => {
           p.connection.send(state)
         }
 
+        // If the player moved levels, send the new map
+        if (p.movedLevels) {
+          p.connection.send(
+            JSON.stringify({
+              type: 'map',
+              data: l.walls
+            })
+          )
+          p.movedLevels = false
+        }
+
         l.monsters.forEach((c) => {
           const state = c.getState()
           if (state) {
@@ -170,13 +181,13 @@ type PlayerConnection = {
 }
 
 const loginPlayer = (ws: WebSocket, { name, race, profession }: MessageLogin) => {
-  const player = game.login(name, race, profession, ws)
+  const { player, level } = game.login(name, race, profession, ws)
   console.log(`Logged in player: ${name}, id: ${player.id}`, race, profession)
-  ws.send(JSON.stringify({ name, id: player.id }))
+  ws.send(JSON.stringify({ name, id: player.id })) // TODO: This doesn't do anything. Make a real message.
   ws.send(
     JSON.stringify({
       type: 'map',
-      data: game.levels.get(1)?.walls
+      data: level.walls
     })
   )
 }

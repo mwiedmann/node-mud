@@ -1,5 +1,5 @@
 import { MOBType, xpForKill } from './monsterFactory'
-import { Level } from '../level'
+import { Level } from '../levels/level'
 import { rollDice, RollResult } from '../combat'
 import { Moved } from '../map'
 import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon, Weapon } from '../item'
@@ -358,7 +358,9 @@ export abstract class MOB implements MOBSkills, MOBItems {
     }
 
     this.takeAction(tick, level, notes)
-    return this.moveTowardsDestination(tick, level, notes)
+    this.moveTowardsDestination(tick, level, notes)
+
+    return notes
   }
 
   moveDestinationInBounds(level: Level<unknown>): void {
@@ -377,7 +379,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     }
   }
 
-  moveTowardsDestination(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): MOBUpdateNotes {
+  moveTowardsDestination(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
     const startX = this.x
     const startY = this.y
 
@@ -431,8 +433,15 @@ export abstract class MOB implements MOBSkills, MOBItems {
     // Return if the MOB actually moved
     notes.moved =
       startX !== this.x || startY !== this.y ? { fromX: startX, fromY: startY, toX: this.x, toY: this.y } : undefined
+  }
 
-    return notes
+  haltEverything(): void {
+    this.moveGraph = []
+    this.destinationX = this.x
+    this.destinationY = this.y
+    this.specialAbilityX = undefined
+    this.specialAbilityY = undefined
+    this.specialAbilityActivate = false
   }
 
   abstract specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void

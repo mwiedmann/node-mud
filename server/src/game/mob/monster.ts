@@ -1,5 +1,5 @@
 import { MOBType } from './monsterFactory'
-import { Level } from '../level'
+import { Level } from '../levels/level'
 import { MOB, MOBUpdateNotes } from './mob'
 
 export class Monster extends MOB {
@@ -67,6 +67,8 @@ export class Monster extends MOB {
       }
     }
 
-    return super.moveTowardsDestination(tick, level, notes)
+    super.moveTowardsDestination(tick, level, notes)
+
+    return notes
   }
 }

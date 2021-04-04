@@ -3,7 +3,7 @@
 import { NewDungeon } from 'random-dungeon-generator'
 import { Consumable, ConsumableTypes } from './consumable'
 import { MajorItemType, MeleeType, MeleeWeapon, MeleeWeaponFactory } from './item'
-import { Level } from './level'
+import { Level } from './levels/level'
 import { Monster } from './mob'
 import { monsterFactory, MonsterType } from './mob/monsterFactory'
 import { SquareType } from 'dng-shared'
@@ -28,6 +28,21 @@ export const createEmptyMap = (mapWidth: number, mapHeight: number): SquareType[
   }
 
   return map
+}
+
+export const addBorderToMap = (
+  map: SquareType[][],
+  start: { x: number; y: number },
+  end: { x: number; y: number },
+  borderPiece = SquareType.Wall
+): void => {
+  for (let y = start.y; y <= end.y; y++) {
+    for (let x = start.x; x <= end.x; x++) {
+      if (x === start.x || x === end.x || y === start.y || y === end.y) {
+        map[y][x] = borderPiece
+      }
+    }
+  }
 }
 
 export const createMapWithMonsters = (wallMap: SquareType[][], monsters: Map<number, Monster>): SquareType[][] => {

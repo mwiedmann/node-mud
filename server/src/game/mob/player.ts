@@ -1,4 +1,4 @@
-import { Level } from '../level'
+import { Level } from '../levels/level'
 import { LevelProgression } from '../characters'
 import { inRange } from '../util'
 import { MOB, MOBUpdateNotes } from './mob'
@@ -22,6 +22,7 @@ export class Player<T> extends MOB {
 
   moveSearchLimit = 20
   lastTickReceivedState = 0
+  movedLevels = false
 
   levelsGained: { level: number; xp: number; gained?: boolean }[] = [
     { level: 1, xp: 0, gained: true },
@@ -241,6 +242,8 @@ export class Player<T> extends MOB {
     //   }
     // }
 
-    return super.moveTowardsDestination(tick, level, notes)
+    super.moveTowardsDestination(tick, level, notes)
+
+    return notes
   }
 }
