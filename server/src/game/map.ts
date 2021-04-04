@@ -2,7 +2,7 @@
 // @ts-ignore
 import { NewDungeon } from 'random-dungeon-generator'
 import { Consumable, ConsumableTypes } from './consumable'
-import { MajorItemType, MeleeType, MeleeWeapon, MeleeWeaponFactory } from './item'
+import { MeleeType, MeleeWeaponFactory } from './item'
 import { Level } from './levels/level'
 import { Monster } from './mob'
 import { monsterFactory, MonsterType } from './mob/monsterFactory'
@@ -24,12 +24,14 @@ export const getPrintableMap = (map: SquareType[][]): string => {
 export const createEmptyMap = (
   mapWidth: number,
   mapHeight: number,
-  floorTileStart: number,
-  floorTypeCount: number
+  floorTileStart = 0,
+  floorTypeCount = 0
 ): number[][] => {
   const map: SquareType[][] = new Array(mapHeight)
   for (let y = 0; y < mapHeight; y++) {
-    map[y] = new Array(mapWidth).fill(0).map((_) => floorTileStart + Math.floor(Math.random() * floorTypeCount))
+    map[y] = new Array(mapWidth)
+      .fill(0)
+      .map((_) => (floorTypeCount ? floorTileStart + Math.floor(Math.random() * floorTypeCount) : floorTileStart))
   }
 
   return map
@@ -56,10 +58,9 @@ export const createMapWithMonsters = (wallMap: SquareType[][], monsters: Map<num
   const mapHeight = wallMap.length
 
   // First create a map with the monster locations
-  const monsterMap = createEmptyMap(wallMap[0].length, wallMap.length, 0, 1)
+  const monsterMap = createEmptyMap(wallMap[0].length, wallMap.length)
   const monIterator = monsters[Symbol.iterator]()
-  for (const m of monIterator) {
-    const monster = m[1]
+  for (const [, monster] of monIterator) {
     if (!monster.dead) {
       monsterMap[monster.y][monster.x] = SquareType.Monster
     }

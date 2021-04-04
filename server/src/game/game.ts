@@ -12,14 +12,14 @@ import { Stairs } from './levels/stairs'
 export class Game<T> {
   constructor() {
     const level = new Level<T>(nextId())
-    const map = randomDungeon(200, 100, 8, 8, 64, 4)
+    const map = randomDungeon(100, 100, 8, 8, 64, 4)
     level.setWalls(map) // This will also create the map search graph
 
     // Create a stairway back up to town in the middle of the level (town will connect when it is created)
     const stairs: Stairs = {
       id: nextId(),
-      x: 100,
-      y: 50
+      x: Math.floor(map[0].length / 2),
+      y: Math.floor(map.length / 2)
     }
     level.stairs.set(stairs.id, stairs)
 
@@ -28,7 +28,7 @@ export class Game<T> {
       .filter(([_, value]) => value.level === 1)
       .map(([key]) => key as MonsterType)
       .forEach((monsterName) => {
-        randomMonsters(monsterName, 30, level)
+        randomMonsters(monsterName, 15, level)
       })
 
     // Need to reupdate the graph after adding monsters
@@ -106,7 +106,6 @@ export class Game<T> {
 
   findStairs(stairsId: number): { level: Level<T>; stairs: Stairs } {
     const iterator = this.levels[Symbol.iterator]()
-
     for (const [, level] of iterator) {
       const stairs = level.stairs.get(stairsId)
       if (stairs) {

@@ -10,6 +10,7 @@ let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
 let tileMap: Phaser.Tilemaps.Tilemap
 let mapLayer: Phaser.Tilemaps.TilemapLayer
+let tileSet: Phaser.Tilemaps.Tileset
 
 const pointerCallback = (p: Phaser.Input.Pointer) => {
   connectionManager.setDestination(gameSettings.cellFromScreenPos(p.worldX), gameSettings.cellFromScreenPos(p.worldY))
@@ -403,6 +404,11 @@ const cleanup = (scene: Phaser.Scene): void => {
 const drawMap = (scene: Phaser.Scene): void => {
   console.log('drawMap')
 
+  if (tileMap) {
+    tileMap.destroy()
+    mapLayer.destroy()
+  }
+
   tileMap = scene.make.tilemap({
     data: gameState.map,
     tileWidth: gameSettings.cellSize,
@@ -411,7 +417,7 @@ const drawMap = (scene: Phaser.Scene): void => {
     height: gameState.map[0].length
   })
 
-  tileMap.addTilesetImage('maptiles', 'maptiles', gameSettings.cellSize, gameSettings.cellSize)
+  tileSet = tileMap.addTilesetImage('maptiles', 'maptiles', gameSettings.cellSize, gameSettings.cellSize)
 
   mapLayer = tileMap.createLayer(0, 'maptiles')
   mapLayer.setDepth(-1)

@@ -246,9 +246,7 @@ export class Level<T> {
     checkCanSee?: boolean
   ): T | undefined {
     const iterator = mobMap[Symbol.iterator]()
-
-    for (const m of iterator) {
-      const mob = m[1]
+    for (const [, mob] of iterator) {
       if (this.isMobInRange(mob, x, y, range, minRange, checkCanSee)) {
         return mob
       }
@@ -267,9 +265,7 @@ export class Level<T> {
   ): T[] {
     const mobList: T[] = []
     const iterator = mobMap[Symbol.iterator]()
-
-    for (const m of iterator) {
-      const mob = m[1]
+    for (const [, mob] of iterator) {
       if (this.isMobInRange(mob, x, y, range, minRange, checkCanSee)) {
         mobList.push(mob)
       }
@@ -280,9 +276,7 @@ export class Level<T> {
 
   locationIsSpotted<T extends MOB>(mobMap: Map<number, T>, x: number, y: number): boolean {
     const iterator = mobMap[Symbol.iterator]()
-
-    for (const m of iterator) {
-      const mob = m[1]
+    for (const [, mob] of iterator) {
       if (
         !mob.dead && // Not dead...duh
         Math.abs(mob.x - x) <= mob.visibleRange && // Check site range before trying more expensive "tileIsBlocked" calc
@@ -336,9 +330,8 @@ export class Level<T> {
     }
 
     const playerIterator = this.players[Symbol.iterator]()
-
-    for (const p of playerIterator) {
-      if (!p[1].dead && p[1].x === x && p[1].y === y) {
+    for (const [, player] of playerIterator) {
+      if (!player.dead && player.x === x && player.y === y) {
         return true
       }
     }
@@ -348,9 +341,7 @@ export class Level<T> {
 
   stairsCheck(x: number, y: number): Stairs | undefined {
     const iterator = this.stairs[Symbol.iterator]()
-
-    for (const s of iterator) {
-      const stairs = s[1]
+    for (const [, stairs] of iterator) {
       if (stairs.x === x && stairs.y === y) {
         return stairs
       }

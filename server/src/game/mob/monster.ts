@@ -28,9 +28,7 @@ export class Monster extends MOB {
     return super.update(tick, level)
   }
 
-  moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
-    const notes: MOBUpdateNotes = { notes: [], moved: undefined }
-
+  moveTowardsDestination(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): MOBUpdateNotes {
     // If it's time to move, see if there are any close players
     if (tick - this.lastMoveTick >= this.ticksPerMove && this.actionPoints >= this.actionPointCostPerMove) {
       notes.notes.push('Looking for player')

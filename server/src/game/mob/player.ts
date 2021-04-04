@@ -225,25 +225,4 @@ export class Player<T> extends MOB {
       }
     }
   }
-
-  moveTowardsDestination(tick: number, level: Level<unknown>): MOBUpdateNotes {
-    const notes: MOBUpdateNotes = { notes: [], moved: undefined }
-
-    // if (
-    //   this.mode === 'hunt' &&
-    //   tick - this.lastMoveTick >= this.ticksPerMove &&
-    //   this.actionPoints >= this.actionPointCostPerMove
-    // ) {
-    //   // If the player is hunting, look for close monsters
-    //   const monster = level.monsterInRange(this.x, this.y, this.huntRange)
-
-    //   if (monster) {
-    //     this.setDestination(monster.x, monster.y)
-    //   }
-    // }
-
-    super.moveTowardsDestination(tick, level, notes)
-
-    return notes
-  }
 }
