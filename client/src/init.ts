@@ -15,6 +15,23 @@ export let controls: {
   special: Phaser.Input.Keyboard.Key
 }
 
+export const freshPlayer = (): Player => ({
+  loggedIn: false,
+  x: 0,
+  y: 0,
+  dead: false,
+  hp: 0,
+  hpMax: 0,
+  ap: 0,
+  apMax: 0,
+  invisible: false,
+  lastX: -1,
+  lastY: -1,
+  activityLog: [],
+  attackActivityLog: [],
+  visibleRange: 5
+})
+
 export const gameState: {
   phase: States
   map: SquareType[][]
@@ -30,23 +47,15 @@ export const gameState: {
   race: 'human',
   profession: 'barbarian',
   mapUpdate: true,
-  player: {
-    loggedIn: false,
-    x: 0,
-    y: 0,
-    hp: 0,
-    hpMax: 0,
-    ap: 0,
-    apMax: 0,
-    invisible: false,
-    lastX: -1,
-    lastY: -1,
-    activityLog: [],
-    attackActivityLog: [],
-    visibleRange: 5
-  },
+  player: freshPlayer(),
   monsters: new Map(),
   items: new Map()
+}
+
+export const resetGameState = (): void => {
+  gameState.player = freshPlayer()
+  gameState.monsters = new Map()
+  gameState.items = new Map()
 }
 
 function scenePreload(this: Phaser.Scene) {

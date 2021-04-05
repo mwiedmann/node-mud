@@ -26,11 +26,14 @@ export const inRange = (visibleRange: number, startX: number, startY: number, en
   Math.abs(endX - startX) <= visibleRange && Math.abs(endY - startY) <= visibleRange
 
 export const setMapTilesSight = (
-  mapLayer: Phaser.Tilemaps.TilemapLayer,
+  mapLayer: Phaser.Tilemaps.TilemapLayer | undefined,
   visibleRange: number,
   startX: number,
   startY: number
 ): void => {
+  if (!mapLayer) {
+    throw new Error('mapLayer not defined')
+  }
   // Calculate visible spaces
   mapLayer.forEachTile((m: SeenTile) => {
     if (m.seen) {

@@ -1,16 +1,18 @@
 import * as Phaser from 'phaser'
 import { connectionManager } from '../connection'
 import { gameSettings } from '../settings'
-import { controls, gameState, sceneUpdate } from '../init'
+import { controls, freshPlayer, gameState, sceneUpdate } from '../init'
 import { checkGhostStatus, inRange, setMapTilesSight, tileIsBlocked } from '../mapTiles'
 import { StatusBars } from '../statusbars'
 import { MOBActivityLogLevel } from 'dng-shared'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
-let tileMap: Phaser.Tilemaps.Tilemap
-let mapLayer: Phaser.Tilemaps.TilemapLayer
-let tileSet: Phaser.Tilemaps.Tileset
+let tileMap: Phaser.Tilemaps.Tilemap | undefined
+let mapLayer: Phaser.Tilemaps.TilemapLayer | undefined
+let tileSet: Phaser.Tilemaps.Tileset | undefined
+let deadText: Phaser.GameObjects.Text | undefined
+let preCameraSettings: Phaser.Types.Cameras.Scene2D.JSONCamera
 
 const pointerCallback = (p: Phaser.Input.Pointer) => {
   connectionManager.setDestination(gameSettings.cellFromScreenPos(p.worldX), gameSettings.cellFromScreenPos(p.worldY))
@@ -51,6 +53,9 @@ const activityLogColor = (level: MOBActivityLogLevel, flip?: boolean) =>
     : activityColors.neutral
 
 const init = (scene: Phaser.Scene): void => {
+  // Save the default camera settings so we can reset later
+  preCameraSettings = scene.cameras.main.toJSON()
+
   connectionManager.openConnection(scene)
   scene.cameras.main.setZoom(gameSettings.gameCameraZoom)
 
@@ -76,12 +81,36 @@ const init = (scene: Phaser.Scene): void => {
   })
 }
 
+const backToTitle = (scene: Phaser.Scene) => {
+  // reset the camera
+  scene.cameras.main.setZoom(1)
+  scene.cameras.main.stopFollow()
+  scene.cameras.main.setDeadzone()
+  scene.cameras.main.setBounds(
+    preCameraSettings.bounds?.x || 0,
+    preCameraSettings.bounds?.y || 0,
+    preCameraSettings.bounds?.width || 1,
+    preCameraSettings.bounds?.height || 1
+  )
+
+  gameState.phase = 'gameOver'
+}
+
 // const isTileVisible = (startX: number, startY: number, endX: number, endY: number, )
 
 const update = (scene: Phaser.Scene, time: number, delta: number): void => {
   // Don't process the game until the player login is complete
   if (!gameState.player.loggedIn) {
     return
+  }
+
+  if (gameState.player.dead) {
+    if (!deadText) {
+      controls.next.on('up', () => {
+        backToTitle(scene)
+      })
+      showDeadMessage(scene)
+    }
   }
 
   if (gameState.mapUpdate) {
@@ -179,8 +208,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
   }
 
   if (controls.quit.isDown) {
-    connectionManager.logout()
-    gameState.phase = 'title'
+    backToTitle(scene)
   }
 
   if (controls.zoomIn.isDown) {
@@ -388,7 +416,23 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
   projectiles = projectiles.filter((f) => !f.delete)
 }
 
+const showDeadMessage = (scene: Phaser.Scene): void => {
+  deadText = scene.add.text(
+    gameSettings.screenPosFromMap(gameState.player.x),
+    gameSettings.screenPosFromMap(gameState.player.y) + gameSettings.cellSize * 2,
+    'You are dead! Press Space to continue',
+    { color: 'red', align: 'center' }
+  )
+}
+
 const cleanup = (scene: Phaser.Scene): void => {
+  projectiles.forEach((p) => p.sprite.destroy())
+  floatingObjects.forEach((l) => l.text.destroy())
+  gameState.items.forEach((i) => i.sprite?.destroy())
+  gameState.monsters.forEach((m) => {
+    m.sprite?.destroy()
+    m.statusbars?.destroy()
+  })
   guy?.destroy()
   guy = undefined
   statusbars?.destroy()
@@ -397,17 +441,18 @@ const cleanup = (scene: Phaser.Scene): void => {
   scene.input.removeListener('pointerup', pointerCallback)
   controls.getItem.removeAllListeners()
 
-  mapLayer.destroy()
-  tileMap.destroy()
+  mapLayer?.destroy()
+  mapLayer = undefined
+  tileMap?.destroy()
+  tileMap = undefined
+  deadText?.destroy()
+  deadText = undefined
 }
 
 const drawMap = (scene: Phaser.Scene): void => {
   console.log('drawMap')
-
-  if (tileMap) {
-    tileMap.destroy()
-    mapLayer.destroy()
-  }
+  tileMap?.destroy()
+  mapLayer?.destroy()
 
   tileMap = scene.make.tilemap({
     data: gameState.map,

@@ -70,6 +70,9 @@ export class Game<T> {
       })
       l.players.forEach((p) => {
         p.update(this.tick, l)
+        if (p.dead) {
+          return
+        }
         const stairs = l.stairsCheck(p.x, p.y)
         if (stairs) {
           // Player is standing on stairs

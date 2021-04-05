@@ -23,6 +23,10 @@ export class Player<T> extends MOB {
   moveSearchLimit = 20
   lastTickReceivedState = 0
   movedLevels = false
+  kills = 0
+  damageDone = 0
+  gold = 0
+  deadSent = false
 
   levelsGained: { level: number; xp: number; gained?: boolean }[] = [
     { level: 1, xp: 0, gained: true },

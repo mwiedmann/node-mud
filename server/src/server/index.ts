@@ -3,7 +3,7 @@ import { createGame, Game } from '../game'
 import { Player } from '../game/mob'
 import { tickSettings } from './tick'
 import { performance } from 'perf_hooks'
-import { PlayerProfession, PlayerRace } from 'dng-shared'
+import { DeadMessage, PlayerProfession, PlayerRace } from 'dng-shared'
 
 let game: Game<WebSocket>
 
@@ -86,6 +86,18 @@ const updateGame = () => {
             })
           )
           p.movedLevels = false
+        }
+
+        if (p.dead && !p.deadSent) {
+          p.deadSent = true
+          p.connection.send(
+            JSON.stringify(<DeadMessage>{
+              type: 'dead',
+              gold: p.gold,
+              kills: p.kills,
+              damageDone: p.damageDone
+            })
+          )
         }
 
         l.monsters.forEach((c) => {

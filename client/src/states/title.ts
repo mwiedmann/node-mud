@@ -2,7 +2,7 @@ import * as Phaser from 'phaser'
 import { gameSettings } from '../settings'
 import { controls, gameState } from '../init'
 
-let screen: Phaser.GameObjects.Image
+let screen: Phaser.GameObjects.Image | undefined
 
 const init = (scene: Phaser.Scene): void => {
   screen = scene.add.image(gameSettings.screenWidthMid, gameSettings.screenHeightMid, 'title')
@@ -15,7 +15,8 @@ const init = (scene: Phaser.Scene): void => {
 const update = (scene: Phaser.Scene, time: number, delta: number): void => {}
 
 const cleanup = (): void => {
-  screen.destroy()
+  screen?.destroy()
+  screen = undefined
   controls.next.removeAllListeners()
 }
 

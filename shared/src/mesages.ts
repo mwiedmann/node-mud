@@ -71,4 +71,18 @@ export type ItemMessage = {
   }
 }
 
-export type BaseMessage = WelcomeMessage | MapMessage | PlayerMessage | MonsterMessage | ConsumableMessage | ItemMessage
+export type DeadMessage = {
+  type: 'dead'
+  gold: number
+  kills: number
+  damageDone: number
+}
+
+export type BaseMessage =
+  | WelcomeMessage
+  | MapMessage
+  | PlayerMessage
+  | MonsterMessage
+  | ConsumableMessage
+  | ItemMessage
+  | DeadMessage

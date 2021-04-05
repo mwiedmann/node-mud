@@ -1,9 +1,9 @@
 import * as Phaser from 'phaser'
 import { gameSettings } from '../settings'
 import { controls, gameState } from '../init'
-import { PlayerProfession, PlayerRace } from 'dng-shared'
+import { PlayerProfession } from 'dng-shared'
 
-let screen: Phaser.GameObjects.Image
+let screen: Phaser.GameObjects.Image | undefined
 
 const width = 500
 const height = 400
@@ -19,7 +19,7 @@ const professionCoordinates: Record<PlayerProfession, Coords> = {
   wizard: { x: 1410, y: 600 }
 }
 
-let selectionRectangle: Phaser.GameObjects.Rectangle
+let selectionRectangle: Phaser.GameObjects.Rectangle | undefined
 
 const pointerCallback = (scene: Phaser.Scene) => (p: Phaser.Input.Pointer) => {
   const x = p.worldX
@@ -57,8 +57,10 @@ const init = (scene: Phaser.Scene): void => {
 const update = (scene: Phaser.Scene, time: number, delta: number): void => {}
 
 const cleanup = (scene: Phaser.Scene): void => {
-  screen.destroy()
-  selectionRectangle.destroy()
+  screen?.destroy()
+  screen = undefined
+  selectionRectangle?.destroy()
+  selectionRectangle = undefined
   controls.next.removeAllListeners()
   scene.input.removeAllListeners()
 }

@@ -5,6 +5,7 @@ export type Player = {
   loggedIn: boolean
   x: number
   y: number
+  dead: boolean
   hp: number
   hpMax: number
   ap: number

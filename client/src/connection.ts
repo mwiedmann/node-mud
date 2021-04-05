@@ -1,4 +1,4 @@
-import { gameState } from './init'
+import { gameState, resetGameState } from './init'
 import * as Phaser from 'phaser'
 import { gameSettings } from './settings'
 import { Consumable, Item } from './player'
@@ -121,6 +121,12 @@ class ConnectionManager {
             item.gone = message.data.gone
           }
           break
+
+        case 'dead':
+          // Might not actually need a separate message for this if we just include with normal updates
+          // but this does give us a chance to specifically do something with this event
+          gameState.player.dead = true
+          break
       }
     }
 
@@ -130,6 +136,7 @@ class ConnectionManager {
   }
 
   logout() {
+    resetGameState()
     this.connection.send(JSON.stringify({ type: 'logout' }))
     this.connection.close()
   }
