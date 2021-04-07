@@ -4,7 +4,7 @@ import { Level } from './levels/level'
 import { performance } from 'perf_hooks'
 import { monsterSettings, MonsterType } from './mob/monsterFactory'
 import { playerFactory } from './characters'
-import { PlayerProfession, PlayerRace, SquareType } from 'dng-shared'
+import { PlayerProfession, PlayerRace, wallRanges, floorRanges } from 'dng-shared'
 import { nextId } from './id'
 import { createTownLevel } from './levels/town'
 import { Stairs } from './levels/stairs'
@@ -12,8 +12,14 @@ import { Stairs } from './levels/stairs'
 export class Game<T> {
   constructor() {
     const level = new Level<T>(nextId())
-    const map = randomDungeon(100, 100, 8, 8, 64, 4)
-    level.setWalls(map) // This will also create the map search graph
+    const map = randomDungeon(
+      100,
+      100,
+      floorRanges.brownPebble.start,
+      floorRanges.brownPebble.length,
+      wallRanges.grayBrick.start,
+      wallRanges.grayBrick.length
+    )
 
     // Create a stairway back up to town in the middle of the level (town will connect when it is created)
     const stairs: Stairs = {
@@ -23,6 +29,8 @@ export class Game<T> {
     }
     level.stairs.set(stairs.id, stairs)
 
+    level.setWalls(map) // This will also add stairs and create the map search graph
+
     // Add some level 1 mosnters
     Object.entries(monsterSettings)
       .filter(([_, value]) => value.level === 1)
@@ -31,11 +39,11 @@ export class Game<T> {
         randomMonsters(monsterName, 15, level)
       })
 
-    // Need to reupdate the graph after adding monsters
-    level.updateGraph()
-
     // Create the town level (connected to the stairs on the 1st level)
     const townLevel = createTownLevel<T>(stairs)
+
+    // Need to reupdate the map/graph after adding monsters and stairs
+    level.updateGraph()
 
     // Add the levels to the game
     this.levels.set(townLevel.id, townLevel)

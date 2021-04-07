@@ -1,5 +1,5 @@
 import { AStarFinder } from 'astar-typescript'
-import { intersect, SquareType } from 'dng-shared'
+import { intersect, SquareType, wallTilesStart, stairsUpTile, stairsDownTile } from 'dng-shared'
 import { Consumable } from '../consumable'
 import { Item } from '../item'
 import { createMapWithMonsters, findOpenSpace, Moved, getPrintableMap } from '../map'
@@ -88,7 +88,6 @@ export class Level<T> {
   }
 
   setWalls(map: number[][]): void {
-    const wallTilesStartIndex = 64
     const mapWidth = map[0].length
     const mapHeight = map.length
 
@@ -100,7 +99,7 @@ export class Level<T> {
     for (let y = 0; y < mapHeight; y++) {
       this.walls[y] = new Array(mapWidth).fill(SquareType.Empty)
       for (let x = 0; x < mapWidth; x++) {
-        this.walls[y][x] = map[y][x] >= wallTilesStartIndex ? SquareType.Wall : SquareType.Empty
+        this.walls[y][x] = map[y][x] >= wallTilesStart ? SquareType.Wall : SquareType.Empty
       }
     }
 
@@ -108,6 +107,7 @@ export class Level<T> {
   }
 
   updateGraph(): void {
+    this.stairs.forEach((s) => (this.detailedMap[s.y][s.x] = s.stairsUp ? stairsUpTile : stairsDownTile))
     this.wallsAndMobs = createMapWithMonsters(this.walls, this.monsters)
   }
 
