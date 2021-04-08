@@ -67,7 +67,9 @@ function scenePreload(this: Phaser.Scene) {
 
   this.load.image('maptiles', 'images/maptiles.png')
 
+  // TODO: Load all the player images and use image for player class
   this.load.image('guy', 'images/players/warrior.png')
+  this.load.image('player', 'images/players/barbarian.png')
 
   // Monsters
   this.load.image('slime', 'images/monsters/slime.png')

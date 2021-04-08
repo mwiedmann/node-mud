@@ -75,6 +75,16 @@ export type DeadMessage = {
   damageDone: number
 }
 
+/**
+ * This is used when a MOB needs to be removed from the player's game.
+ * It is usually due to the MOB switching levels.
+ * Death is handled separately.
+ */
+export type RemoveMessage = {
+  type: 'remove'
+  id: number
+}
+
 export type BaseMessage =
   | WelcomeMessage
   | MapMessage
@@ -84,3 +94,4 @@ export type BaseMessage =
   | ConsumableMessage
   | ItemMessage
   | DeadMessage
+  | RemoveMessage

@@ -129,6 +129,16 @@ class ConnectionManager {
           // but this does give us a chance to specifically do something with this event
           gameState.player.dead = true
           break
+
+        case 'remove':
+          const removeMonster = gameState.monsters.get(message.id)
+
+          if (removeMonster) {
+            // Monster isn't really dead but this will remove it from the client
+            // TODO: Maybe have to refactor if "dead" takes on any extra effects, etc.
+            removeMonster.dead = true
+          }
+          break
       }
     }
 

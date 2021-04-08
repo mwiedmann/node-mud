@@ -85,6 +85,27 @@ const updateGame = () => {
               data: l.detailedMap
             })
           )
+
+          // Need to notify players that may have been on the same level to remove this player.
+          // Currently, players only receive updates about MOBs on their level.
+          // If player switches levels, they will simply stop receiving updates about that player and a "ghost" is left behind.
+          // This will remove the player from their list of MOBs
+          // TODO: We should be able to slim this down to only the players that were sharing a level
+          // but since the player has already moved we don't have that info any longer...just send to all players, this is easier for now
+          game.players.forEach((otherPlayer) => {
+            // Don't send update about yourself
+            if (otherPlayer.id === p.id) {
+              return
+            }
+            console.log('sending remove', p.id)
+            otherPlayer.connection.send(
+              JSON.stringify({
+                type: 'remove',
+                id: p.id
+              })
+            )
+          })
+
           p.movedLevels = false
         }
 
@@ -102,6 +123,17 @@ const updateGame = () => {
 
         l.monsters.forEach((c) => {
           const state = c.getState(game.tick, -99)
+          if (state) {
+            p.connection.send(state)
+          }
+        })
+
+        l.players.forEach((otherPlayer) => {
+          // Don't send update about yourself (already handled)
+          if (otherPlayer.id === p.id) {
+            return
+          }
+          const state = otherPlayer.getState(game.tick, p.id)
           if (state) {
             p.connection.send(state)
           }
