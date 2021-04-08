@@ -1,4 +1,4 @@
-import { SquareType } from 'dng-shared'
+import { floorRanges, wallRanges } from 'dng-shared'
 import { nextId } from '../id'
 import { addBorderToMap, createEmptyMap } from '../map'
 import { Level } from './level'
@@ -10,8 +10,14 @@ const height = 10
 export const createTownLevel = <T>(stairsDown: Stairs): Level<T> => {
   const level = new Level<T>(nextId())
 
-  const map = createEmptyMap(10, 10, 8, 8)
-  addBorderToMap(map, { x: 0, y: 0 }, { x: width - 1, y: height - 1 }, 96, 8)
+  const map = createEmptyMap(10, 10, floorRanges.brownPebble.start, floorRanges.brownPebble.length)
+  addBorderToMap(
+    map,
+    { x: 0, y: 0 },
+    { x: width - 1, y: height - 1 },
+    wallRanges.whiteBrick.start,
+    wallRanges.whiteBrick.length
+  )
 
   // Create the town stairs down into the dungeon
   const townStairs: Stairs = {

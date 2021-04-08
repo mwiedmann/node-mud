@@ -72,7 +72,7 @@ const updateGame = () => {
           disconnectedPlayers.push(p)
           return
         }
-        const state = p.getState()
+        const state = p.getState(game.tick, p.id)
         if (state) {
           p.connection.send(state)
         }
@@ -101,7 +101,7 @@ const updateGame = () => {
         }
 
         l.monsters.forEach((c) => {
-          const state = c.getState()
+          const state = c.getState(game.tick, -99)
           if (state) {
             p.connection.send(state)
           }

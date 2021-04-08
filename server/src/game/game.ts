@@ -15,8 +15,8 @@ export class Game<T> {
     const map = randomDungeon(
       100,
       100,
-      floorRanges.brownPebble.start,
-      floorRanges.brownPebble.length,
+      floorRanges.blueMarble.start,
+      floorRanges.blueMarble.length,
       wallRanges.grayBrick.start,
       wallRanges.grayBrick.length
     )

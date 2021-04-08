@@ -16,6 +16,7 @@ export let controls: {
 }
 
 export const freshPlayer = (): Player => ({
+  id: 0,
   loggedIn: false,
   x: 0,
   y: 0,

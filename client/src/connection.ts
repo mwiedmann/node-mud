@@ -35,7 +35,8 @@ class ConnectionManager {
           gameState.mapUpdate = true
           break
 
-        case 'player':
+        case 'self':
+          gameState.player.id = message.data.id
           gameState.player.x = message.data.x
           gameState.player.y = message.data.y
           gameState.player.hp = message.data.hp
@@ -59,6 +60,7 @@ class ConnectionManager {
           break
 
         case 'monster':
+        case 'player':
           let monster = gameState.monsters.get(message.data.id)
 
           if (!monster) {

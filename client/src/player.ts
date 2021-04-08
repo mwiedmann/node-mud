@@ -1,8 +1,8 @@
 import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
 import { StatusBars } from './statusbars'
 
-export type Player = {
-  loggedIn: boolean
+type MOB = {
+  id: number
   x: number
   y: number
   dead: boolean
@@ -13,9 +13,13 @@ export type Player = {
   invisible: boolean
   lastX: number
   lastY: number
-  visibleRange: number
   activityLog: MOBActivityLog[]
   attackActivityLog: MOBAttackActivityLog[]
+}
+
+export type Player = MOB & {
+  loggedIn: boolean
+  visibleRange: number
 }
 
 export type Ghost = {
@@ -25,23 +29,11 @@ export type Ghost = {
   sprite?: Phaser.GameObjects.Image
 }
 
-export type Monster = Ghost & {
-  subType: string
-  id: number
-  x: number
-  y: number
-  hp: number
-  hpMax: number
-  ap: number
-  apMax: number
-  invisible: boolean
-  lastX: number
-  lastY: number
-  dead: boolean
-  activityLog: MOBActivityLog[]
-  attackActivityLog: MOBAttackActivityLog[]
-  statusbars?: StatusBars
-}
+export type Monster = MOB &
+  Ghost & {
+    subType: string
+    statusbars?: StatusBars
+  }
 
 export type Consumable = Ghost & {
   subType: string

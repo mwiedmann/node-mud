@@ -11,38 +11,35 @@ export type WelcomeMessage = {
   data: string
 }
 
+type MOBMessageData = {
+  id: number
+  subType: string
+  dead: boolean
+  x: number
+  y: number
+  hp: number
+  hpMax: number
+  ap: number
+  apMax: number
+  invisible: boolean
+  activityLog: MOBActivityLog[]
+  attackActivityLog: MOBAttackActivityLog[]
+}
+
 export type PlayerMessage = {
   type: 'player'
-  data: {
-    x: number
-    y: number
-    hp: number
-    hpMax: number
-    ap: number
-    apMax: number
-    invisible: boolean
-    activityLog: MOBActivityLog[]
-    attackActivityLog: MOBAttackActivityLog[]
+  data: MOBMessageData & {
     visibleRange: number
   }
 }
 
+export type PlayerSelfMessage = {
+  type: 'self'
+} & Pick<PlayerMessage, 'data'>
+
 export type MonsterMessage = {
   type: 'monster'
-  data: {
-    id: number
-    subType: string
-    x: number
-    y: number
-    dead: boolean
-    hp: number
-    hpMax: number
-    ap: number
-    apMax: number
-    invisible: boolean
-    activityLog: MOBActivityLog[]
-    attackActivityLog: MOBAttackActivityLog[]
-  }
+  data: MOBMessageData
 }
 
 export type ConsumableMessage = {
@@ -82,6 +79,7 @@ export type BaseMessage =
   | WelcomeMessage
   | MapMessage
   | PlayerMessage
+  | PlayerSelfMessage
   | MonsterMessage
   | ConsumableMessage
   | ItemMessage

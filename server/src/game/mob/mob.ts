@@ -69,6 +69,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
   lastSpecialAbilityTick = 0
 
   lastState = ''
+  lastStateTick = 0
+
   tickPausedUntil = 0
 
   moveGraph: number[][] = []
@@ -663,9 +665,9 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.specialAbilityActivate = true
   }
 
-  getState(): string | undefined {
+  getState(tick: number, selfId: number): string | undefined {
     const state = JSON.stringify({
-      type: this.type === 'player' ? 'player' : 'monster',
+      type: this.type === 'player' ? (selfId === this.id ? 'self' : 'player') : 'monster',
       data: {
         subType: this.type,
         id: this.id,
@@ -687,11 +689,13 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.activityLog = []
     this.attackActivityLog = []
 
+    // Store the state if it changed
     if (this.lastState !== state) {
       this.lastState = state
-      return state
+      this.lastStateTick = tick
     }
 
-    return undefined
+    // If the state was changed this tick, send it, otherwise skip
+    return this.lastStateTick === tick ? state : undefined
   }
 }
