@@ -7,7 +7,7 @@ import { wallTilesStart } from 'dng-shared'
 import { Mrpas } from 'mrpas'
 
 const fov = new Mrpas(gameSettings.cellCountX, gameSettings.cellCountY, (x, y) => {
-  return gameState.map[y][x] < wallTilesStart
+  return gameState.map[y] !== undefined && gameState.map[y][x] !== undefined && gameState.map[y][x] < wallTilesStart
 })
 
 export type MapTiles = Map<

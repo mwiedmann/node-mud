@@ -426,13 +426,8 @@ const showDeadMessage = (scene: Phaser.Scene): void => {
 }
 
 const cleanup = (scene: Phaser.Scene): void => {
-  projectiles.forEach((p) => p.sprite.destroy())
-  floatingObjects.forEach((l) => l.text.destroy())
-  gameState.items.forEach((i) => i.sprite?.destroy())
-  gameState.monsters.forEach((m) => {
-    m.sprite?.destroy()
-    m.statusbars?.destroy()
-  })
+  cleanupMap()
+
   guy?.destroy()
   guy = undefined
   statusbars?.destroy()
@@ -440,6 +435,20 @@ const cleanup = (scene: Phaser.Scene): void => {
 
   scene.input.removeListener('pointerup', pointerCallback)
   controls.getItem.removeAllListeners()
+}
+
+const cleanupMap = () => {
+  projectiles.forEach((p) => p.sprite.destroy())
+  projectiles = []
+  floatingObjects.forEach((l) => l.text.destroy())
+  floatingObjects = []
+  gameState.items.forEach((i) => i.sprite?.destroy())
+  gameState.items.clear()
+  gameState.monsters.forEach((m) => {
+    m.sprite?.destroy()
+    m.statusbars?.destroy()
+  })
+  gameState.monsters.clear()
 
   mapLayer?.destroy()
   mapLayer = undefined
@@ -451,8 +460,7 @@ const cleanup = (scene: Phaser.Scene): void => {
 
 const drawMap = (scene: Phaser.Scene): void => {
   console.log('drawMap')
-  tileMap?.destroy()
-  mapLayer?.destroy()
+  cleanupMap()
 
   tileMap = scene.make.tilemap({
     data: gameState.map,
