@@ -41,6 +41,10 @@ export class Player<T> extends MOB {
     { level: 10, xp: 4000 } // 75: 5
   ]
 
+  getState(tick: number, selfId: number): string | undefined {
+    return super.getState(tick, selfId, { race: this.race, profession: this.profession })
+  }
+
   gainXP(points: number): void {
     // Only players can gain XP (for now)
     this.xp += points

@@ -665,7 +665,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.specialAbilityActivate = true
   }
 
-  getState(tick: number, selfId: number): string | undefined {
+  getState(tick: number, selfId: number, extraData: Record<string, unknown> = {}): string | undefined {
     const state = JSON.stringify({
       type: this.type === 'player' ? (selfId === this.id ? 'self' : 'player') : 'monster',
       data: {
@@ -681,7 +681,8 @@ export abstract class MOB implements MOBSkills, MOBItems {
         activityLog: this.activityLog,
         attackActivityLog: this.attackActivityLog,
         visibleRange: this.visibleRange,
-        invisible: this.invisible
+        invisible: this.invisible,
+        ...extraData
       }
     })
 

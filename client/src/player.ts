@@ -15,6 +15,8 @@ type MOB = {
   lastY: number
   activityLog: MOBActivityLog[]
   attackActivityLog: MOBAttackActivityLog[]
+  profession?: string
+  race?: string
 }
 
 export type Player = MOB & {

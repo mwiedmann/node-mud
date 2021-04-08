@@ -24,6 +24,8 @@ type MOBMessageData = {
   invisible: boolean
   activityLog: MOBActivityLog[]
   attackActivityLog: MOBAttackActivityLog[]
+  profession?: string
+  race?: string
 }
 
 export type PlayerMessage = {

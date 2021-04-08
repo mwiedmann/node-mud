@@ -59,7 +59,7 @@ const init = (scene: Phaser.Scene): void => {
   connectionManager.openConnection(scene)
   scene.cameras.main.setZoom(gameSettings.gameCameraZoom)
 
-  guy = scene.add.image(0, 0, 'guy')
+  guy = scene.add.image(0, 0, gameState.profession)
   statusbars = new StatusBars(scene)
 
   // Set the camera to follow the guy (with some lerping, a deadzone, and bounds)
@@ -274,7 +274,11 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
     }
 
     if (!m.sprite) {
-      m.sprite = scene.add.image(gameSettings.screenPosFromMap(m.x), gameSettings.screenPosFromMap(m.y), m.subType)
+      m.sprite = scene.add.image(
+        gameSettings.screenPosFromMap(m.x),
+        gameSettings.screenPosFromMap(m.y),
+        m.profession || m.subType
+      )
       m.sprite.setVisible(false)
     }
 

@@ -67,9 +67,13 @@ function scenePreload(this: Phaser.Scene) {
 
   this.load.image('maptiles', 'images/maptiles.png')
 
-  // TODO: Load all the player images and use image for player class
-  this.load.image('guy', 'images/players/warrior.png')
-  this.load.image('player', 'images/players/barbarian.png')
+  this.load.image('warrior', 'images/players/warrior.png')
+  this.load.image('barbarian', 'images/players/barbarian.png')
+  this.load.image('rogue', 'images/players/rogue.png')
+  this.load.image('wizard', 'images/players/wizard.png')
+  this.load.image('illusionist', 'images/players/illusionist.png')
+  this.load.image('ranger', 'images/players/ranger.png')
+  this.load.image('cleric', 'images/players/cleric.png')
 
   // Monsters
   this.load.image('slime', 'images/monsters/slime.png')
