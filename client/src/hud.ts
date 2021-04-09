@@ -8,7 +8,6 @@ let healthText: Phaser.GameObjects.Text | undefined
 let actionsText: Phaser.GameObjects.Text | undefined
 let xpText: Phaser.GameObjects.Text | undefined
 let levelText: Phaser.GameObjects.Text | undefined
-let specialText: Phaser.GameObjects.Text | undefined
 
 export function createHudScene(scene: Phaser.Scene): void {
   scene.scene.add(
@@ -43,9 +42,6 @@ function hudCreate(this: Phaser.Scene) {
 
   this.add.text(col1, (y += lineHeight), 'XP', textStyle).setOrigin(1, 0)
   xpText = this.add.text(col1 + 5, y, '').setOrigin(0, 0)
-
-  this.add.text(col1, (y += lineHeight), 'Special', textStyle).setOrigin(1, 0)
-  specialText = this.add.text(col1 + 5, y, '').setOrigin(0, 0)
 }
 
 export function hudCleanup(scene: Phaser.Scene): void {
@@ -58,5 +54,4 @@ function hudUpdate(this: Phaser.Scene): void {
   actionsText?.setText(`${gameState.player.ap} / ${gameState.player.apMax}`)
   levelText?.setText(`${gameState.player.level}`)
   xpText?.setText(`${gameState.player.xp} / ${gameState.player.xpNext}`)
-  specialText?.setText(`${gameState.player.special}`)
 }

@@ -9,6 +9,8 @@ import { createHudScene, hudCleanup } from '../hud'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
+let star: Phaser.GameObjects.Image | undefined
+
 const tileData: Map<
   number,
   {
@@ -84,6 +86,7 @@ const init = (scene: Phaser.Scene): void => {
 
   guy = scene.add.image(0, 0, gameState.profession)
   statusbars = new StatusBars(scene)
+  star = scene.add.image(0, 0, 'star')
 
   // Set the camera to follow the guy (with some lerping, a deadzone, and bounds)
   scene.cameras.main.startFollow(guy, true, 0.03, 0.03)
@@ -153,6 +156,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       gameSettings.screenPosFromMap(gameState.player.x),
       gameSettings.screenPosFromMap(gameState.player.y)
     )
+    star?.setPosition(guy.x + 12, guy.y - 24)
 
     gameState.player.lastX = gameState.player.x
     gameState.player.lastY = gameState.player.y
@@ -163,6 +167,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
   // Dim invisible players
   guy.setAlpha(gameState.player.invisible ? 0.3 : 1)
+  star?.setVisible(gameState.player.special)
 
   if (statusbars) {
     statusbars.set(
@@ -468,6 +473,8 @@ const cleanup = (scene: Phaser.Scene): void => {
   guy = undefined
   statusbars?.destroy()
   statusbars = undefined
+  star?.destroy()
+  star = undefined
 
   scene.input.removeListener('pointerup', pointerCallback)
   controls.getItem.removeAllListeners()

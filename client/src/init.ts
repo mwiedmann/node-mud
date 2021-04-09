@@ -149,8 +149,11 @@ function scenePreload(this: Phaser.Scene) {
   this.load.image('ranged-spell', 'images/items/spell.png')
   this.load.image('melee-spell', 'images/items/spell.png')
   this.load.image('ranged', 'images/items/ranged.png')
-  this.load.image('boots', 'images/items/head.png')
+  this.load.image('boots', 'images/items/boots.png')
   this.load.image('head', 'images/items/head.png')
+
+  // Misc
+  this.load.image('star', 'images/star.png')
 }
 
 function sceneCreate(this: Phaser.Scene) {
