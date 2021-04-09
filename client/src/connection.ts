@@ -47,6 +47,7 @@ class ConnectionManager {
           gameState.player.xp = message.data.xp
           gameState.player.xpNext = message.data.xpNext
           gameState.player.level = message.data.level
+          gameState.player.special = message.data.special
           gameState.player.invisible = message.data.invisible
           gameState.player.activityLog = message.data.activityLog
           gameState.player.attackActivityLog = message.data.attackActivityLog

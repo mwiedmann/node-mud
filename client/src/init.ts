@@ -28,6 +28,7 @@ export const freshPlayer = (): Player => ({
   xp: 0,
   xpNext: 0,
   level: 1,
+  special: false,
   invisible: false,
   lastX: -1,
   lastY: -1,

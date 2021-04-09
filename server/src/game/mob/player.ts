@@ -48,7 +48,8 @@ export class Player<T> extends MOB {
       profession: this.profession,
       xp: this.xp,
       xpNext: nextLevel.xp,
-      level: this.level
+      level: this.level,
+      special: tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility
     })
   }
 

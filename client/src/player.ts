@@ -10,9 +10,6 @@ type MOB = {
   hpMax: number
   ap: number
   apMax: number
-  xp: number
-  xpNext: number
-  level: number
   invisible: boolean
   lastX: number
   lastY: number
@@ -25,6 +22,10 @@ type MOB = {
 export type Player = MOB & {
   loggedIn: boolean
   visibleRange: number
+  xp: number
+  xpNext: number
+  level: number
+  special: boolean
 }
 
 export type Ghost = {
