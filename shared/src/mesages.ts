@@ -3,7 +3,10 @@ import { SquareType } from './square'
 
 export type MapMessage = {
   type: 'map'
-  data: SquareType[][]
+  data: {
+    map: SquareType[][]
+    id: number
+  }
 }
 
 export type WelcomeMessage = {

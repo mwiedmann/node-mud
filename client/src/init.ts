@@ -37,6 +37,7 @@ export const gameState: {
   phase: States
   map: SquareType[][]
   mapUpdate: boolean
+  mapId: number
   race: PlayerRace
   profession: PlayerProfession
   player: Player
@@ -45,6 +46,7 @@ export const gameState: {
 } = {
   phase: 'init',
   map: [[SquareType.Empty]],
+  mapId: 0,
   race: 'human',
   profession: 'barbarian',
   mapUpdate: true,

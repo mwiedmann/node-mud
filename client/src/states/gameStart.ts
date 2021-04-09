@@ -8,11 +8,25 @@ import { MOBActivityLogLevel } from 'dng-shared'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
-let tileMap: Phaser.Tilemaps.Tilemap | undefined
-let mapLayer: Phaser.Tilemaps.TilemapLayer | undefined
-let tileSet: Phaser.Tilemaps.Tileset | undefined
+const tileData: Map<
+  number,
+  {
+    tileMap: Phaser.Tilemaps.Tilemap
+    mapLayer: Phaser.Tilemaps.TilemapLayer
+    tileSet: Phaser.Tilemaps.Tileset
+  }
+> = new Map()
+
 let deadText: Phaser.GameObjects.Text | undefined
 let preCameraSettings: Phaser.Types.Cameras.Scene2D.JSONCamera
+
+const currentTileData = () => {
+  const data = tileData.get(gameState.mapId)
+  if (!data) {
+    throw new Error(`No tiledata found for id:${gameState.mapId}`)
+  }
+  return data
+}
 
 const pointerCallback = (p: Phaser.Input.Pointer) => {
   connectionManager.setDestination(gameSettings.cellFromScreenPos(p.worldX), gameSettings.cellFromScreenPos(p.worldY))
@@ -135,7 +149,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
     gameState.player.lastY = gameState.player.y
 
     // Calculate visible spaces
-    setMapTilesSight(mapLayer, gameState.player.visibleRange, gameState.player.x, gameState.player.y)
+    setMapTilesSight(currentTileData().mapLayer, gameState.player.visibleRange, gameState.player.x, gameState.player.y)
   }
 
   // Dim invisible players
@@ -430,7 +444,16 @@ const showDeadMessage = (scene: Phaser.Scene): void => {
 }
 
 const cleanup = (scene: Phaser.Scene): void => {
-  cleanupMap()
+  cleanupLevel()
+
+  // Cleanup all of the tileset/map data
+  tileData.forEach((data) => {
+    data.mapLayer.destroy()
+    data.tileMap.destroy()
+    // TileSet doesn't have destroy
+    // data.tileSet.destroy()
+  })
+  tileData.clear()
 
   guy?.destroy()
   guy = undefined
@@ -441,7 +464,7 @@ const cleanup = (scene: Phaser.Scene): void => {
   controls.getItem.removeAllListeners()
 }
 
-const cleanupMap = () => {
+const cleanupLevel = () => {
   projectiles.forEach((p) => p.sprite.destroy())
   projectiles = []
   floatingObjects.forEach((l) => l.text.destroy())
@@ -454,30 +477,44 @@ const cleanupMap = () => {
   })
   gameState.monsters.clear()
 
-  mapLayer?.destroy()
-  mapLayer = undefined
-  tileMap?.destroy()
-  tileMap = undefined
   deadText?.destroy()
   deadText = undefined
 }
 
 const drawMap = (scene: Phaser.Scene): void => {
   console.log('drawMap')
-  cleanupMap()
+  cleanupLevel()
 
-  tileMap = scene.make.tilemap({
-    data: gameState.map,
-    tileWidth: gameSettings.cellSize,
-    tileHeight: gameSettings.cellSize,
-    width: gameState.map.length,
-    height: gameState.map[0].length
+  // See if we have already created this tileMap/Set/Layer
+  // We save it so a player revisiting a level will see areas
+  // they've already explored.
+  let data = tileData.get(gameState.mapId)
+
+  if (!data) {
+    const tileMap = scene.make.tilemap({
+      data: gameState.map,
+      tileWidth: gameSettings.cellSize,
+      tileHeight: gameSettings.cellSize,
+      width: gameState.map.length,
+      height: gameState.map[0].length
+    })
+
+    const tileSet = tileMap.addTilesetImage('maptiles', 'maptiles', gameSettings.cellSize, gameSettings.cellSize)
+
+    const mapLayer = tileMap.createLayer(0, 'maptiles')
+
+    data = { tileMap, tileSet, mapLayer }
+    tileData.set(gameState.mapId, data)
+  }
+
+  // Hide all layers
+  tileData.forEach((td) => {
+    td.mapLayer.visible = false
   })
 
-  tileSet = tileMap.addTilesetImage('maptiles', 'maptiles', gameSettings.cellSize, gameSettings.cellSize)
-
-  mapLayer = tileMap.createLayer(0, 'maptiles')
-  mapLayer.setDepth(-1)
+  // Make this layer visible and set its depth
+  data.mapLayer.visible = true
+  data.mapLayer.setDepth(-1)
 }
 
 export const fns = {

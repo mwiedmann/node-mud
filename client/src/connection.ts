@@ -31,7 +31,8 @@ class ConnectionManager {
 
       switch (message.type) {
         case 'map':
-          gameState.map = message.data
+          gameState.map = message.data.map
+          gameState.mapId = message.data.id
           gameState.mapUpdate = true
           break
 

@@ -3,7 +3,7 @@ import { createGame, Game } from '../game'
 import { Player } from '../game/mob'
 import { tickSettings } from './tick'
 import { performance } from 'perf_hooks'
-import { DeadMessage, PlayerProfession, PlayerRace } from 'dng-shared'
+import { DeadMessage, MapMessage, PlayerProfession, PlayerRace, RemoveMessage } from 'dng-shared'
 
 let game: Game<WebSocket>
 
@@ -82,8 +82,11 @@ const updateGame = () => {
           p.connection.send(
             JSON.stringify({
               type: 'map',
-              data: l.detailedMap
-            })
+              data: {
+                map: l.detailedMap,
+                id: l.id
+              }
+            } as MapMessage)
           )
 
           // Need to notify players that may have been on the same level to remove this player.
@@ -97,12 +100,11 @@ const updateGame = () => {
             if (otherPlayer.id === p.id) {
               return
             }
-            console.log('sending remove', p.id)
             otherPlayer.connection.send(
               JSON.stringify({
                 type: 'remove',
                 id: p.id
-              })
+              } as RemoveMessage)
             )
           })
 
@@ -112,12 +114,12 @@ const updateGame = () => {
         if (p.dead && !p.deadSent) {
           p.deadSent = true
           p.connection.send(
-            JSON.stringify(<DeadMessage>{
+            JSON.stringify((<DeadMessage>{
               type: 'dead',
               gold: p.gold,
               kills: p.kills,
               damageDone: p.damageDone
-            })
+            }) as DeadMessage)
           )
         }
 
@@ -231,8 +233,11 @@ const loginPlayer = (ws: WebSocket, { name, race, profession }: MessageLogin) =>
   ws.send(
     JSON.stringify({
       type: 'map',
-      data: level.detailedMap
-    })
+      data: {
+        map: level.detailedMap,
+        id: level.id
+      }
+    } as MapMessage)
   )
 }
 
