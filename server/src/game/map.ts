@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { NewDungeon } from 'random-dungeon-generator'
 import { Consumable, ConsumableTypes } from './consumable'
 import { MeleeType, MeleeWeaponFactory } from './item'
 import { Level } from './levels/level'
@@ -85,34 +82,6 @@ export const addRandomWalls = (map: SquareType[][], wallCount: number): void => 
 
     map[y][x] = SquareType.Wall
   }
-}
-
-export const randomDungeon = (
-  mapWidth: number,
-  mapHeight: number,
-  floorTileStart: number,
-  floorTypeCount: number,
-  wallTileStart: number,
-  wallTypeCount: number
-): number[][] => {
-  const options = {
-    width: mapWidth,
-    height: mapHeight,
-    minRoomSize: 5,
-    maxRoomSize: 20
-  }
-  const dungeon = NewDungeon(options) as number[][]
-
-  for (let y = 0; y < dungeon.length; y++) {
-    for (let x = 0; x < dungeon[y].length; x++) {
-      dungeon[y][x] =
-        dungeon[y][x] === 1
-          ? wallTileStart + Math.floor(Math.random() * wallTypeCount)
-          : floorTileStart + Math.floor(Math.random() * floorTypeCount)
-    }
-  }
-
-  return dungeon
 }
 
 export const randomMonsters = (type: MonsterType, count: number, level: Level<unknown>): void => {

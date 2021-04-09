@@ -1,4 +1,4 @@
-import { randomConsumables, randomDungeon, randomMeleeWeapons, randomMonsters } from './map'
+import { randomConsumables, randomMeleeWeapons, randomMonsters } from './map'
 import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './levels/level'
 import { performance } from 'perf_hooks'
@@ -8,46 +8,71 @@ import { PlayerProfession, PlayerRace, wallRanges, floorRanges } from 'dng-share
 import { nextId } from './id'
 import { createTownLevel } from './levels/town'
 import { Stairs } from './levels/stairs'
+import { randomDungeon } from './dungeonGenerators/standard'
 
 export class Game<T> {
   constructor() {
-    const level = new Level<T>(nextId())
-    const map = randomDungeon(
-      100,
-      100,
-      floorRanges.blueMarble.start,
-      floorRanges.blueMarble.length,
-      wallRanges.grayBrick.start,
-      wallRanges.grayBrick.length
-    )
-
-    // Create a stairway back up to town in the middle of the level (town will connect when it is created)
-    const stairs: Stairs = {
-      id: nextId(),
-      x: Math.floor(map[0].length / 2),
-      y: Math.floor(map.length / 2)
-    }
-    level.stairs.set(stairs.id, stairs)
-
-    level.setWalls(map) // This will also add stairs and create the map search graph
-
-    // Add some level 1 mosnters
-    Object.entries(monsterSettings)
-      .filter(([_, value]) => value.level === 1)
-      .map(([key]) => key as MonsterType)
-      .forEach((monsterName) => {
-        randomMonsters(monsterName, 15, level)
-      })
+    const levelCount = 5
 
     // Create the town level (connected to the stairs on the 1st level)
-    const townLevel = createTownLevel<T>(stairs)
+    const { level: townLevel, stairs: townStairs } = createTownLevel<T>()
 
-    // Need to reupdate the map/graph after adding monsters and stairs
-    level.updateGraph()
-
-    // Add the levels to the game
     this.levels.set(townLevel.id, townLevel)
-    this.levels.set(level.id, level)
+    let lastDownStairs = townStairs
+
+    // Create a town with a 5 level dungeon
+    for (let i = 1; i <= levelCount; i++) {
+      const level = new Level<T>(nextId())
+      this.levels.set(level.id, level)
+
+      const { map, stairsUp, stairsDown } = randomDungeon(
+        100,
+        100,
+        floorRanges.blueMarble.start,
+        floorRanges.blueMarble.length,
+        wallRanges.grayBrick.start,
+        wallRanges.grayBrick.length
+      )
+
+      // Create a stairway back up
+      const stairsObjUp: Stairs = {
+        id: nextId(),
+        x: stairsUp.x,
+        y: stairsUp.y,
+        stairsUp: lastDownStairs.id
+      }
+      level.stairs.set(stairsObjUp.id, stairsObjUp)
+
+      // Connect the previous down stairs to this up stairs
+      lastDownStairs.stairsDown = stairsObjUp.id
+
+      // If this is not the last level, create a stairway down
+      if (i < levelCount) {
+        const stairsObjDown: Stairs = {
+          id: nextId(),
+          x: stairsDown.x,
+          y: stairsDown.y,
+          stairsDown: 999 // This will be set when the next level (and stairs) are created
+        }
+        level.stairs.set(stairsObjDown.id, stairsObjDown)
+
+        // Track this as the last down stairs so it can be connected to the stairs on the next level
+        lastDownStairs = stairsObjDown
+      }
+
+      level.setWalls(map) // This will also add stairs and create the map search graph
+
+      // Add some mosnters. Monster level will equal dungeon level. Fix later.
+      Object.entries(monsterSettings)
+        .filter(([_, value]) => value.level === i)
+        .map(([key]) => key as MonsterType)
+        .forEach((monsterName) => {
+          randomMonsters(monsterName, 15, level)
+        })
+
+      // Need to reupdate the map/graph after adding monsters and stairs
+      level.updateGraph()
+    }
 
     // Players start in town
     this.startingLevelId = townLevel.id
