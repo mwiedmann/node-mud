@@ -28,40 +28,47 @@ export class Player<T> extends MOB {
   gold = 0
   deadSent = false
 
-  levelsGained: { level: number; xp: number; gained?: boolean }[] = [
-    { level: 1, xp: 0, gained: true },
-    { level: 2, xp: 20 }, // 20: 1
-    { level: 3, xp: 60 }, // 25: 1,2
-    { level: 4, xp: 120 }, // 30: 2
-    { level: 5, xp: 250 }, // 35: 2,3
-    { level: 6, xp: 450 }, // 40: 3
-    { level: 7, xp: 800 }, // 45: 3,4
-    { level: 8, xp: 1300 }, // 50: 4
-    { level: 9, xp: 2200 }, // 55: 4,5
-    { level: 10, xp: 4000 } // 75: 5
-  ]
+  levelsGained: Record<number, { xp: number; gained?: boolean }> = {
+    1: { xp: 0, gained: true },
+    2: { xp: 20 }, // 20: 1
+    3: { xp: 60 }, // 25: 1,2
+    4: { xp: 120 }, // 30: 2
+    5: { xp: 250 }, // 35: 2,3
+    6: { xp: 450 }, // 40: 3
+    7: { xp: 800 }, // 45: 3,4
+    8: { xp: 1300 }, // 50: 4
+    9: { xp: 2200 }, // 55: 4,5
+    10: { xp: 4000 } // 75: 5
+  }
 
   getState(tick: number, selfId: number): string | undefined {
-    return super.getState(tick, selfId, { race: this.race, profession: this.profession })
+    const nextLevel = this.levelsGained[this.level + 1] || this.levelsGained[10]
+    return super.getState(tick, selfId, {
+      race: this.race,
+      profession: this.profession,
+      xp: this.xp,
+      xpNext: nextLevel.xp,
+      level: this.level
+    })
   }
 
   gainXP(points: number): void {
     // Only players can gain XP (for now)
     this.xp += points
 
-    this.levelsGained.forEach((l) => {
-      if (!l.gained && this.xp >= l.xp) {
-        l.gained = true
+    Object.entries(this.levelsGained).forEach(([levelNum, levelData]) => {
+      if (!levelData.gained && this.xp >= levelData.xp) {
+        levelData.gained = true
         this.addActivity({ level: 'great', message: `LEVEL UP!!!` })
 
         // Get and apply the upgrades for this level for the character's profession
         console.log('Profession Upgrades')
-        const professionUpgrade = this.professionProgression.find((p) => p.level === l.level)
+        const professionUpgrade = this.professionProgression.find((p) => p.level === parseInt(levelNum))
         this.applyLevelProgression(professionUpgrade?.upgrades)
 
         // Get and apply the upgrades for this level for the character's race
         console.log('Race Upgrades')
-        const raceUpgrade = this.raceProgression.find((p) => p.level === l.level)
+        const raceUpgrade = this.raceProgression.find((p) => p.level === parseInt(levelNum))
         this.applyLevelProgression(raceUpgrade?.upgrades)
 
         this.init()

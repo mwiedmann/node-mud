@@ -10,6 +10,9 @@ type MOB = {
   hpMax: number
   ap: number
   apMax: number
+  xp: number
+  xpNext: number
+  level: number
   invisible: boolean
   lastX: number
   lastY: number

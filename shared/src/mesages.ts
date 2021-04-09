@@ -24,6 +24,9 @@ type MOBMessageData = {
   hpMax: number
   ap: number
   apMax: number
+  xp: number
+  xpNext: number
+  level: number
   invisible: boolean
   activityLog: MOBActivityLog[]
   attackActivityLog: MOBAttackActivityLog[]

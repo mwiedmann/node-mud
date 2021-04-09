@@ -6,6 +6,8 @@ const lineHeight = 20
 
 let healthText: Phaser.GameObjects.Text | undefined
 let actionsText: Phaser.GameObjects.Text | undefined
+let xpText: Phaser.GameObjects.Text | undefined
+let levelText: Phaser.GameObjects.Text | undefined
 
 export function createHudScene(scene: Phaser.Scene): void {
   scene.scene.add(
@@ -34,7 +36,12 @@ function hudCreate(this: Phaser.Scene) {
 
   this.add.text(col1, (y += lineHeight), 'Actions', textStyle).setOrigin(1, 0)
   actionsText = this.add.text(col1 + 5, y, '').setOrigin(0, 0)
-  y += lineHeight
+
+  this.add.text(col1, (y += lineHeight), 'Level', textStyle).setOrigin(1, 0)
+  levelText = this.add.text(col1 + 5, y, '').setOrigin(0, 0)
+
+  this.add.text(col1, (y += lineHeight), 'XP', textStyle).setOrigin(1, 0)
+  xpText = this.add.text(col1 + 5, y, '').setOrigin(0, 0)
 }
 
 export function hudCleanup(scene: Phaser.Scene): void {
@@ -45,4 +52,6 @@ export function hudCleanup(scene: Phaser.Scene): void {
 function hudUpdate(this: Phaser.Scene): void {
   healthText?.setText(`${gameState.player.hp} / ${gameState.player.hpMax}`)
   actionsText?.setText(`${gameState.player.ap} / ${gameState.player.apMax}`)
+  levelText?.setText(`${gameState.player.level}`)
+  xpText?.setText(`${gameState.player.xp} / ${gameState.player.xpNext}`)
 }

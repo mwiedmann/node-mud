@@ -44,6 +44,9 @@ class ConnectionManager {
           gameState.player.ap = message.data.ap
           gameState.player.hpMax = message.data.hpMax
           gameState.player.apMax = message.data.apMax
+          gameState.player.xp = message.data.xp
+          gameState.player.xpNext = message.data.xpNext
+          gameState.player.level = message.data.level
           gameState.player.invisible = message.data.invisible
           gameState.player.activityLog = message.data.activityLog
           gameState.player.attackActivityLog = message.data.attackActivityLog
