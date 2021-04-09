@@ -7,6 +7,8 @@ class GameSettings {
     this.fieldHeightMid = this.fieldHeight / 2
     this.screenWidthMid = this.screenWidth / 2
     this.screenHeightMid = this.screenHeight / 2
+    this.gameViewportX = this.hudWidth
+    this.gameViewportWidth = this.screenWidth - this.hudWidth
   }
 
   cellCountX = 200
@@ -19,7 +21,10 @@ class GameSettings {
   gameCameraZoom = 1.4
   ghostAlpha = 0.4
   hiddenTileAlpha = 0.3
+  hudWidth = 200
 
+  gameViewportX: number
+  gameViewportWidth: number
   halfCell: number
   fieldWidth: number
   fieldHeight: number

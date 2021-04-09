@@ -1,10 +1,11 @@
 import * as Phaser from 'phaser'
 import { connectionManager } from '../connection'
 import { gameSettings } from '../settings'
-import { controls, freshPlayer, gameState, sceneUpdate } from '../init'
+import { controls, gameState } from '../init'
 import { checkGhostStatus, inRange, setMapTilesSight, tileIsBlocked } from '../mapTiles'
 import { StatusBars } from '../statusbars'
 import { MOBActivityLogLevel } from 'dng-shared'
+import { createHudScene, hudCleanup } from '../hud'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
@@ -67,11 +68,19 @@ const activityLogColor = (level: MOBActivityLogLevel, flip?: boolean) =>
     : activityColors.neutral
 
 const init = (scene: Phaser.Scene): void => {
+  createHudScene(scene)
+
   // Save the default camera settings so we can reset later
   preCameraSettings = scene.cameras.main.toJSON()
 
   connectionManager.openConnection(scene)
   scene.cameras.main.setZoom(gameSettings.gameCameraZoom)
+  scene.cameras.main.setViewport(
+    gameSettings.gameViewportX,
+    0,
+    gameSettings.gameViewportWidth,
+    gameSettings.screenHeight
+  )
 
   guy = scene.add.image(0, 0, gameState.profession)
   statusbars = new StatusBars(scene)
@@ -106,7 +115,7 @@ const backToTitle = (scene: Phaser.Scene) => {
     preCameraSettings.bounds?.width || 1,
     preCameraSettings.bounds?.height || 1
   )
-
+  scene.cameras.main.setViewport(0, 0, gameSettings.screenWidth, gameSettings.screenHeight)
   gameState.phase = 'gameOver'
 }
 
@@ -462,6 +471,8 @@ const cleanup = (scene: Phaser.Scene): void => {
 
   scene.input.removeListener('pointerup', pointerCallback)
   controls.getItem.removeAllListeners()
+
+  hudCleanup(scene)
 }
 
 const cleanupLevel = () => {
