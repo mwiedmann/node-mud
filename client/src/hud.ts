@@ -2,6 +2,9 @@ import { MOBActivityLog } from 'dng-shared'
 import { activityLogColor } from './activity'
 import { gameState } from './init'
 import { gameSettings } from './settings'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import BBCodeText from 'phaser3-rex-plugins/plugins/bbcodetext'
 
 const hudSceneId = 'hud'
 const lineHeight = 20
@@ -50,13 +53,15 @@ function hudCreate(this: Phaser.Scene) {
   xpText = this.add.text(col1 + 5, y, '').setOrigin(0, 0)
 
   this.add.text(col1, (y += lineHeight), 'LOG', textStyle).setOrigin(1, 0)
-  logText = this.add
-    .text(5, (y += lineHeight), '', {
-      wordWrap: {
-        width: gameSettings.hudWidth - 10
-      }
-    })
-    .setOrigin(0, 0)
+
+  logText = new BBCodeText(this, 5, (y += lineHeight), '', {
+    wrap: {
+      mode: 1,
+      width: gameSettings.hudWidth - 10
+    }
+  }).setOrigin(0, 0)
+
+  this.add.existing(logText)
 }
 
 export const hudCleanup = (scene: Phaser.Scene): void => {
@@ -71,17 +76,17 @@ function hudUpdate(this: Phaser.Scene): void {
   xpText?.setText(`${gameState.player.xp} / ${gameState.player.xpNext}`)
 
   if (newLogs) {
-    // This was way too slow
-    // if (logText) {
-    //   logText.forEach((l) => l.destroy())
-    // }
-    // let y = 125
-    // logText = log.map((l) =>
-    //   this.add.text(5, (y += lineHeight), `${l.source ? `${l.source}:` : ''}${l.entry.message}`, {
-    //     color: activityLogColor(l.entry.level, l.flip)
-    //   })
-    // )
-    logText.setText(log.map((l) => `${l.source ? `${l.source}:` : ''}${l.entry.message}`).join('\n'))
+    logText.setText(
+      log
+        .map(
+          (l) =>
+            `${l.source ? `[color=red]${l.source}:` : '[color=yellow]you:'}[/color] [color=${activityLogColor(
+              l.entry.level,
+              l.flip
+            )}]${l.entry.message}[/color]`
+        )
+        .join('\n')
+    )
     newLogs = false
   }
 }

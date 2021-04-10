@@ -4,13 +4,14 @@
   "version": "0.0.1",
   "main": "src/main.ts",
   "dependencies": {
-    "phaser": "3.52.0",
-    "ws": "7.4.1",
     "dng-shared": "1.0.0",
-    "mrpas": "2.0.0"
+    "mrpas": "2.0.0",
+    "phaser3-rex-plugins": "1.1.44",
+    "phaser": "3.52.0",
+    "ws": "7.4.4"
   },
   "devDependencies": {
-    "@types/ws": "7.4.0",
+    "@types/ws": "7.4.1",
     "@typescript-eslint/eslint-plugin": "4.15.2",
     "@typescript-eslint/parser": "4.15.2",
     "clean-webpack-plugin": "3.0.0",
