@@ -5,7 +5,8 @@ import { controls, gameState } from '../init'
 import { checkGhostStatus, inRange, setMapTilesSight, tileIsBlocked } from '../mapTiles'
 import { StatusBars } from '../statusbars'
 import { MOBActivityLogLevel } from 'dng-shared'
-import { createHudScene, hudCleanup } from '../hud'
+import { addMessages, createHudScene, hudCleanup } from '../hud'
+import { activityLogColor } from '../activity'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
@@ -47,27 +48,6 @@ let projectiles: {
   sprite: Phaser.GameObjects.Line
   delete?: boolean
 }[] = []
-
-const activityColors: Record<MOBActivityLogLevel, string> = {
-  great: '#00FF00',
-  good: '#00FF88',
-  neutral: '#00DDFF',
-  bad: '#FF6f00',
-  terrible: '#FF0000'
-}
-
-const activityLogColor = (level: MOBActivityLogLevel, flip?: boolean) =>
-  (level === 'great' && !flip) || (level === 'terrible' && flip)
-    ? activityColors.great
-    : (level === 'good' && !flip) || (level === 'bad' && flip)
-    ? activityColors.good
-    : level === 'neutral'
-    ? activityColors.neutral
-    : (level === 'bad' && !flip) || (level === 'good' && flip)
-    ? activityColors.bad
-    : (level === 'terrible' && !flip) || (level === 'great' && flip)
-    ? activityColors.terrible
-    : activityColors.neutral
 
 const init = (scene: Phaser.Scene): void => {
   createHudScene(scene)
@@ -196,6 +176,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
       })
       offSet += 16
     })
+    addMessages(gameState.player.activityLog)
     gameState.player.activityLog = []
   }
 
@@ -266,6 +247,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
         })
         offSet += 16
       })
+      addMessages(m.activityLog, m.subType, true)
       m.activityLog = []
     }
 

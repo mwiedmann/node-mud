@@ -21,7 +21,7 @@ class GameSettings {
   gameCameraZoom = 1.4
   ghostAlpha = 0.4
   hiddenTileAlpha = 0.3
-  hudWidth = 200
+  hudWidth = 250
 
   gameViewportX: number
   gameViewportWidth: number
