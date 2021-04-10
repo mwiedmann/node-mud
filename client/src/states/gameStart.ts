@@ -4,9 +4,13 @@ import { gameSettings } from '../settings'
 import { controls, gameState } from '../init'
 import { checkGhostStatus, inRange, setMapTilesSight, tileIsBlocked } from '../mapTiles'
 import { StatusBars } from '../statusbars'
-import { MOBActivityLogLevel } from 'dng-shared'
-import { addMessages, createHudScene, hudCleanup } from '../hud'
-import { activityLogColor } from '../activity'
+import { createHudScene, hudCleanup } from '../hud'
+import {
+  cleanupFloatingObjects,
+  manageFloatingObjects,
+  monsterFloatingObjects,
+  playerFloatingObjects
+} from '../floatingObjects'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
@@ -35,19 +39,6 @@ const currentTileData = () => {
 const pointerCallback = (p: Phaser.Input.Pointer) => {
   connectionManager.setDestination(gameSettings.cellFromScreenPos(p.worldX), gameSettings.cellFromScreenPos(p.worldY))
 }
-
-let floatingObjects: {
-  timeStart: number
-  text: Phaser.GameObjects.Text
-  delete?: boolean
-  direction: number
-}[] = []
-
-let projectiles: {
-  timeStart: number
-  sprite: Phaser.GameObjects.Line
-  delete?: boolean
-}[] = []
 
 const init = (scene: Phaser.Scene): void => {
   createHudScene(scene)
@@ -160,45 +151,8 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
     )
   }
 
-  // Create floating text for any player activity
-  if (gameState.player.activityLog.length > 0) {
-    let offSet = 0
-    gameState.player.activityLog.forEach((a) => {
-      floatingObjects.push({
-        timeStart: time,
-        direction: 1,
-        text: scene.add.text(
-          gameSettings.screenPosFromMap(gameState.player.x),
-          gameSettings.screenPosFromMap(gameState.player.y) + (gameSettings.halfCell + offSet),
-          a.message,
-          { color: activityLogColor(a.level), align: 'center' }
-        )
-      })
-      offSet += 16
-    })
-    addMessages(gameState.player.activityLog)
-    gameState.player.activityLog = []
-  }
-
-  if (gameState.player.attackActivityLog.length > 0) {
-    gameState.player.attackActivityLog.forEach((a) => {
-      projectiles.push({
-        timeStart: time,
-        sprite: scene.add
-          .line(
-            0,
-            0,
-            gameSettings.screenPosFromMap(a.fromX),
-            gameSettings.screenPosFromMap(a.fromY),
-            gameSettings.screenPosFromMap(a.toX),
-            gameSettings.screenPosFromMap(a.toY),
-            a.hit ? 0x00ff00 : 0x00ffff
-          )
-          .setOrigin(0, 0)
-      })
-    })
-    gameState.player.attackActivityLog = []
-  }
+  // Manage floating objects for the player
+  playerFloatingObjects(scene, time)
 
   if (controls.cursors.left.isDown) {
     scene.cameras.main.x -= 1
@@ -230,44 +184,8 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
   // Check monsterss
   gameState.monsters.forEach((m) => {
-    // First show any activity for the monster
-    if (m.activityLog.length > 0) {
-      // TODO: Calc the offset and y pos from cellSize?
-      let offSet = 0
-      m.activityLog.forEach((a) => {
-        floatingObjects.push({
-          timeStart: time,
-          direction: -1,
-          text: scene.add.text(
-            gameSettings.screenPosFromMap(m.x),
-            gameSettings.screenPosFromMap(m.y) - (gameSettings.cellSize + offSet),
-            a.message,
-            { color: activityLogColor(a.level, true), align: 'center' }
-          )
-        })
-        offSet += 16
-      })
-      addMessages(m.activityLog, m.subType, true)
-      m.activityLog = []
-    }
-
-    m.attackActivityLog.forEach((a) => {
-      projectiles.push({
-        timeStart: time,
-        sprite: scene.add
-          .line(
-            0,
-            0,
-            gameSettings.screenPosFromMap(a.fromX),
-            gameSettings.screenPosFromMap(a.fromY),
-            gameSettings.screenPosFromMap(a.toX),
-            gameSettings.screenPosFromMap(a.toY),
-            a.hit ? 0xff0000 : 0x77ff77
-          )
-          .setOrigin(0, 0)
-      })
-    })
-    m.attackActivityLog = []
+    // Manage floating objects for the monster
+    monsterFloatingObjects(scene, m, time)
 
     // If the monster is dead, destroy any sprite
     // We could remove from the list, but we might want to leave a body behind
@@ -410,24 +328,8 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
     }
   })
 
-  // Move any floating text and destroy after a while
-  floatingObjects.forEach((l) => {
-    l.text.y += 8 * l.direction * (delta / 100)
-    if (time - l.timeStart >= 1250) {
-      l.text.destroy()
-      l.delete = true
-    }
-  })
-  floatingObjects = floatingObjects.filter((f) => !f.delete)
-
-  projectiles.forEach((p) => {
-    p.sprite.alpha = p.sprite.alpha - delta / 100
-    if (time - p.timeStart >= 150) {
-      p.sprite.destroy()
-      p.delete = true
-    }
-  })
-  projectiles = projectiles.filter((f) => !f.delete)
+  // Manage any floating objects and destroy after a while
+  manageFloatingObjects(time, delta)
 }
 
 const showDeadMessage = (scene: Phaser.Scene): void => {
@@ -465,10 +367,7 @@ const cleanup = (scene: Phaser.Scene): void => {
 }
 
 const cleanupLevel = () => {
-  projectiles.forEach((p) => p.sprite.destroy())
-  projectiles = []
-  floatingObjects.forEach((l) => l.text.destroy())
-  floatingObjects = []
+  cleanupFloatingObjects()
   gameState.items.forEach((i) => i.sprite?.destroy())
   gameState.items.clear()
   gameState.monsters.forEach((m) => {

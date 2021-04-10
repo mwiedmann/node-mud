@@ -1,7 +1,7 @@
 import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
 import { StatusBars } from './statusbars'
 
-type MOB = {
+export type MOB = {
   id: number
   x: number
   y: number
