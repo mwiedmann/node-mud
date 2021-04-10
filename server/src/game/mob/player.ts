@@ -95,6 +95,7 @@ export class Player<T> extends MOB {
       // Check the wizard's teleport
       if (this.profession === 'wizard' && this.specialAbilityX && this.specialAbilityY) {
         if (
+          level.locationInBounds(this.specialAbilityX, this.specialAbilityY) &&
           !level.locationIsBlocked(this.specialAbilityX, this.specialAbilityY) &&
           inRange(this.visibleRange, this.x, this.y, this.specialAbilityX, this.specialAbilityY)
         ) {
@@ -112,6 +113,7 @@ export class Player<T> extends MOB {
           notes.notes.push('Teleporting was blocked or out of range')
           this.specialAbilityX = undefined
           this.specialAbilityY = undefined
+          this.specialAbilityActivate = false
         }
       }
       // The illusionist can turn invisible if he not currently spotted
@@ -127,16 +129,18 @@ export class Player<T> extends MOB {
         this.specialAbilityX &&
         this.specialAbilityY
       ) {
-        // Calculate a path towards the spot
-        this.moveGraph = level.findPath(
-          { x: this.x, y: this.y },
-          { x: this.specialAbilityX, y: this.specialAbilityY },
-          this.moveSearchLimit
-        )
+        if (level.locationInBounds(this.specialAbilityX, this.specialAbilityY)) {
+          // Calculate a path towards the spot
+          this.moveGraph = level.findPath(
+            { x: this.x, y: this.y },
+            { x: this.specialAbilityX, y: this.specialAbilityY },
+            this.moveSearchLimit
+          )
 
-        // Limit to a number of steps
-        if (this.moveGraph.length > this.specialAbilityLength) {
-          this.moveGraph = this.moveGraph.slice(0, this.specialAbilityLength)
+          // Limit to a number of steps
+          if (this.moveGraph.length > this.specialAbilityLength) {
+            this.moveGraph = this.moveGraph.slice(0, this.specialAbilityLength)
+          }
         }
         this.specialAbilityX = undefined
         this.specialAbilityY = undefined
