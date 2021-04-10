@@ -659,10 +659,12 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.moveGraph = []
   }
 
-  setSpecialAbility(x?: number, y?: number): void {
-    this.specialAbilityX = x
-    this.specialAbilityY = y
-    this.specialAbilityActivate = true
+  setSpecialAbility(tick: number, x?: number, y?: number): void {
+    if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+      this.specialAbilityX = x
+      this.specialAbilityY = y
+      this.specialAbilityActivate = true
+    }
   }
 
   getState(tick: number, selfId: number, extraData: Record<string, unknown> = {}): string | undefined {

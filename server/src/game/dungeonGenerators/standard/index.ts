@@ -19,7 +19,9 @@ export const randomDungeon = (
   const dng = new Dungeon(mapWidth, mapHeight)
   dng.generate()
 
-  const map = createEmptyMap(mapWidth, mapHeight, floorTileStart, floorTypeCount)
+  // Start the entire dungeon as solid walls
+  // We will then carve out rooms
+  const map = createEmptyMap(mapWidth, mapHeight, wallTileStart, wallTypeCount)
 
   dng.rooms.forEach((r) => {
     for (let y = r.pos.y; y < r.pos.y + r.size.y; y++) {
@@ -28,8 +30,9 @@ export const randomDungeon = (
         const tileY = y - r.pos.y
         const tileType = r.tiles[tileY][tileX]
 
-        if (tileType === Tiles.wall || tileType === Tiles.blank) {
-          map[y][x] = wallTileStart + Math.floor(Math.random() * wallTypeCount)
+        // Turn all non-wall/blanks into floor spaces
+        if (tileType !== Tiles.wall) {
+          map[y][x] = floorTileStart + Math.floor(Math.random() * floorTypeCount)
         }
       }
     }

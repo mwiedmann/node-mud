@@ -217,7 +217,7 @@ export class Game<T> {
       return
     }
 
-    player.setSpecialAbility(x, y)
+    player.setSpecialAbility(this.tick, x, y)
   }
 
   getItem(connection: T, x: number, y: number): void {
