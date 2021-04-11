@@ -1,9 +1,7 @@
 import { MOBAttackActivityLog } from 'dng-shared'
 import { activityLogColor } from './activity'
 import { addMessages } from './hud'
-import { gameState } from './init'
-import { MOB, Monster } from './player'
-import { gameSettings } from './settings'
+import { gameState, gameSettings, MOB, Monster } from '../../gameManagement'
 
 type Floating = { timeStart: number; object: Phaser.GameObjects.Text | Phaser.GameObjects.Line; delete?: boolean }
 type Projectile = Floating & { type: 'projectile' }

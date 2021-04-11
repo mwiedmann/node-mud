@@ -1,7 +1,5 @@
 import * as Phaser from 'phaser'
-import { gameState } from './init'
-import { Ghost } from './player'
-import { gameSettings } from './settings'
+import { gameState, gameSettings, Ghost } from '../../gameManagement'
 import { wallTilesStart } from 'dng-shared'
 
 import { Mrpas } from 'mrpas'

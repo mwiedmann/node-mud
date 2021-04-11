@@ -1,7 +1,7 @@
 import { MOBActivityLog } from 'dng-shared'
+import { gameSettings, gameState } from '../../gameManagement'
 import { activityLogColor } from './activity'
-import { gameState } from './init'
-import { gameSettings } from './settings'
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import BBCodeText from 'phaser3-rex-plugins/plugins/bbcodetext'

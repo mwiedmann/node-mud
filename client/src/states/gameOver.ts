@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser'
 import { connectionManager } from '../connection'
-import { gameState } from '../init'
+import { gameState } from '../gameManagement'
 
 const init = (scene: Phaser.Scene): void => {
   // For now we just log the player out and move back to the title screen

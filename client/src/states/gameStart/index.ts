@@ -1,16 +1,14 @@
 import * as Phaser from 'phaser'
-import { connectionManager } from '../connection'
-import { gameSettings } from '../settings'
-import { controls, gameState } from '../init'
-import { checkGhostStatus, inRange, setMapTilesSight, tileIsBlocked } from '../mapTiles'
-import { StatusBars } from '../statusbars'
-import { createHudScene, hudCleanup } from '../hud'
+import { connectionManager } from '../../connection'
+import { gameSettings, controls, gameState, StatusBars } from '../../gameManagement'
+import { checkGhostStatus, inRange, setMapTilesSight, tileIsBlocked } from './mapTiles'
+import { createHudScene, hudCleanup } from './hud'
 import {
   cleanupFloatingObjects,
   manageFloatingObjects,
   monsterFloatingObjects,
   playerFloatingObjects
-} from '../floatingObjects'
+} from './floatingObjects'
 
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined

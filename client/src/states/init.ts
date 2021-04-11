@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser'
-import { gameState } from '../init'
+import { gameState } from '../gameManagement'
 
 const init = (scene: Phaser.Scene): void => {
   gameState.phase = 'title'

@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser'
-import { gameSettings } from '../settings'
-import { controls, gameState } from '../init'
+import { gameSettings } from '../gameManagement/settings'
+import { controls, gameState } from '../gameManagement'
 
 let screen: Phaser.GameObjects.Image | undefined
 

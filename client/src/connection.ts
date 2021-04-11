@@ -1,7 +1,6 @@
-import { gameState, resetGameState } from './init'
 import * as Phaser from 'phaser'
-import { gameSettings } from './settings'
-import { Consumable, Item } from './player'
+import { gameState, gameSettings, resetGameState } from './gameManagement'
+import { Consumable, Item } from './gameManagement/gameTypes'
 import { BaseMessage } from 'dng-shared'
 
 class ConnectionManager {
