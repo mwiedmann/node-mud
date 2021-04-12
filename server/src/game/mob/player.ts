@@ -43,13 +43,55 @@ export class Player<T> extends MOB {
 
   getState(tick: number, selfId: number): string | undefined {
     const nextLevel = this.levelsGained[this.level + 1] || this.levelsGained[10]
+    const meleeWeapon = this.bestMeleeWeapon()
+    const meleeSkills = meleeWeapon
+      ? {
+          weapon: meleeWeapon.getDescription(),
+          meleeHitBonus: this.meleeHitBonus,
+          meleeDamageBonus: this.meleeDamageBonus
+        }
+      : undefined
+    const rangedWeapon = this.bestRangedWeapon()
+    const rangedSkills = rangedWeapon
+      ? {
+          weapon: rangedWeapon.getDescription(),
+          rangedHitBonus: this.rangedHitBonus,
+          rangedDamageBonus: this.rangedDamageBonus
+        }
+      : undefined
+    const rangedSpell = this.bestRangedSpellWeapon()
+    const rangedSpellSkills = rangedSpell
+      ? {
+          weapon: rangedSpell.getDescription(),
+          spellHitBonus: this.spellHitBonus,
+          spellDamageBonus: this.spellDamageBonus
+        }
+      : undefined
+    const meleeSpell = this.bestMeleeSpellWeapon()
+    const meleeSpellSkills = meleeSpell
+      ? {
+          weapon: meleeSpell.getDescription(),
+          spellHitBonus: this.spellHitBonus,
+          spellDamageBonus: this.spellDamageBonus
+        }
+      : undefined
+
     return super.getState(tick, selfId, {
       race: this.race,
       profession: this.profession,
       xp: this.xp,
       xpNext: nextLevel.xp,
+      meleeDefense: this.meleeDefense,
+      rangedDefense: this.rangedDefense,
+      magicDefense: this.magicDefense,
       level: this.level,
-      special: tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility
+      special: tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility,
+      meleeHitBonus: this.meleeHitBonus,
+      meleeDamageBonus: this.meleeDamageBonus,
+      meleeSkills,
+      rangedSkills,
+      rangedSpellSkills,
+      meleeSpellSkills
     })
   }
 

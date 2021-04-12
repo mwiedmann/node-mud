@@ -39,6 +39,25 @@ export type PlayerMessage = {
     xpNext: number
     level: number
     special: boolean
+    meleeDefense: number
+    rangedDefense: number
+    magicDefense: number
+    meleeSkills: { weapon: string; meleeHitBonus: number; meleeDamageBonus: number }
+    rangedSkills: {
+      weapon: string
+      rangedHitBonus: number
+      rangedDamageBonus: number
+    }
+    rangedSpellSkills: {
+      weapon: string
+      spellHitBonus: number
+      spellDamageBonus: number
+    }
+    meleeSpellSkills: {
+      weapon: string
+      spellHitBonus: number
+      spellDamageBonus: number
+    }
   }
 }
 

@@ -27,6 +27,7 @@ export const initControls = (scene: Phaser.Scene): void => {
 }
 
 export const freshPlayer = (): Player => ({
+  name: 'Joe Blow',
   id: 0,
   loggedIn: false,
   x: 0,
@@ -38,6 +39,9 @@ export const freshPlayer = (): Player => ({
   apMax: 0,
   xp: 0,
   xpNext: 0,
+  meleeDefense: 0,
+  rangedDefense: 0,
+  magicDefense: 0,
   level: 1,
   special: false,
   invisible: false,

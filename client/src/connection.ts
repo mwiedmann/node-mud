@@ -51,6 +51,13 @@ class ConnectionManager {
           gameState.player.activityLog = message.data.activityLog
           gameState.player.attackActivityLog = message.data.attackActivityLog
           gameState.player.visibleRange = message.data.visibleRange
+          gameState.player.meleeSkills = message.data.meleeSkills
+          gameState.player.rangedSkills = message.data.rangedSkills
+          gameState.player.meleeSpellSkills = message.data.meleeSpellSkills
+          gameState.player.rangedSpellSkills = message.data.rangedSpellSkills
+          gameState.player.meleeDefense = message.data.meleeDefense
+          gameState.player.rangedDefense = message.data.rangedDefense
+          gameState.player.magicDefense = message.data.magicDefense
 
           // This is the first update for the player on this level
           // Snap the camera
