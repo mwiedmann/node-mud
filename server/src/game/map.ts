@@ -93,9 +93,7 @@ export const randomMonsters = (type: MonsterType, count: number, level: Level<un
 
     const location = findOpenSpace(level)
 
-    monster.x = location.x
-    monster.y = location.y
-
+    monster.setSpawn(location.x, location.y)
     monster.setDestination(location.x, location.y)
 
     level.monsters.set(monster.id, monster)

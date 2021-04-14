@@ -326,7 +326,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.addActivity({ level: 'good', message: `${amount} action points` })
   }
 
-  takeDamage(roll: RollResult): void {
+  takeDamage(tick: number, roll: RollResult): void {
     this.health -= roll.total
 
     this.addActivity({ level: 'bad', message: `${roll.total} damage from ${roll.description}` })
@@ -468,7 +468,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
       const dmgRoll = this.rangedDamageRoll()
       console.log(this.name, 'ranged hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 
-      mobToAttack.takeDamage(dmgRoll)
+      mobToAttack.takeDamage(tick, dmgRoll)
 
       attackLogEntry.hit = true
       if (mobToAttack.dead) {
@@ -508,7 +508,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
       const dmgRoll = this.rangedSpellDamageRoll()
       console.log(this.name, 'spell hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 
-      mobToAttack.takeDamage(dmgRoll)
+      mobToAttack.takeDamage(tick, dmgRoll)
 
       attackLogEntry.hit = true
       if (mobToAttack.dead) {
@@ -534,7 +534,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
       const dmgRoll = this.meleeDamageRoll()
       console.log(this.name, 'melee hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 
-      mobToAttack.takeDamage(dmgRoll)
+      mobToAttack.takeDamage(tick, dmgRoll)
 
       if (mobToAttack.dead) {
         this.gainXP(xpForKill(this.level, mobToAttack))
@@ -567,7 +567,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
       const dmgRoll = this.meleeSpellDamageRoll()
       console.log(this.name, 'spell hit', mobToAttack.name, 'roll:', attackResult.total, 'dmg:', dmgRoll.total)
 
-      mobToAttack.takeDamage(dmgRoll)
+      mobToAttack.takeDamage(tick, dmgRoll)
 
       if (mobToAttack.dead) {
         this.gainXP(xpForKill(this.level, mobToAttack))

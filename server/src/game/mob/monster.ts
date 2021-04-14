@@ -1,6 +1,7 @@
 import { MOBType } from './monsterFactory'
 import { Level } from '../levels/level'
 import { MOB, MOBUpdateNotes } from './mob'
+import { RollResult } from '../combat'
 
 export class Monster extends MOB {
   constructor(type: MOBType, team: number, id: number, name?: string) {
@@ -11,12 +12,48 @@ export class Monster extends MOB {
   moveRange = 5
   moveSearchLimit = 12
   playerRangeToActivate = 30
+  startingX = 0
+  startingY = 0
+  deathTick = 0
+  reviveTick = 600 // Respawn after 1 min
+
+  takeDamage(tick: number, roll: RollResult): void {
+    super.takeDamage(tick, roll)
+
+    if (this.dead) {
+      this.deathTick = tick
+    }
+  }
+
+  setSpawn(x: number, y: number): void {
+    this.x = x
+    this.y = y
+    this.startingX = x
+    this.startingY = y
+  }
+
+  checkRespawn(tick: number): void {
+    if (this.dead && tick - this.reviveTick >= this.deathTick) {
+      this.dead = false
+      this.health = this.maxHealth
+      this.actionPoints = this.maxAtionPoints
+      this.x = this.startingX
+      this.y = this.startingY
+      this.haltEverything()
+    }
+  }
 
   specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
     // No specials for Monsters yet
   }
 
   update(tick: number, level: Level<unknown>): MOBUpdateNotes {
+    // If the monster is dead, see if it is ready to respawn
+    if (this.dead) {
+      this.checkRespawn(tick)
+    }
+
+    // If still dead, exit
     if (this.dead) {
       return { notes: ['dead'], moved: undefined }
     }
