@@ -4,25 +4,27 @@ import { States } from '../states'
 
 export let controls: {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
-  next: Phaser.Input.Keyboard.Key
   spell: Phaser.Input.Keyboard.Key
   quit: Phaser.Input.Keyboard.Key
   zoomIn: Phaser.Input.Keyboard.Key
   zoomOut: Phaser.Input.Keyboard.Key
   getItem: Phaser.Input.Keyboard.Key
   special: Phaser.Input.Keyboard.Key
+  melee: Phaser.Input.Keyboard.Key
+  ranged: Phaser.Input.Keyboard.Key
 }
 
 export const initControls = (scene: Phaser.Scene): void => {
   controls = {
     cursors: scene.input.keyboard.createCursorKeys(),
-    next: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
-    spell: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL),
-    quit: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+    quit: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC),
     zoomIn: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS),
     zoomOut: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS),
     getItem: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G),
-    special: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+    special: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
+    melee: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+    ranged: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R),
+    spell: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
   }
 }
 
@@ -39,6 +41,9 @@ export const freshPlayer = (): Player => ({
   apMax: 0,
   xp: 0,
   xpNext: 0,
+  meleeOn: true,
+  rangedOn: true,
+  spellOn: true,
   meleeDefense: 0,
   rangedDefense: 0,
   magicDefense: 0,

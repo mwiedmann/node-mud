@@ -31,6 +31,9 @@ export abstract class MOB implements MOBSkills, MOBItems {
   specialAbilityLength = 10
   specialAbilityActivate = false
   invisible = false
+  meleeOn = true
+  rangedOn = true
+  spellOn = true
 
   abstract moveSearchLimit: number
 
@@ -592,6 +595,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     // TODO: REFACTOR - The ranged and melee attacks are the same with a few params/functions
     const selectedRangedItem = this.bestRangedWeapon()
     if (
+      this.rangedOn &&
       selectedRangedItem &&
       tick - this.lastRangedActionTick >= this.ticksPerRangedAction &&
       this.actionPoints >= this.actionPointsCostPerRangedAction
@@ -609,6 +613,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     // Check ranged spells
     const selectedRangedSpellItem = this.bestRangedSpellWeapon()
     if (
+      this.spellOn &&
       selectedRangedSpellItem &&
       tick - this.lastSpellActionTick >= this.ticksPerSpellAction &&
       this.actionPoints >= this.actionPointsCostPerSpellAction
@@ -625,6 +630,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
     // Check melee attack
     if (
+      this.meleeOn &&
       this.bestMeleeWeapon() &&
       tick - this.lastMeleeActionTick >= this.ticksPerMeleeAction &&
       this.actionPoints >= this.actionPointsCostPerMeleeAction
@@ -639,6 +645,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
     // Check melee spell attack
     if (
+      this.spellOn &&
       this.bestMeleeSpellWeapon() &&
       tick - this.lastSpellActionTick >= this.ticksPerSpellAction &&
       this.actionPoints >= this.actionPointsCostPerSpellAction

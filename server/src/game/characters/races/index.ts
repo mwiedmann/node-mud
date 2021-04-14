@@ -38,7 +38,7 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     maxHealth: 28,
     ticksPerMove: 5,
     meleeHitBonus: 3,
-    meleeDamageBonus: 3,
+    meleeDamageBonus: 2,
     rangedHitBonus: -2,
     spellHitBonus: -2,
     visibleRange: 7,

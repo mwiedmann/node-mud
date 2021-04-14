@@ -1,4 +1,4 @@
-import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
+import { MOBActivityLog, MOBAttackActivityLog, WeaponDetails } from 'dng-shared'
 import { StatusBars } from './statusbars'
 
 export type MOB = {
@@ -25,27 +25,18 @@ export type Player = MOB & {
   visibleRange: number
   xp: number
   xpNext: number
+  meleeOn: boolean
+  rangedOn: boolean
+  spellOn: boolean
   level: number
   special: boolean
   meleeDefense: number
   rangedDefense: number
   magicDefense: number
-  meleeSkills?: { weapon: string; meleeHitBonus: number; meleeDamageBonus: number }
-  rangedSkills?: {
-    weapon: string
-    rangedHitBonus: number
-    rangedDamageBonus: number
-  }
-  rangedSpellSkills?: {
-    weapon: string
-    spellHitBonus: number
-    spellDamageBonus: number
-  }
-  meleeSpellSkills?: {
-    weapon: string
-    spellHitBonus: number
-    spellDamageBonus: number
-  }
+  meleeSkills?: WeaponDetails
+  rangedSkills?: WeaponDetails
+  rangedSpellSkills?: WeaponDetails
+  meleeSpellSkills?: WeaponDetails
 }
 
 export type Ghost = {

@@ -7,17 +7,17 @@ let screen: Phaser.GameObjects.Image | undefined
 const init = (scene: Phaser.Scene): void => {
   screen = scene.add.image(gameSettings.screenWidthMid, gameSettings.screenHeightMid, 'title')
 
-  controls.next.on('up', () => {
+  scene.input.keyboard.on('keyup', () => {
     gameState.phase = 'race'
   })
 }
 
 const update = (scene: Phaser.Scene, time: number, delta: number): void => {}
 
-const cleanup = (): void => {
+const cleanup = (scene: Phaser.Scene): void => {
   screen?.destroy()
   screen = undefined
-  controls.next.removeAllListeners()
+  scene.input.keyboard.removeAllListeners()
 }
 
 export const fns = {

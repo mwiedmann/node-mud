@@ -78,7 +78,7 @@ export const playerFactory = <T>(
     if (professionStartingValues[skillKey] !== undefined) {
       // For defense abilities (and potentially others in the future),
       // we add the race/profession values together
-      if (skillKey.endsWith('Defense')) {
+      if (skillKey.endsWith('Defense') || skillKey.endsWith('Bonus')) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         player[skillKey] += professionStartingValues[skillKey] as any
       } else {

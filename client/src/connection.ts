@@ -45,6 +45,9 @@ class ConnectionManager {
           gameState.player.apMax = message.data.apMax
           gameState.player.xp = message.data.xp
           gameState.player.xpNext = message.data.xpNext
+          gameState.player.meleeOn = message.data.meleeOn
+          gameState.player.rangedOn = message.data.rangedOn
+          gameState.player.spellOn = message.data.spellOn
           gameState.player.level = message.data.level
           gameState.player.special = message.data.special
           gameState.player.invisible = message.data.invisible
@@ -174,6 +177,18 @@ class ConnectionManager {
 
   getItem(x: number, y: number) {
     this.connection.send(JSON.stringify({ type: 'getItem', x, y }))
+  }
+
+  meleeToggle() {
+    this.connection.send(JSON.stringify({ type: 'meleeToggle' }))
+  }
+
+  rangedToggle() {
+    this.connection.send(JSON.stringify({ type: 'rangedToggle' }))
+  }
+
+  spellToggle() {
+    this.connection.send(JSON.stringify({ type: 'spellToggle' }))
   }
 }
 

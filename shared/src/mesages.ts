@@ -31,6 +31,8 @@ type MOBMessageData = {
   race?: string
 }
 
+export type WeaponDetails = { weapon: string; hitBonus: number; dmgBonus: number }
+
 export type PlayerMessage = {
   type: 'player'
   data: MOBMessageData & {
@@ -39,25 +41,16 @@ export type PlayerMessage = {
     xpNext: number
     level: number
     special: boolean
+    meleeOn: boolean
+    rangedOn: boolean
+    spellOn: boolean
     meleeDefense: number
     rangedDefense: number
     magicDefense: number
-    meleeSkills: { weapon: string; meleeHitBonus: number; meleeDamageBonus: number }
-    rangedSkills: {
-      weapon: string
-      rangedHitBonus: number
-      rangedDamageBonus: number
-    }
-    rangedSpellSkills: {
-      weapon: string
-      spellHitBonus: number
-      spellDamageBonus: number
-    }
-    meleeSpellSkills: {
-      weapon: string
-      spellHitBonus: number
-      spellDamageBonus: number
-    }
+    meleeSkills: WeaponDetails
+    rangedSkills: WeaponDetails
+    rangedSpellSkills: WeaponDetails
+    meleeSpellSkills: WeaponDetails
   }
 }
 

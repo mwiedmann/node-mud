@@ -47,7 +47,7 @@ const init = (scene: Phaser.Scene): void => {
 
   scene.input.on('pointerup', pointerCallback(scene))
 
-  controls.next.on('up', () => {
+  scene.input.keyboard.on('keyup', () => {
     gameState.phase = 'gameStart'
   })
 
@@ -61,7 +61,7 @@ const cleanup = (scene: Phaser.Scene): void => {
   screen = undefined
   selectionRectangle?.destroy()
   selectionRectangle = undefined
-  controls.next.removeAllListeners()
+  scene.input.keyboard.removeAllListeners()
   scene.input.removeAllListeners()
 }
 

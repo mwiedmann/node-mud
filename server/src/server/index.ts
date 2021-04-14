@@ -43,6 +43,18 @@ export const startServer = (): void => {
               setSpecialAbilityLocation(ws, obj)
               break
 
+            case 'meleeToggle':
+              meleeToggle(ws)
+              break
+
+            case 'rangedToggle':
+              rangedToggle(ws)
+              break
+
+            case 'spellToggle':
+              spellToggle(ws)
+              break
+
             default:
               console.error('Invalid message type')
           }
@@ -213,12 +225,27 @@ type MessageGetItem = {
   y: number
 }
 
+type MessageMeleeToggle = {
+  type: 'meleeToggle'
+}
+
+type MessageRangedToggle = {
+  type: 'rangedToggle'
+}
+
+type MessageSpellToggle = {
+  type: 'spellToggle'
+}
+
 type MessageBase =
   | MessageLogin
   | MessageLogout
   | MessageSetDestination
   | MessageGetItem
   | MessageSetSpecialAbilityLocation
+  | MessageMeleeToggle
+  | MessageRangedToggle
+  | MessageSpellToggle
 
 type PlayerConnection = {
   id: number
@@ -262,4 +289,16 @@ const setSpecialAbilityLocation = (ws: WebSocket, { x, y }: MessageSetSpecialAbi
 
 const getItem = (ws: WebSocket, { x, y }: MessageGetItem) => {
   game.getItem(ws, x, y)
+}
+
+const meleeToggle = (ws: WebSocket) => {
+  game.meleeToggle(ws)
+}
+
+const rangedToggle = (ws: WebSocket) => {
+  game.rangedToggle(ws)
+}
+
+const spellToggle = (ws: WebSocket) => {
+  game.spellToggle(ws)
 }

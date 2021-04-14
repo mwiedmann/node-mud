@@ -22,6 +22,7 @@ export const professionSettings: () => {
     ticksPausedAfterMelee: 4,
     ticksPausedAfterRanged: 20,
     ticksPausedAfterSpell: 20,
+    meleeDamageBonus: 1,
     meleeDefense: 4,
     rangedDefense: 3,
     magicDefense: 3
@@ -32,6 +33,7 @@ export const professionSettings: () => {
     ticksPerRangedAction: 25,
     ticksPerSpecialAbility: 100, // 10 seconds per Divine Smites
     ticksPausedAfterRanged: 15,
+    spellHitBonus: 1,
     meleeDefense: 4,
     rangedDefense: 4,
     magicDefense: 4
@@ -47,6 +49,7 @@ export const professionSettings: () => {
     ticksPausedAfterRanged: 15,
     hitBonusWhenInvisible: 5,
     damageBonusWhenInvisible: 1,
+    spellHitBonus: 1,
     meleeDefense: 3,
     rangedDefense: 4,
     magicDefense: 5
@@ -58,6 +61,7 @@ export const professionSettings: () => {
     ticksPerSpecialAbility: 100, // 10 seconds per ranged flurry
     ticksPausedAfterMelee: 6,
     ticksPausedAfterRanged: 8,
+    rangedHitBonus: 1,
     meleeDefense: 4,
     rangedDefense: 5,
     magicDefense: 3
@@ -72,6 +76,7 @@ export const professionSettings: () => {
     ticksPausedAfterRanged: 10,
     hitBonusWhenInvisible: 4,
     damageBonusWhenInvisible: 1,
+    meleeHitBonus: 1,
     meleeDefense: 4,
     rangedDefense: 5,
     magicDefense: 4
@@ -82,6 +87,7 @@ export const professionSettings: () => {
     ticksPerSpellAction: 30,
     ticksPerSpecialAbility: 100, // 10 seconds per ???
     ticksPausedAfterMelee: 5,
+    meleeHitBonus: 1,
     meleeDefense: 5,
     rangedDefense: 5,
     magicDefense: 4
@@ -95,6 +101,7 @@ export const professionSettings: () => {
     ticksPerSpecialAbility: 60, // 6 seconds per teleport
     ticksPausedAfterMelee: 12,
     ticksPausedAfterRanged: 15,
+    spellDamageBonus: 1,
     meleeDefense: 3,
     rangedDefense: 3,
     magicDefense: 5

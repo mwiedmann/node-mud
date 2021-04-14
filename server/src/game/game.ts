@@ -202,7 +202,7 @@ export class Game<T> {
     const player = this.players.get(connection)
 
     if (!player) {
-      console.log('No player found')
+      console.warn('No player found')
       return
     }
 
@@ -213,7 +213,7 @@ export class Game<T> {
     const player = this.players.get(connection)
 
     if (!player) {
-      console.log('No player found')
+      console.warn('No player found')
       return
     }
 
@@ -224,7 +224,7 @@ export class Game<T> {
     const player = this.players.get(connection)
 
     if (!player) {
-      console.log('No player found')
+      console.warn('No player found')
       return
     }
 
@@ -233,6 +233,39 @@ export class Game<T> {
         l.grabItem(player)
       }
     })
+  }
+
+  meleeToggle(connection: T): void {
+    const player = this.players.get(connection)
+
+    if (!player) {
+      console.warn('No player found')
+      return
+    }
+
+    player.meleeOn = !player.meleeOn
+  }
+
+  rangedToggle(connection: T): void {
+    const player = this.players.get(connection)
+
+    if (!player) {
+      console.warn('No player found')
+      return
+    }
+
+    player.rangedOn = !player.rangedOn
+  }
+
+  spellToggle(connection: T): void {
+    const player = this.players.get(connection)
+
+    if (!player) {
+      console.warn('No player found')
+      return
+    }
+
+    player.spellOn = !player.spellOn
   }
 }
 

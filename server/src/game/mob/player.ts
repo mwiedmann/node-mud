@@ -2,7 +2,7 @@ import { Level } from '../levels/level'
 import { LevelProgression } from '../characters'
 import { inRange } from '../util'
 import { MOB, MOBUpdateNotes } from './mob'
-import { PlayerProfession, PlayerRace } from 'dng-shared'
+import { PlayerProfession, PlayerRace, WeaponDetails } from 'dng-shared'
 import { MOBSkills } from '.'
 
 export class Player<T> extends MOB {
@@ -45,35 +45,35 @@ export class Player<T> extends MOB {
     const nextLevel = this.levelsGained[this.level + 1] || this.levelsGained[10]
     const meleeWeapon = this.bestMeleeWeapon()
     const meleeSkills = meleeWeapon
-      ? {
+      ? ({
           weapon: meleeWeapon.getDescription(),
-          meleeHitBonus: this.meleeHitBonus,
-          meleeDamageBonus: this.meleeDamageBonus
-        }
+          hitBonus: this.meleeHitBonus,
+          dmgBonus: this.meleeDamageBonus
+        } as WeaponDetails)
       : undefined
     const rangedWeapon = this.bestRangedWeapon()
     const rangedSkills = rangedWeapon
-      ? {
+      ? ({
           weapon: rangedWeapon.getDescription(),
-          rangedHitBonus: this.rangedHitBonus,
-          rangedDamageBonus: this.rangedDamageBonus
-        }
+          hitBonus: this.rangedHitBonus,
+          dmgBonus: this.rangedDamageBonus
+        } as WeaponDetails)
       : undefined
     const rangedSpell = this.bestRangedSpellWeapon()
     const rangedSpellSkills = rangedSpell
-      ? {
+      ? ({
           weapon: rangedSpell.getDescription(),
-          spellHitBonus: this.spellHitBonus,
-          spellDamageBonus: this.spellDamageBonus
-        }
+          hitBonus: this.spellHitBonus,
+          dmgBonus: this.spellDamageBonus
+        } as WeaponDetails)
       : undefined
     const meleeSpell = this.bestMeleeSpellWeapon()
     const meleeSpellSkills = meleeSpell
-      ? {
+      ? ({
           weapon: meleeSpell.getDescription(),
-          spellHitBonus: this.spellHitBonus,
-          spellDamageBonus: this.spellDamageBonus
-        }
+          hitBonus: this.spellHitBonus,
+          dmgBonus: this.spellDamageBonus
+        } as WeaponDetails)
       : undefined
 
     return super.getState(tick, selfId, {
@@ -81,6 +81,9 @@ export class Player<T> extends MOB {
       profession: this.profession,
       xp: this.xp,
       xpNext: nextLevel.xp,
+      meleeOn: this.meleeOn,
+      rangedOn: this.rangedOn,
+      spellOn: this.spellOn,
       meleeDefense: this.meleeDefense,
       rangedDefense: this.rangedDefense,
       magicDefense: this.magicDefense,

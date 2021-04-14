@@ -74,6 +74,18 @@ const init = (scene: Phaser.Scene): void => {
       gameSettings.cellFromScreenPos(scene.input.activePointer.worldY)
     )
   })
+
+  controls.melee.on('up', () => {
+    connectionManager.meleeToggle()
+  })
+
+  controls.ranged.on('up', () => {
+    connectionManager.rangedToggle()
+  })
+
+  controls.spell.on('up', () => {
+    connectionManager.spellToggle()
+  })
 }
 
 const backToTitle = (scene: Phaser.Scene) => {
@@ -101,7 +113,7 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
   if (gameState.player.dead) {
     if (!deadText) {
-      controls.next.on('up', () => {
+      controls.quit.on('up', () => {
         backToTitle(scene)
       })
       showDeadMessage(scene)
@@ -334,7 +346,7 @@ const showDeadMessage = (scene: Phaser.Scene): void => {
   deadText = scene.add.text(
     gameSettings.screenPosFromMap(gameState.player.x),
     gameSettings.screenPosFromMap(gameState.player.y) + gameSettings.cellSize * 2,
-    'You are dead! Press Space to continue',
+    'You are dead! Press ESC to continue',
     { color: 'red', align: 'center' }
   )
 }

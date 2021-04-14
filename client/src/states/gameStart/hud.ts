@@ -1,4 +1,4 @@
-import { MOBActivityLog } from 'dng-shared'
+import { MOBActivityLog, WeaponDetails } from 'dng-shared'
 import { gameSettings, gameState } from '../../gameManagement'
 import { activityLogColor } from './activity'
 
@@ -16,8 +16,8 @@ let meleeDefText: Phaser.GameObjects.Text | undefined
 let rangedDefText: Phaser.GameObjects.Text | undefined
 let magicDefText: Phaser.GameObjects.Text | undefined
 let levelText: Phaser.GameObjects.Text | undefined
-let attacksText: Phaser.GameObjects.Text | undefined
-let logText: Phaser.GameObjects.Text // Phaser.GameObjects.Text[] | undefined
+let attacksText: Phaser.GameObjects.Text
+let logText: Phaser.GameObjects.Text
 let newLogs = false
 
 let log: { entry: MOBActivityLog; source?: string; flip?: boolean }[] = []
@@ -62,7 +62,13 @@ function hudCreate(this: Phaser.Scene) {
   magicDefText = this.add.text(gameSettings.hudWidth - 10, y, 'MAG XX', right).setOrigin(1, 0)
 
   this.add.text(x, (y += lineHeight), 'Attacks').setOrigin(0, 0)
-  attacksText = this.add.text(x + 5, (y += lineHeight), '').setOrigin(0, 0)
+  attacksText = new BBCodeText(this, x + 5, (y += lineHeight), '', {
+    wrap: {
+      mode: 1,
+      width: gameSettings.hudWidth - 10
+    }
+  }).setOrigin(0, 0)
+  this.add.existing(attacksText)
 
   this.add.text(gameSettings.hudWidth / 2, (y += lineHeight * 8), '----LOG----', center).setOrigin(0.5, 0)
 
@@ -90,20 +96,19 @@ function hudUpdate(this: Phaser.Scene): void {
   rangedDefText?.setText(`🏹 ${gameState.player.rangedDefense}`)
   magicDefText?.setText(`⚡️ ${gameState.player.magicDefense}`)
 
+  const weaponDetails = (icon: string, on: boolean, details?: WeaponDetails) =>
+    details
+      ? on
+        ? `${icon} ${details.weapon}\n  Bonus HIT ${details.hitBonus} DMG ${details.dmgBonus}`
+        : `${icon} [color=#555555]${details.weapon}\n  Bonus HIT ${details.hitBonus} DMG ${details.dmgBonus}[/color]`
+      : undefined
+
   attacksText?.setText(
     [
-      gameState.player.meleeSkills
-        ? `⚔️: ${gameState.player.meleeSkills.weapon}\n  Bonus HIT ${gameState.player.meleeSkills.meleeHitBonus} DMG ${gameState.player.meleeSkills.meleeDamageBonus}`
-        : undefined,
-      gameState.player.rangedSkills
-        ? `🏹: ${gameState.player.rangedSkills.weapon}\n  Bonus HIT ${gameState.player.rangedSkills.rangedHitBonus} DMG ${gameState.player.rangedSkills.rangedDamageBonus}`
-        : undefined,
-      gameState.player.rangedSpellSkills
-        ? `⚡️: ${gameState.player.rangedSpellSkills.weapon}\n  Bonus HIT ${gameState.player.rangedSpellSkills.spellHitBonus} DMG ${gameState.player.rangedSpellSkills.spellDamageBonus}`
-        : undefined,
-      gameState.player.meleeSpellSkills
-        ? `💥: ${gameState.player.meleeSpellSkills.weapon}\n  Bonus HIT ${gameState.player.meleeSpellSkills.spellHitBonus} DMG ${gameState.player.meleeSpellSkills.spellDamageBonus}`
-        : undefined
+      weaponDetails('⚔️', gameState.player.meleeOn, gameState.player.meleeSkills),
+      weaponDetails('🏹', gameState.player.rangedOn, gameState.player.rangedSkills),
+      weaponDetails('⚡️', gameState.player.spellOn, gameState.player.rangedSpellSkills),
+      weaponDetails('💥', gameState.player.spellOn, gameState.player.meleeSpellSkills)
     ]
       .filter((t) => t)
       .join('\n')
