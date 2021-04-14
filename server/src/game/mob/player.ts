@@ -105,6 +105,9 @@ export class Player<T> extends MOB {
     Object.entries(this.levelsGained).forEach(([levelNum, levelData]) => {
       if (!levelData.gained && this.xp >= levelData.xp) {
         levelData.gained = true
+        if (parseInt(levelNum) > this.level) {
+          this.level = parseInt(levelNum)
+        }
         this.addActivity({ level: 'great', message: `LEVEL UP!!!` })
 
         // Get and apply the upgrades for this level for the character's profession
