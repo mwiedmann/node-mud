@@ -1,4 +1,4 @@
-import { randomConsumables, randomMeleeWeapons, randomMonsters } from './map'
+import { findOpenSpace, randomConsumables, randomMeleeWeapons, randomMonsters } from './map'
 import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './levels/level'
 import { performance } from 'perf_hooks'
@@ -171,7 +171,8 @@ export class Game<T> {
     const level = this.getFirstLevel()
     const player = playerFactory(race, profession, name, 1, connection)
 
-    const startingLocation = level.findOpenLocation()
+    const stairsUp = level.getStairsUp()
+    const startingLocation = findOpenSpace(level, stairsUp && { x: stairsUp.x, y: stairsUp.y, range: 2 })
     player.x = startingLocation.x
     player.y = startingLocation.y
     player.setDestination(startingLocation.x, startingLocation.y)

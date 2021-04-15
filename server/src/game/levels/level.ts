@@ -127,10 +127,6 @@ export class Level<T> {
     }
   }
 
-  findOpenLocation(): { x: number; y: number } {
-    return findOpenSpace(this)
-  }
-
   tileIsBlocked(startX: number, startY: number, endX: number, endY: number): boolean {
     // Can the player see this tile?
     const line = {
@@ -343,6 +339,15 @@ export class Level<T> {
     const iterator = this.stairs[Symbol.iterator]()
     for (const [, stairs] of iterator) {
       if (stairs.x === x && stairs.y === y) {
+        return stairs
+      }
+    }
+  }
+
+  getStairsUp(): Stairs | undefined {
+    const iterator = this.stairs[Symbol.iterator]()
+    for (const [, stairs] of iterator) {
+      if (stairs.stairsUp) {
         return stairs
       }
     }

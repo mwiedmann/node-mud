@@ -4,6 +4,7 @@ import { Level } from './levels/level'
 import { Monster } from './mob'
 import { monsterFactory, MonsterType } from './mob/monsterFactory'
 import { SquareType } from 'dng-shared'
+import { inRange } from './util'
 
 export type Moved = {
   fromX: number
@@ -91,7 +92,8 @@ export const randomMonsters = (type: MonsterType, count: number, level: Level<un
     // This helps stagger the movements of all the monsters
     monster.lastMoveTick = Math.floor(Math.random() * monster.ticksPerMove) + 1
 
-    const location = findOpenSpace(level)
+    const stairsUp = level.getStairsUp()
+    const location = findOpenSpace(level, stairsUp && { x: stairsUp.x, y: stairsUp.y, range: 15 })
 
     monster.setSpawn(location.x, location.y)
     monster.setDestination(location.x, location.y)
@@ -106,7 +108,8 @@ export const randomConsumables = (type: ConsumableTypes, count: number, level: L
     c.type = type
     c.health = 5
 
-    const location = findOpenSpace(level)
+    const stairsUp = level.getStairsUp()
+    const location = findOpenSpace(level, stairsUp && { x: stairsUp.x, y: stairsUp.y, range: 15 })
 
     c.x = location.x
     c.y = location.y
@@ -119,7 +122,8 @@ export const randomMeleeWeapons = (subType: MeleeType, count: number, level: Lev
   for (let i = 0; i < count; i++) {
     const c = MeleeWeaponFactory(subType)
 
-    const location = findOpenSpace(level)
+    const stairsUp = level.getStairsUp()
+    const location = findOpenSpace(level, stairsUp && { x: stairsUp.x, y: stairsUp.y, range: 15 })
 
     c.x = location.x
     c.y = location.y
@@ -128,7 +132,10 @@ export const randomMeleeWeapons = (subType: MeleeType, count: number, level: Lev
   }
 }
 
-export const findOpenSpace = (level: Level<unknown>): { x: number; y: number } => {
+export const findOpenSpace = (
+  level: Level<unknown>,
+  avoid?: { x: number; y: number; range: number }
+): { x: number; y: number } => {
   let attempts = 0
   let location: { x: number; y: number }
   do {
@@ -137,6 +144,9 @@ export const findOpenSpace = (level: Level<unknown>): { x: number; y: number } =
     if (attempts > 500) {
       throw new Error(`Could not find an empty location after ${attempts} attempts.`)
     }
-  } while (level.wallsAndMobs[location.y][location.x] > 0)
+  } while (
+    level.wallsAndMobs[location.y][location.x] > 0 ||
+    (avoid && inRange(avoid.range, location.x, location.y, avoid.x, avoid.y))
+  )
   return location
 }

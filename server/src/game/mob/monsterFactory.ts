@@ -460,12 +460,8 @@ export const xpForKill = (attackingMobLevel: number, monster: MOB): number => {
   let xp = xpList[monster.level] || 1
   const levelDifference = attackingMobLevel - monster.level
 
-  // Only 1/2 XP if the attacker is 2 levels higher than the target
-  if (levelDifference === 2) {
-    xp = Math.ceil(xp / 2)
-  }
-  // 0 XP if the attacker more than 2 levels higher than the target
-  else if (levelDifference > 2) {
+  // If the attacker is 2 levels higher than the target, no xp for you!
+  if (levelDifference >= 2) {
     xp = 0
   }
 
