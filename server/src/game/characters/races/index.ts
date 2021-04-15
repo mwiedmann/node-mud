@@ -17,7 +17,7 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     rangedHitBonus: -1,
     spellHitBonus: -1,
     visibleRange: 10,
-    meleeDefense: 5,
+    meleeDefense: 4,
     rangedDefense: 4,
     magicDefense: 3
   },
@@ -42,9 +42,9 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     rangedHitBonus: -2,
     spellHitBonus: -2,
     visibleRange: 7,
-    meleeDefense: 4,
-    rangedDefense: 4,
-    magicDefense: 3
+    meleeDefense: 2,
+    rangedDefense: 2,
+    magicDefense: 1
   },
   gnome: {
     maxHealth: 12,
@@ -77,7 +77,7 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     rangedHitBonus: 1,
     spellHitBonus: 1,
     visibleRange: 8,
-    meleeDefense: 4,
+    meleeDefense: 3,
     rangedDefense: 4,
     magicDefense: 4
   }
