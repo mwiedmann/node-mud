@@ -19,7 +19,7 @@ export const professionSettings: () => {
     ticksPerMeleeAction: 5,
     ticksPerRangedAction: 25,
     ticksPerSpellAction: 30,
-    ticksPerSpecialAbility: 100, // 10 seconds per charge
+    ticksPerSpecialAbility: 80, // 10 seconds per charge
     ticksPausedAfterMelee: 4,
     ticksPausedAfterRanged: 20,
     ticksPausedAfterSpell: 20,
@@ -33,7 +33,7 @@ export const professionSettings: () => {
     meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
     meleeSpell: new MeleeSpell('divine smite', {}, 'd6'),
     ticksPerRangedAction: 25,
-    ticksPerSpecialAbility: 100, // 10 seconds per Divine Smites
+    ticksPerSpecialAbility: 80, // 10 seconds per Divine Smites
     ticksPausedAfterRanged: 15,
     spellHitBonus: 1,
     meleeDefense: 4,
@@ -47,7 +47,7 @@ export const professionSettings: () => {
     ticksPerMeleeAction: 10,
     ticksPerRangedAction: 25,
     ticksPerSpellAction: 15,
-    ticksPerSpecialAbility: 60, // 6 seconds per invisible
+    ticksPerSpecialAbility: 50, // 6 seconds per invisible
     ticksPausedAfterMelee: 12,
     ticksPausedAfterRanged: 15,
     hitBonusWhenInvisible: 5,
@@ -62,7 +62,7 @@ export const professionSettings: () => {
     meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
     rangedItem: RangedWeaponFactory('shortbow', 'Snipe'),
     ticksPerRangedAction: 15,
-    ticksPerSpecialAbility: 100, // 10 seconds per ranged flurry
+    ticksPerSpecialAbility: 80, // 10 seconds per ranged flurry
     ticksPausedAfterMelee: 6,
     ticksPausedAfterRanged: 8,
     rangedHitBonus: 1,
@@ -105,7 +105,7 @@ export const professionSettings: () => {
     ticksPerMeleeAction: 10,
     ticksPerRangedAction: 25,
     ticksPerSpellAction: 15,
-    ticksPerSpecialAbility: 60, // 6 seconds per teleport
+    ticksPerSpecialAbility: 50, // 6 seconds per teleport
     ticksPausedAfterMelee: 12,
     ticksPausedAfterRanged: 15,
     spellDamageBonus: 1,

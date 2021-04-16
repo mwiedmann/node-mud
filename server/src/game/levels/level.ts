@@ -224,7 +224,7 @@ export class Level<T> {
   isMobInRange(mob: MOB, x: number, y: number, range: number, minRange?: number, checkCanSee?: boolean): boolean {
     return (
       !mob.dead && // Not dead...duh
-      !mob.invisible && // Not in range if you can't see it
+      (!checkCanSee || !mob.invisible) && // Not in range if you can't see it
       Math.abs(mob.x - x) <= range && // Check ranges
       Math.abs(mob.y - y) <= range &&
       // Min range use to limit how close (e.g. ranged attacks can't be used point blank)
