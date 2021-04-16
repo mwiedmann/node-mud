@@ -92,7 +92,7 @@ export const monsterSettings: {
   // Level 1 - HP: 1-4, DEF: 4-6
   slime: {
     level: 1,
-    maxHealth: 3,
+    maxHealth: 5,
     ticksPerMove: 8,
     meleeDefense: 6,
     rangedDefense: 5,
@@ -101,7 +101,7 @@ export const monsterSettings: {
   },
   bat: {
     level: 1,
-    maxHealth: 3,
+    maxHealth: 5,
     ticksPerMove: 2,
     meleeDefense: 7,
     rangedDefense: 8,
@@ -110,7 +110,7 @@ export const monsterSettings: {
   },
   snake: {
     level: 1,
-    maxHealth: 3,
+    maxHealth: 5,
     ticksPerMove: 4,
     meleeDefense: 6,
     rangedDefense: 7,
@@ -119,7 +119,7 @@ export const monsterSettings: {
   },
   orc: {
     level: 1,
-    maxHealth: 3,
+    maxHealth: 5,
     ticksPerMove: 6,
     meleeDefense: 7,
     rangedDefense: 7,
@@ -129,7 +129,7 @@ export const monsterSettings: {
   },
   skeleton: {
     level: 1,
-    maxHealth: 3,
+    maxHealth: 5,
     ticksPerMove: 4,
     meleeDefense: 7,
     rangedDefense: 8,
@@ -139,7 +139,7 @@ export const monsterSettings: {
   },
   goblin: {
     level: 1,
-    maxHealth: 4,
+    maxHealth: 6,
     ticksPerMove: 3,
     meleeDefense: 8,
     rangedDefense: 7,
@@ -151,7 +151,7 @@ export const monsterSettings: {
   // Level 2 - HP: 5-8, DEF: 7-9
   zombie: {
     level: 2,
-    maxHealth: 5,
+    maxHealth: 7,
     ticksPerMove: 5,
     meleeDefense: 9,
     rangedDefense: 8,
@@ -161,7 +161,7 @@ export const monsterSettings: {
   },
   kobold: {
     level: 2,
-    maxHealth: 5,
+    maxHealth: 7,
     ticksPerMove: 3,
     meleeDefense: 9,
     rangedDefense: 9,
@@ -170,7 +170,7 @@ export const monsterSettings: {
   },
   'giant-rat': {
     level: 2,
-    maxHealth: 6,
+    maxHealth: 8,
     ticksPerMove: 2,
     meleeDefense: 10,
     rangedDefense: 11,
@@ -179,7 +179,7 @@ export const monsterSettings: {
   },
   spider: {
     level: 2,
-    maxHealth: 7,
+    maxHealth: 9,
     ticksPerMove: 4,
     meleeDefense: 10,
     rangedDefense: 11,
@@ -189,7 +189,7 @@ export const monsterSettings: {
   },
   lizardman: {
     level: 2,
-    maxHealth: 7,
+    maxHealth: 9,
     ticksPerMove: 3,
     meleeDefense: 11,
     rangedDefense: 11,
@@ -199,7 +199,7 @@ export const monsterSettings: {
   },
   gnoll: {
     level: 2,
-    maxHealth: 8,
+    maxHealth: 10,
     ticksPerMove: 3,
     meleeDefense: 11,
     rangedDefense: 11,
@@ -210,7 +210,7 @@ export const monsterSettings: {
   // Level 3 - HP: 9-12, DEF: 10-12
   ogre: {
     level: 3,
-    maxHealth: 9,
+    maxHealth: 11,
     ticksPerMove: 3,
     meleeDefense: 12,
     rangedDefense: 11,
@@ -219,7 +219,7 @@ export const monsterSettings: {
   },
   ghoul: {
     level: 3,
-    maxHealth: 9,
+    maxHealth: 11,
     ticksPerMove: 5,
     meleeDefense: 13,
     rangedDefense: 12,
@@ -229,7 +229,7 @@ export const monsterSettings: {
   },
   harpy: {
     level: 3,
-    maxHealth: 10,
+    maxHealth: 12,
     ticksPerMove: 2,
     meleeDefense: 12,
     rangedDefense: 13,
@@ -238,7 +238,7 @@ export const monsterSettings: {
   },
   'insect-swarm': {
     level: 3,
-    maxHealth: 11,
+    maxHealth: 13,
     ticksPerMove: 3,
     meleeDefense: 14,
     rangedDefense: 15,
@@ -248,7 +248,7 @@ export const monsterSettings: {
   },
   'gelatinous-cube': {
     level: 3,
-    maxHealth: 12,
+    maxHealth: 14,
     ticksPerMove: 6,
     meleeDefense: 14,
     rangedDefense: 15,
@@ -258,7 +258,7 @@ export const monsterSettings: {
   },
   troll: {
     level: 3,
-    maxHealth: 12,
+    maxHealth: 14,
     ticksPerMove: 4,
     meleeDefense: 14,
     rangedDefense: 13,
@@ -268,7 +268,7 @@ export const monsterSettings: {
   // Level 4 - HO: 13-16, DEF: 13-15
   wraith: {
     level: 4,
-    maxHealth: 13,
+    maxHealth: 15,
     ticksPerMove: 4,
     meleeDefense: 15,
     rangedDefense: 14,
@@ -278,7 +278,7 @@ export const monsterSettings: {
   },
   yeti: {
     level: 4,
-    maxHealth: 13,
+    maxHealth: 15,
     ticksPerMove: 3,
     meleeDefense: 16,
     rangedDefense: 16,
@@ -287,7 +287,7 @@ export const monsterSettings: {
   },
   centaur: {
     level: 4,
-    maxHealth: 14,
+    maxHealth: 16,
     ticksPerMove: 2,
     meleeDefense: 15,
     rangedDefense: 16,
@@ -297,7 +297,7 @@ export const monsterSettings: {
   },
   elemental: {
     level: 4,
-    maxHealth: 14,
+    maxHealth: 16,
     ticksPerMove: 3,
     meleeDefense: 16,
     rangedDefense: 16,
@@ -307,7 +307,7 @@ export const monsterSettings: {
   },
   imp: {
     level: 4,
-    maxHealth: 15,
+    maxHealth: 17,
     ticksPerMove: 2,
     meleeDefense: 17,
     rangedDefense: 18,
@@ -317,7 +317,7 @@ export const monsterSettings: {
   },
   banshee: {
     level: 4,
-    maxHealth: 16,
+    maxHealth: 18,
     ticksPerMove: 5,
     meleeDefense: 17,
     rangedDefense: 16,
@@ -328,7 +328,7 @@ export const monsterSettings: {
   // Level 5 HP: 17-20, DEF: 16-18
   demon: {
     level: 5,
-    maxHealth: 17,
+    maxHealth: 19,
     ticksPerMove: 3,
     meleeDefense: 18,
     rangedDefense: 18,
@@ -338,7 +338,7 @@ export const monsterSettings: {
   },
   giant: {
     level: 5,
-    maxHealth: 17,
+    maxHealth: 19,
     ticksPerMove: 5,
     meleeDefense: 20,
     rangedDefense: 19,
@@ -348,7 +348,7 @@ export const monsterSettings: {
   },
   mummy: {
     level: 5,
-    maxHealth: 18,
+    maxHealth: 20,
     ticksPerMove: 6,
     meleeDefense: 19,
     rangedDefense: 18,
@@ -358,7 +358,7 @@ export const monsterSettings: {
   },
   griffon: {
     level: 5,
-    maxHealth: 19,
+    maxHealth: 21,
     ticksPerMove: 2,
     meleeDefense: 18,
     rangedDefense: 19,
@@ -367,7 +367,7 @@ export const monsterSettings: {
   },
   manticore: {
     level: 5,
-    maxHealth: 20,
+    maxHealth: 22,
     ticksPerMove: 2,
     meleeDefense: 19,
     rangedDefense: 18,
@@ -377,7 +377,7 @@ export const monsterSettings: {
   },
   minotaur: {
     level: 5,
-    maxHealth: 20,
+    maxHealth: 22,
     ticksPerMove: 3,
     meleeDefense: 20,
     rangedDefense: 20,
@@ -388,7 +388,7 @@ export const monsterSettings: {
   // Legendary Monsters 20+ 20+
   dragon: {
     level: 6,
-    maxHealth: 25,
+    maxHealth: 27,
     ticksPerMove: 2,
     meleeDefense: 22,
     rangedDefense: 21,
@@ -398,7 +398,7 @@ export const monsterSettings: {
   },
   lich: {
     level: 6,
-    maxHealth: 21,
+    maxHealth: 23,
     ticksPerMove: 4,
     meleeDefense: 23,
     rangedDefense: 23,
@@ -408,7 +408,7 @@ export const monsterSettings: {
   },
   vampire: {
     level: 6,
-    maxHealth: 22,
+    maxHealth: 24,
     ticksPerMove: 3,
     meleeDefense: 24,
     rangedDefense: 25,
@@ -418,7 +418,7 @@ export const monsterSettings: {
   },
   beholder: {
     level: 6,
-    maxHealth: 21,
+    maxHealth: 23,
     ticksPerMove: 5,
     meleeDefense: 24,
     rangedDefense: 24,
@@ -427,7 +427,7 @@ export const monsterSettings: {
   },
   'mind-flayer': {
     level: 6,
-    maxHealth: 20,
+    maxHealth: 22,
     ticksPerMove: 4,
     meleeDefense: 23,
     rangedDefense: 22,
@@ -436,7 +436,7 @@ export const monsterSettings: {
   },
   devil: {
     level: 6,
-    maxHealth: 24,
+    maxHealth: 26,
     ticksPerMove: 3,
     meleeDefense: 25,
     rangedDefense: 25,

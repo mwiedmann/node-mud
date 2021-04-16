@@ -10,7 +10,7 @@ import { MOBSkills } from '../../mob'
 
 export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () => ({
   dwarf: {
-    maxHealth: 24,
+    maxHealth: 11,
     ticksPerMove: 4,
     meleeHitBonus: 2,
     meleeDamageBonus: 2,
@@ -22,7 +22,7 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     magicDefense: 3
   },
   elf: {
-    maxHealth: 16,
+    maxHealth: 9,
     ticksPerMove: 2,
     meleeHitBonus: -1,
     rangedHitBonus: 3,
@@ -35,7 +35,7 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     magicDefense: 4
   },
   giant: {
-    maxHealth: 28,
+    maxHealth: 12,
     ticksPerMove: 5,
     meleeHitBonus: 3,
     meleeDamageBonus: 2,
@@ -47,7 +47,7 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     magicDefense: 1
   },
   gnome: {
-    maxHealth: 12,
+    maxHealth: 7,
     ticksPerMove: 3,
     meleeHitBonus: -2,
     rangedHitBonus: 1,
@@ -59,7 +59,7 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     magicDefense: 5
   },
   halfling: {
-    maxHealth: 14,
+    maxHealth: 8,
     ticksPerMove: 3,
     meleeHitBonus: 1,
     meleeDamageBonus: 1,
@@ -71,7 +71,7 @@ export const raceSettings: () => { [K in PlayerRace]: Partial<MOBSkills> } = () 
     magicDefense: 4
   },
   human: {
-    maxHealth: 20,
+    maxHealth: 10,
     ticksPerMove: 3,
     meleeHitBonus: 1,
     rangedHitBonus: 1,

@@ -14,6 +14,7 @@ export const professionSettings: () => {
   [K in PlayerProfession]: Partial<MOBSkills> & Partial<MOBItems>
 } = () => ({
   barbarian: {
+    maxHealth: 12,
     meleeItem: MeleeWeaponFactory('axe', 'Fury'),
     ticksPerMeleeAction: 5,
     ticksPerRangedAction: 25,
@@ -28,6 +29,7 @@ export const professionSettings: () => {
     magicDefense: 3
   },
   cleric: {
+    maxHealth: 10,
     meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
     meleeSpell: new MeleeSpell('divine smite', {}, 'd6'),
     ticksPerRangedAction: 25,
@@ -39,6 +41,7 @@ export const professionSettings: () => {
     magicDefense: 4
   },
   illusionist: {
+    maxHealth: 7,
     meleeItem: MeleeWeaponFactory('staff', 'Willow'),
     rangedSpell: new RangedSpell('mind strike', {}, 6, 'd6'),
     ticksPerMeleeAction: 10,
@@ -55,6 +58,7 @@ export const professionSettings: () => {
     magicDefense: 5
   },
   ranger: {
+    maxHealth: 9,
     meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
     rangedItem: RangedWeaponFactory('shortbow', 'Snipe'),
     ticksPerRangedAction: 15,
@@ -67,6 +71,7 @@ export const professionSettings: () => {
     magicDefense: 3
   },
   rogue: {
+    maxHealth: 8,
     meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
     rangedItem: RangedWeaponFactory('shortbow', 'Stinger'),
     ticksPerRangedAction: 17,
@@ -82,6 +87,7 @@ export const professionSettings: () => {
     magicDefense: 4
   },
   warrior: {
+    maxHealth: 11,
     meleeItem: MeleeWeaponFactory('broadsword', 'Vengence'),
     ticksPerMeleeAction: 5,
     ticksPerSpellAction: 30,
@@ -93,6 +99,7 @@ export const professionSettings: () => {
     magicDefense: 4
   },
   wizard: {
+    maxHealth: 7,
     meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
     rangedSpell: new RangedSpell('energy blast', {}, 6, 'd6'),
     ticksPerMeleeAction: 10,

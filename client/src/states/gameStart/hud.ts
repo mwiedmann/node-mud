@@ -85,6 +85,8 @@ function hudCreate(this: Phaser.Scene) {
 export const hudCleanup = (scene: Phaser.Scene): void => {
   // TODO: Are all the gameobjects destroyed as well or do I need to manually destroy them?
   scene.scene.remove(hudSceneId)
+  log = []
+  newLogs = false
 }
 
 function hudUpdate(this: Phaser.Scene): void {

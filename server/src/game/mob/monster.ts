@@ -15,7 +15,7 @@ export class Monster extends MOB {
   startingX = 0
   startingY = 0
   deathTick = 0
-  reviveTick = 600 // Respawn after 1 min
+  reviveTick = 1800 // Respawn after 3 mins
 
   takeDamage(tick: number, roll: RollResult): void {
     super.takeDamage(tick, roll)
