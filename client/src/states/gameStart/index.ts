@@ -63,7 +63,7 @@ const init = (scene: Phaser.Scene): void => {
   scene.cameras.main
     .startFollow(guy, true, 0.03, 0.03)
     .setDeadzone(gameSettings.cellSize * 2, gameSettings.cellSize * 2)
-    .setBounds(-300, -300, gameSettings.fieldWidth + 300, gameSettings.fieldHeight + 300)
+    .setBounds(-600, -600, gameSettings.fieldWidth + 600, gameSettings.fieldHeight + 600)
 
   mapCamera = scene.cameras.add(
     gameSettings.mapViewportX,
@@ -75,6 +75,7 @@ const init = (scene: Phaser.Scene): void => {
     .setZoom(gameSettings.mapZoom)
     .startFollow(guy, true, 0.03, 0.03)
     .setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
+    .setBackgroundColor('rgba(255,255,255,0.1)')
 
   scene.input.on('pointerup', pointerCallback)
 
