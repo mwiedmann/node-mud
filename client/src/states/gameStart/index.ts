@@ -13,6 +13,8 @@ import {
 let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
 let star: Phaser.GameObjects.Image | undefined
+let mapCamera: Phaser.Cameras.Scene2D.Camera | undefined
+let cameraBack: Phaser.GameObjects.Rectangle | undefined
 
 const tileData: Map<
   number,
@@ -58,9 +60,21 @@ const init = (scene: Phaser.Scene): void => {
   star = scene.add.image(0, 0, 'star')
 
   // Set the camera to follow the guy (with some lerping, a deadzone, and bounds)
-  scene.cameras.main.startFollow(guy, true, 0.03, 0.03)
-  scene.cameras.main.setDeadzone(gameSettings.cellSize * 2, gameSettings.cellSize * 2)
-  scene.cameras.main.setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
+  scene.cameras.main
+    .startFollow(guy, true, 0.03, 0.03)
+    .setDeadzone(gameSettings.cellSize * 2, gameSettings.cellSize * 2)
+    .setBounds(-300, -300, gameSettings.fieldWidth + 300, gameSettings.fieldHeight + 300)
+
+  mapCamera = scene.cameras.add(
+    gameSettings.mapViewportX,
+    gameSettings.mapViewportY,
+    gameSettings.mapViewportSize,
+    gameSettings.mapViewportSize
+  )
+  mapCamera
+    .setZoom(gameSettings.mapZoom)
+    .startFollow(guy, true, 0.03, 0.03)
+    .setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
 
   scene.input.on('pointerup', pointerCallback)
 
@@ -163,22 +177,6 @@ const update = (scene: Phaser.Scene, time: number, delta: number): void => {
 
   // Manage floating objects for the player
   playerFloatingObjects(scene, time)
-
-  if (controls.cursors.left.isDown) {
-    scene.cameras.main.x -= 1
-  }
-
-  if (controls.cursors.right.isDown) {
-    scene.cameras.main.x += 1
-  }
-
-  if (controls.cursors.up.isDown) {
-    scene.cameras.main.y -= 1
-  }
-
-  if (controls.cursors.down.isDown) {
-    scene.cameras.main.y += 1
-  }
 
   if (controls.quit.isDown) {
     backToTitle(scene)
@@ -372,6 +370,11 @@ const cleanup = (scene: Phaser.Scene): void => {
 
   scene.input.removeListener('pointerup', pointerCallback)
   controls.getItem.removeAllListeners()
+
+  if (mapCamera) {
+    scene.cameras.remove(mapCamera)
+    mapCamera = undefined
+  }
 
   hudCleanup(scene)
 }
