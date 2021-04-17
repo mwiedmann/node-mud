@@ -14,7 +14,8 @@ let guy: Phaser.GameObjects.Image | undefined
 let statusbars: StatusBars | undefined
 let star: Phaser.GameObjects.Image | undefined
 let mapCamera: Phaser.Cameras.Scene2D.Camera | undefined
-let cameraBack: Phaser.GameObjects.Rectangle | undefined
+
+let mapFullscreen = false
 
 const tileData: Map<
   number,
@@ -28,6 +29,25 @@ const tileData: Map<
 let deadText: Phaser.GameObjects.Text | undefined
 let preCameraSettings: Phaser.Types.Cameras.Scene2D.JSONCamera
 
+const toggleMap = (scene: Phaser.Scene) => {
+  mapFullscreen = !mapFullscreen
+  if (mapFullscreen) {
+    scene.cameras.main.visible = false
+    mapCamera
+      ?.setViewport(gameSettings.gameViewportX, 0, gameSettings.gameViewportWidth, gameSettings.screenHeight)
+      .setZoom(gameSettings.mapZoomBig)
+  } else {
+    scene.cameras.main.visible = true
+    mapCamera
+      ?.setViewport(
+        gameSettings.mapViewportX,
+        gameSettings.mapViewportY,
+        gameSettings.mapViewportSize,
+        gameSettings.mapViewportSize
+      )
+      .setZoom(gameSettings.mapZoomSmall)
+  }
+}
 const currentTileData = () => {
   const data = tileData.get(gameState.mapId)
   if (!data) {
@@ -63,7 +83,7 @@ const init = (scene: Phaser.Scene): void => {
   scene.cameras.main
     .startFollow(guy, true, 0.03, 0.03)
     .setDeadzone(gameSettings.cellSize * 2, gameSettings.cellSize * 2)
-    .setBounds(-600, -600, gameSettings.fieldWidth + 600, gameSettings.fieldHeight + 600)
+    .setBounds(-500, -500, gameSettings.fieldWidth + 1000, gameSettings.fieldHeight + 1000)
 
   mapCamera = scene.cameras.add(
     gameSettings.mapViewportX,
@@ -72,10 +92,14 @@ const init = (scene: Phaser.Scene): void => {
     gameSettings.mapViewportSize
   )
   mapCamera
-    .setZoom(gameSettings.mapZoom)
+    .setZoom(gameSettings.mapZoomSmall)
     .startFollow(guy, true, 0.03, 0.03)
     .setBounds(0, 0, gameSettings.fieldWidth, gameSettings.fieldHeight)
     .setBackgroundColor('rgba(255,255,255,0.1)')
+
+  controls.mapToggle.on('up', () => {
+    toggleMap(scene)
+  })
 
   scene.input.on('pointerup', pointerCallback)
 

@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser'
 import { gameState, gameSettings, Ghost } from '../../gameManagement'
-import { wallTilesStart } from 'dng-shared'
+import { stairsDownTile, stairsUpTile, wallTilesStart } from 'dng-shared'
 
 import { Mrpas } from 'mrpas'
 
@@ -25,6 +25,12 @@ export type SeenTile = Phaser.Tilemaps.Tile & {
 export const inRange = (visibleRange: number, startX: number, startY: number, endX: number, endY: number): boolean =>
   Math.abs(endX - startX) <= visibleRange && Math.abs(endY - startY) <= visibleRange
 
+/** Some tiles (stairs) will show at full alpha so they are more visible */
+const specialTileHiddenAlpha = (tile: SeenTile & Phaser.Tilemaps.Tile) =>
+  gameState.map[tile.y][tile.x] === stairsDownTile || gameState.map[tile.y][tile.x] === stairsUpTile
+    ? 1
+    : gameSettings.hiddenTileAlpha
+
 export const setMapTilesSight = (
   mapLayer: Phaser.Tilemaps.TilemapLayer | undefined,
   visibleRange: number,
@@ -35,10 +41,10 @@ export const setMapTilesSight = (
     throw new Error('mapLayer not defined')
   }
   // Calculate visible spaces
-  mapLayer.forEachTile((m: SeenTile) => {
+  mapLayer.forEachTile((m: SeenTile & Phaser.Tilemaps.Tile) => {
     if (m.seen) {
       m.setVisible(true)
-      m.setAlpha(gameSettings.hiddenTileAlpha)
+      m.setAlpha(specialTileHiddenAlpha(m))
     } else {
       m.setVisible(false)
       m.setAlpha(0)

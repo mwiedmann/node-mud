@@ -12,6 +12,7 @@ export let controls: {
   special: Phaser.Input.Keyboard.Key
   melee: Phaser.Input.Keyboard.Key
   ranged: Phaser.Input.Keyboard.Key
+  mapToggle: Phaser.Input.Keyboard.Key
 }
 
 export const initControls = (scene: Phaser.Scene): void => {
@@ -24,7 +25,8 @@ export const initControls = (scene: Phaser.Scene): void => {
     special: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
     melee: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
     ranged: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R),
-    spell: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+    spell: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+    mapToggle: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TAB)
   }
 }
 

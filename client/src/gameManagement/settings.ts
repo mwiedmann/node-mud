@@ -25,7 +25,8 @@ class GameSettings {
   hiddenTileAlpha = 0.3
   hudWidth = 400
   mapViewportSize = 400
-  mapZoom = 0.1
+  mapZoomSmall = 0.125
+  mapZoomBig = 0.34
 
   mapViewportX: number
   mapViewportY = 5
