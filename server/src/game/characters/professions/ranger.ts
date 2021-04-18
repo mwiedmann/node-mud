@@ -1,6 +1,21 @@
+import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
+import { Player } from '../../mob'
 
-export const rangerProgression: LevelProgression[] = [
+export class Ranger<T> extends Player<T> {
+  constructor(
+    name: string,
+    race: PlayerRace,
+    raceProgression: LevelProgression[],
+    team: number,
+    id: number,
+    connection: T
+  ) {
+    super(name, race, 'ranger', rangerProgression, raceProgression, team, id, connection)
+  }
+}
+
+const rangerProgression: LevelProgression[] = [
   {
     level: 2,
     upgrades: {

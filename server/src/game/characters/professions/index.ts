@@ -1,14 +1,19 @@
-import { LevelProgression } from '..'
+import { LevelProgression, raceProgression } from '..'
 import { MeleeSpell, MeleeWeaponFactory, RangedSpell, RangedWeaponFactory } from '../../item'
-import { MOBItems, MOBSkills } from '../../mob'
-import { barbarianProgression } from './barbarian'
-import { clericProgression } from './cleric'
-import { illusionistProgression } from './illusionist'
-import { rangerProgression } from './ranger'
-import { rogueProgression } from './rogue'
-import { warriorProgression } from './warrior'
-import { wizardProgression } from './wizard'
-import { PlayerProfession } from 'dng-shared'
+import { MOBItems, MOBSkills, Player } from '../../mob'
+import { Barbarian } from './barbarian'
+import { Cleric } from './cleric'
+import { Illusionist } from './illusionist'
+import { Ranger } from './ranger'
+import { Rogue } from './rogue'
+import { Warrior } from './warrior'
+import { Wizard } from './wizard'
+import { PlayerProfession, PlayerRace } from 'dng-shared'
+import { nextId } from '../../id'
+
+export interface PlayerConstruction<T> {
+  new (name: string, race: PlayerRace, raceProg: LevelProgression[], team: number, id: number, connection: T): Player<T>
+}
 
 export const professionSettings: () => {
   [K in PlayerProfession]: Partial<MOBSkills> & Partial<MOBItems>
@@ -19,7 +24,7 @@ export const professionSettings: () => {
     ticksPerMeleeAction: 5,
     ticksPerRangedAction: 25,
     ticksPerSpellAction: 30,
-    ticksPerSpecialAbility: 80, // 10 seconds per charge
+    ticksPerSpecialAbility: 50, // 5 seconds per charge
     ticksPausedAfterMelee: 4,
     ticksPausedAfterRanged: 20,
     ticksPausedAfterSpell: 20,
@@ -33,7 +38,7 @@ export const professionSettings: () => {
     meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
     meleeSpell: new MeleeSpell('divine smite', {}, 'd6'),
     ticksPerRangedAction: 25,
-    ticksPerSpecialAbility: 80, // 10 seconds per Divine Smites
+    ticksPerSpecialAbility: 50, // 5 seconds per Divine Smites
     ticksPausedAfterRanged: 15,
     spellHitBonus: 1,
     meleeDefense: 4,
@@ -47,7 +52,7 @@ export const professionSettings: () => {
     ticksPerMeleeAction: 10,
     ticksPerRangedAction: 25,
     ticksPerSpellAction: 15,
-    ticksPerSpecialAbility: 50, // 6 seconds per invisible
+    ticksPerSpecialAbility: 30, // 3 seconds per invisible
     ticksPausedAfterMelee: 12,
     ticksPausedAfterRanged: 15,
     hitBonusWhenInvisible: 5,
@@ -62,7 +67,7 @@ export const professionSettings: () => {
     meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
     rangedItem: RangedWeaponFactory('shortbow', 'Snipe'),
     ticksPerRangedAction: 15,
-    ticksPerSpecialAbility: 80, // 10 seconds per ranged flurry
+    ticksPerSpecialAbility: 50, // 5 seconds per ranged flurry
     ticksPausedAfterMelee: 6,
     ticksPausedAfterRanged: 8,
     rangedHitBonus: 1,
@@ -75,9 +80,9 @@ export const professionSettings: () => {
     meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
     rangedItem: RangedWeaponFactory('shortbow', 'Stinger'),
     ticksPerRangedAction: 17,
-    // 2 seconds per camouflage
-    // If not currently spotted, the rogue only needs a few seconds to hide
-    ticksPerSpecialAbility: 20,
+    // 1 seconds per camouflage
+    // If not currently spotted, the rogue only needs a second to hide
+    ticksPerSpecialAbility: 10,
     ticksPausedAfterRanged: 10,
     hitBonusWhenInvisible: 4,
     damageBonusWhenInvisible: 2,
@@ -105,7 +110,7 @@ export const professionSettings: () => {
     ticksPerMeleeAction: 10,
     ticksPerRangedAction: 25,
     ticksPerSpellAction: 15,
-    ticksPerSpecialAbility: 50, // 6 seconds per teleport
+    ticksPerSpecialAbility: 30, // 3 seconds per teleport
     ticksPausedAfterMelee: 12,
     ticksPausedAfterRanged: 15,
     spellDamageBonus: 1,
@@ -115,14 +120,24 @@ export const professionSettings: () => {
   }
 })
 
-export const professionProgression: {
-  [K in PlayerProfession]: LevelProgression[]
-} = {
-  barbarian: barbarianProgression,
-  warrior: warriorProgression,
-  ranger: rangerProgression,
-  rogue: rogueProgression,
-  wizard: wizardProgression,
-  illusionist: illusionistProgression,
-  cleric: clericProgression
+const professionMap = <T>(): Record<PlayerProfession, PlayerConstruction<T>> => ({
+  barbarian: Barbarian,
+  cleric: Cleric,
+  illusionist: Illusionist,
+  ranger: Ranger,
+  rogue: Rogue,
+  warrior: Warrior,
+  wizard: Wizard
+})
+
+export const professionFactory = <T>(
+  name: string,
+  race: PlayerRace,
+  profession: PlayerProfession,
+  team: number,
+  connection: T
+): Player<T> => {
+  const raceProg = raceProgression[race]
+  const profType = professionMap<T>()[profession]
+  return new profType(name, race, raceProg, team, nextId(), connection)
 }

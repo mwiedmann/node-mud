@@ -209,15 +209,31 @@ export class Player<T> extends MOB {
         this.lastSpecialAbilityTick = tick
         this.specialAbilityActivate = false
       }
-      // The Ranger can shoot all enemies he can see.
-      else if (this.profession === 'ranger' && this.specialAbilityActivate) {
+      // The Ranger can shoot an exploding arrow that hits all in range
+      else if (
+        this.profession === 'ranger' &&
+        this.specialAbilityActivate &&
+        this.specialAbilityX &&
+        this.specialAbilityY
+      ) {
         const range = this.bestRangedWeapon()?.range || 0
-        const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, range, 2, true)
+        const mobsInRange = level.allMobsInRange(
+          level.monsters,
+          this.specialAbilityX,
+          this.specialAbilityY,
+          range,
+          2,
+          true
+        )
 
         // Only activate the ability if there are mobs in range
         if (mobsInRange.length > 0) {
           mobsInRange.forEach((m) => {
-            this.makeRangedAttack(m, tick, level, notes, false)
+            this.makeRangedAttack(m, tick, level, notes, {
+              hasCost: false,
+              fromX: this.specialAbilityX,
+              fromY: this.specialAbilityY
+            })
           })
           this.lastSpecialAbilityTick = tick
           this.specialAbilityActivate = false

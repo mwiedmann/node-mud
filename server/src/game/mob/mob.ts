@@ -451,11 +451,17 @@ export abstract class MOB implements MOBSkills, MOBItems {
 
   abstract specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void
 
-  makeRangedAttack(mobToAttack: MOB, tick: number, level: Level<unknown>, notes: MOBUpdateNotes, hasCost = true): void {
+  makeRangedAttack(
+    mobToAttack: MOB,
+    tick: number,
+    level: Level<unknown>,
+    notes: MOBUpdateNotes,
+    options: { hasCost?: boolean; fromX?: number; fromY?: number } = { hasCost: true }
+  ): void {
     const attackLogEntry: MOBAttackActivityLog = {
       type: 'ranged',
-      fromX: this.x,
-      fromY: this.y,
+      fromX: options.fromX || this.x,
+      fromY: options.fromY || this.y,
       toX: mobToAttack.x,
       toY: mobToAttack.y,
       hit: false,
@@ -483,7 +489,7 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.addAttackActivity(attackLogEntry)
 
     // Some special abilities make extra attacks at no cost
-    if (hasCost) {
+    if (options.hasCost) {
       this.actionPoints -= this.actionPointsCostPerRangedAction
       this.lastRangedActionTick = tick
       this.tickPausedUntil = tick + this.ticksPausedAfterRanged
