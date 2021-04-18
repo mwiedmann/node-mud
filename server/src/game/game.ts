@@ -63,12 +63,12 @@ export class Game<T> {
       level.setWalls(map) // This will also add stairs and create the map search graph
 
       // Add some mosnters. Monster level will equal dungeon level. Fix later.
-      // Object.entries(monsterSettings)
-      //   .filter(([_, value]) => value.level === i)
-      //   .map(([key]) => key as MonsterType)
-      //   .forEach((monsterName) => {
-      //     randomMonsters(monsterName, 15, level)
-      //   })
+      Object.entries(monsterSettings)
+        .filter(([_, value]) => value.level === i)
+        .map(([key]) => key as MonsterType)
+        .forEach((monsterName) => {
+          randomMonsters(monsterName, 15, level)
+        })
 
       // Need to reupdate the map/graph after adding monsters and stairs
       level.updateGraph()

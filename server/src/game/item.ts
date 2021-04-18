@@ -132,12 +132,12 @@ export class RangedWeapon extends Weapon {
 }
 export const RangedWeaponFactory = (type: RangedType, name = ''): RangedWeapon => {
   const weapon: Record<RangedType, [range: number, damageDie: Dice]> = {
-    natural: [4, 'd2'],
-    blowgun: [4, 'd2'],
-    shortbow: [5, 'd2'],
-    'light-crossbow': [6, 'd4'],
-    longbow: [8, 'd4'],
-    'heavy-crossbow': [10, 'd6']
+    natural: [5, 'd2'],
+    blowgun: [5, 'd2'],
+    shortbow: [6, 'd4'],
+    'light-crossbow': [7, 'd4'],
+    longbow: [8, 'd6'],
+    'heavy-crossbow': [10, 'd8']
   }
 
   const selectedWeapon = weapon[type]

@@ -165,7 +165,7 @@ export class Player<T> extends MOB {
         }
       }
       // The illusionist can turn invisible if he not currently spotted
-      else if (this.profession === 'illusionist' && this.specialAbilityActivate && !level.playerIsSpotted(this)) {
+      else if (this.profession === 'illusionist' && this.specialAbilityActivate) {
         this.invisible = true
         this.specialAbilityActivate = false
         this.lastSpecialAbilityTick = tick
@@ -213,17 +213,27 @@ export class Player<T> extends MOB {
       else if (this.profession === 'ranger' && this.specialAbilityActivate) {
         const range = this.bestRangedWeapon()?.range || 0
         const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, range, 2, true)
-        mobsInRange.forEach((m) => {
-          this.makeRangedAttack(m, tick, level, notes, false)
-        })
-        this.lastSpecialAbilityTick = tick
-        this.specialAbilityActivate = false
+
+        // Only activate the ability if there are mobs in range
+        if (mobsInRange.length > 0) {
+          mobsInRange.forEach((m) => {
+            this.makeRangedAttack(m, tick, level, notes, false)
+          })
+          this.lastSpecialAbilityTick = tick
+          this.specialAbilityActivate = false
+        }
       }
     }
 
+    // While invisible, this illusionist can't recharge their invisibility special
+    if (this.profession === 'illusionist') {
+      if (this.invisible) {
+        this.lastSpecialAbilityTick = tick
+      }
+    }
     // The rogue can camouflage into nearby walls.
     // The more walls, the better
-    if (this.profession === 'rogue') {
+    else if (this.profession === 'rogue') {
       // If the rogue is not currently camouflaged, see if he can hide.
       // Ability must be off coooldown, rogue must be near a wall, and not in sight of any monsters
       if (!this.invisible && tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
