@@ -93,13 +93,15 @@ function scenePreload(this: Phaser.Scene) {
   this.load.image('star', 'images/star.png')
 }
 
-function sceneCreate(this: Phaser.Scene) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+function sceneCreate(this: Phaser.Scene, data: object) {
   initControls(this)
 }
 
 let lastState: States | undefined = undefined
+let lastTime = 0
 
-export function sceneUpdate(this: Phaser.Scene, time: number, delta: number): void {
+export function sceneUpdate(this: Phaser.Scene): void {
   if (lastState !== gameState.phase) {
     console.log('transition', lastState, gameState.phase)
     // Cleanup the last phase (if needed)
@@ -113,7 +115,11 @@ export function sceneUpdate(this: Phaser.Scene, time: number, delta: number): vo
     return
   }
 
-  stateFunctions[gameState.phase].update(this, time, delta)
+  // Time between loops
+  const delta = this.time.now - lastTime
+  lastTime = this.time.now
+
+  stateFunctions[gameState.phase].update(this, this.time.now, delta)
 }
 
 export const startGame = (): void => {

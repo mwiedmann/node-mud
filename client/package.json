@@ -7,7 +7,7 @@
     "dng-shared": "1.0.0",
     "mrpas": "2.0.0",
     "phaser3-rex-plugins": "1.1.44",
-    "phaser": "3.52.0",
+    "phaser": "3.54.0",
     "ws": "7.4.4"
   },
   "devDependencies": {
