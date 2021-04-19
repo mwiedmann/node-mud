@@ -1,6 +1,7 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
-import { Player } from '../../mob'
+import { MeleeWeaponFactory } from '../../item'
+import { MOBItems, MOBSkills, Player } from '../../mob'
 
 export class Warrior<T> extends Player<T> {
   constructor(
@@ -11,9 +12,22 @@ export class Warrior<T> extends Player<T> {
     id: number,
     connection: T
   ) {
-    super(name, race, 'warrior', warriorProgression, raceProgression, team, id, connection)
+    super(name, race, 'warrior', startingSettings(), warriorProgression, raceProgression, team, id, connection)
   }
 }
+
+const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
+  maxHealth: 11,
+  meleeItem: MeleeWeaponFactory('broadsword', 'Vengence'),
+  ticksPerMeleeAction: 5,
+  ticksPerSpellAction: 30,
+  ticksPerSpecialAbility: 100, // 10 seconds per ???
+  ticksPausedAfterMelee: 5,
+  meleeHitBonus: 1,
+  meleeDefense: 5,
+  rangedDefense: 5,
+  magicDefense: 4
+})
 
 const warriorProgression: LevelProgression[] = [
   {

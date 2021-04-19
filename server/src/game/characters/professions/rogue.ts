@@ -1,6 +1,7 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
-import { Player } from '../../mob'
+import { MeleeWeaponFactory, RangedWeaponFactory } from '../../item'
+import { MOBItems, MOBSkills, Player } from '../../mob'
 
 export class Rogue<T> extends Player<T> {
   constructor(
@@ -11,9 +12,26 @@ export class Rogue<T> extends Player<T> {
     id: number,
     connection: T
   ) {
-    super(name, race, 'rogue', rogueProgression, raceProgression, team, id, connection)
+    super(name, race, 'rogue', startingSettings(), rogueProgression, raceProgression, team, id, connection)
   }
 }
+
+const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
+  maxHealth: 8,
+  meleeItem: MeleeWeaponFactory('dagger', 'Stick'),
+  rangedItem: RangedWeaponFactory('shortbow', 'Stinger'),
+  ticksPerRangedAction: 17,
+  // 1 seconds per camouflage
+  // If not currently spotted, the rogue only needs a second to hide
+  ticksPerSpecialAbility: 10,
+  ticksPausedAfterRanged: 10,
+  hitBonusWhenInvisible: 4,
+  damageBonusWhenInvisible: 2,
+  meleeHitBonus: 1,
+  meleeDefense: 4,
+  rangedDefense: 5,
+  magicDefense: 4
+})
 
 const rogueProgression: LevelProgression[] = [
   {

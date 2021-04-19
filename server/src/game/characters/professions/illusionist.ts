@@ -1,6 +1,7 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
-import { Player } from '../../mob'
+import { MeleeWeaponFactory, RangedSpell } from '../../item'
+import { MOBItems, MOBSkills, Player } from '../../mob'
 
 export class Illusionist<T> extends Player<T> {
   constructor(
@@ -11,9 +12,27 @@ export class Illusionist<T> extends Player<T> {
     id: number,
     connection: T
   ) {
-    super(name, race, 'illusionist', illusionistProgression, raceProgression, team, id, connection)
+    super(name, race, 'illusionist', startingSettings(), illusionistProgression, raceProgression, team, id, connection)
   }
 }
+
+const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
+  maxHealth: 7,
+  meleeItem: MeleeWeaponFactory('staff', 'Willow'),
+  rangedSpell: new RangedSpell('mind strike', {}, 6, 'd6'),
+  ticksPerMeleeAction: 10,
+  ticksPerRangedAction: 25,
+  ticksPerSpellAction: 15,
+  ticksPerSpecialAbility: 30, // 3 seconds per invisible
+  ticksPausedAfterMelee: 12,
+  ticksPausedAfterRanged: 15,
+  hitBonusWhenInvisible: 5,
+  damageBonusWhenInvisible: 2,
+  spellHitBonus: 1,
+  meleeDefense: 3,
+  rangedDefense: 4,
+  magicDefense: 5
+})
 
 const illusionistProgression: LevelProgression[] = [
   {

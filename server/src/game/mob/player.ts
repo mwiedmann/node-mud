@@ -1,7 +1,7 @@
 import { Level } from '../levels/level'
 import { LevelProgression } from '../characters'
 import { inRange } from '../util'
-import { MOB, MOBUpdateNotes } from './mob'
+import { MOB, MOBItems, MOBUpdateNotes } from './mob'
 import { PlayerProfession, PlayerRace, WeaponDetails } from 'dng-shared'
 import { MOBSkills } from '.'
 
@@ -10,6 +10,7 @@ export class Player<T> extends MOB {
     name: string,
     public race: PlayerRace,
     public profession: PlayerProfession,
+    public startingProfessionSettings: Partial<MOBSkills> & Partial<MOBItems>,
     public professionProgression: LevelProgression[],
     public raceProgression: LevelProgression[],
     team: number,

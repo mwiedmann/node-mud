@@ -1,6 +1,7 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
-import { Player } from '../../mob'
+import { MeleeWeaponFactory } from '../../item'
+import { MOBItems, MOBSkills, Player } from '../../mob'
 
 export class Barbarian<T> extends Player<T> {
   constructor(
@@ -11,9 +12,25 @@ export class Barbarian<T> extends Player<T> {
     id: number,
     connection: T
   ) {
-    super(name, race, 'barbarian', barbarianProgression, raceProgression, team, id, connection)
+    super(name, race, 'barbarian', startingSettings(), barbarianProgression, raceProgression, team, id, connection)
   }
 }
+
+const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
+  maxHealth: 12,
+  meleeItem: MeleeWeaponFactory('axe', 'Fury'),
+  ticksPerMeleeAction: 5,
+  ticksPerRangedAction: 25,
+  ticksPerSpellAction: 30,
+  ticksPerSpecialAbility: 50, // 5 seconds per charge
+  ticksPausedAfterMelee: 4,
+  ticksPausedAfterRanged: 20,
+  ticksPausedAfterSpell: 20,
+  meleeDamageBonus: 1,
+  meleeDefense: 4,
+  rangedDefense: 3,
+  magicDefense: 3
+})
 
 const barbarianProgression: LevelProgression[] = [
   {

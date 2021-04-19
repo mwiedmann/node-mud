@@ -1,6 +1,7 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
-import { Player } from '../../mob'
+import { MeleeSpell, MeleeWeaponFactory } from '../../item'
+import { MOBItems, MOBSkills, Player } from '../../mob'
 
 export class Cleric<T> extends Player<T> {
   constructor(
@@ -11,9 +12,22 @@ export class Cleric<T> extends Player<T> {
     id: number,
     connection: T
   ) {
-    super(name, race, 'cleric', clericProgression, raceProgression, team, id, connection)
+    super(name, race, 'cleric', startingSettings(), clericProgression, raceProgression, team, id, connection)
   }
 }
+
+const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
+  maxHealth: 10,
+  meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
+  meleeSpell: new MeleeSpell('divine smite', {}, 'd6'),
+  ticksPerRangedAction: 25,
+  ticksPerSpecialAbility: 50, // 5 seconds per Divine Smites
+  ticksPausedAfterRanged: 15,
+  spellHitBonus: 1,
+  meleeDefense: 4,
+  rangedDefense: 4,
+  magicDefense: 4
+})
 
 const clericProgression: LevelProgression[] = [
   {

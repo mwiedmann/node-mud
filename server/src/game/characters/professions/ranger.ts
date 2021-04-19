@@ -1,6 +1,7 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
-import { Player } from '../../mob'
+import { MeleeWeaponFactory, RangedWeaponFactory } from '../../item'
+import { MOBItems, MOBSkills, Player } from '../../mob'
 
 export class Ranger<T> extends Player<T> {
   constructor(
@@ -11,9 +12,23 @@ export class Ranger<T> extends Player<T> {
     id: number,
     connection: T
   ) {
-    super(name, race, 'ranger', rangerProgression, raceProgression, team, id, connection)
+    super(name, race, 'ranger', startingSettings(), rangerProgression, raceProgression, team, id, connection)
   }
 }
+
+const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
+  maxHealth: 9,
+  meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
+  rangedItem: RangedWeaponFactory('shortbow', 'Snipe'),
+  ticksPerRangedAction: 15,
+  ticksPerSpecialAbility: 50, // 5 seconds per ranged flurry
+  ticksPausedAfterMelee: 6,
+  ticksPausedAfterRanged: 8,
+  rangedHitBonus: 1,
+  meleeDefense: 4,
+  rangedDefense: 5,
+  magicDefense: 3
+})
 
 const rangerProgression: LevelProgression[] = [
   {

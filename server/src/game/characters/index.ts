@@ -1,8 +1,7 @@
 import { PlayerProfession, PlayerRace } from 'dng-shared'
-import { nextId } from '../id'
 import { MOBItems, MOBSkills, Player } from '../mob'
-import { professionFactory, professionSettings } from './professions'
-import { raceProgression, raceSettings } from './races'
+import { professionFactory } from './professions'
+import { raceSettings } from './races'
 export * from './professions'
 export * from './races'
 
@@ -58,11 +57,9 @@ export const playerFactory = <T>(
   connection: T
 ): Player<T> => {
   const raceStartingValues = raceSettings()[race]
-  const professionStartingValues = professionSettings()[profession]
-  const raceUpgrades = raceProgression[race]
 
   const player = professionFactory(name, race, profession, team, connection)
-  // new Player<T>(name, race, profession, progressionUpgrades, raceUpgrades, team, nextId(), connection)
+  const professionStartingValues = player.startingProfessionSettings
 
   const startingSettings: MOBSkills = { ...basePlayerScores, ...raceStartingValues }
 

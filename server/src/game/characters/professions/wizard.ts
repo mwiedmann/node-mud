@@ -1,6 +1,7 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
-import { Player } from '../../mob'
+import { MeleeWeaponFactory, RangedSpell } from '../../item'
+import { MOBItems, MOBSkills, Player } from '../../mob'
 
 export class Wizard<T> extends Player<T> {
   constructor(
@@ -11,9 +12,25 @@ export class Wizard<T> extends Player<T> {
     id: number,
     connection: T
   ) {
-    super(name, race, 'wizard', wizardProgression, raceProgression, team, id, connection)
+    super(name, race, 'wizard', startingSettings(), wizardProgression, raceProgression, team, id, connection)
   }
 }
+
+const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
+  maxHealth: 7,
+  meleeItem: MeleeWeaponFactory('staff', 'Darkwood'),
+  rangedSpell: new RangedSpell('energy blast', {}, 6, 'd6'),
+  ticksPerMeleeAction: 10,
+  ticksPerRangedAction: 25,
+  ticksPerSpellAction: 15,
+  ticksPerSpecialAbility: 30, // 3 seconds per teleport
+  ticksPausedAfterMelee: 12,
+  ticksPausedAfterRanged: 15,
+  spellDamageBonus: 1,
+  meleeDefense: 3,
+  rangedDefense: 3,
+  magicDefense: 5
+})
 
 const wizardProgression: LevelProgression[] = [
   {
