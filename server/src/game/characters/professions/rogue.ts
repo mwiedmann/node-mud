@@ -1,7 +1,8 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
 import { MeleeWeaponFactory, RangedWeaponFactory } from '../../item'
-import { MOBItems, MOBSkills, Player } from '../../mob'
+import { Level } from '../../levels/level'
+import { MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
 
 export class Rogue<T> extends Player<T> {
   constructor(
@@ -13,6 +14,28 @@ export class Rogue<T> extends Player<T> {
     connection: T
   ) {
     super(name, race, 'rogue', startingSettings(), rogueProgression, raceProgression, team, id, connection)
+  }
+
+  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+    // The rogue can camouflage into nearby walls.
+    // The more walls, the better
+    // If the rogue is not currently camouflaged, see if he can hide.
+    // Ability must be off coooldown, rogue must be near a wall, and not in sight of any monsters
+    if (!this.invisible && tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+      const wallCount = level.surroundingWallsCount(this.x, this.y)
+      if (wallCount > 0 && !level.playerIsSpotted(this)) {
+        this.invisible = true
+        this.lastSpecialAbilityTick = tick
+      }
+    } // If currently camouflaged, check if still near a wall
+    else if (this.invisible) {
+      this.lastSpecialAbilityTick = tick
+      const wallCount = level.surroundingWallsCount(this.x, this.y)
+      if (wallCount === 0) {
+        // Not near any walls, camouflage is removed
+        this.invisible = false
+      }
+    }
   }
 }
 

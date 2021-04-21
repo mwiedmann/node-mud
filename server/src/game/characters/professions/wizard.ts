@@ -1,7 +1,9 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
 import { MeleeWeaponFactory, RangedSpell } from '../../item'
-import { MOBItems, MOBSkills, Player } from '../../mob'
+import { Level } from '../../levels/level'
+import { MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
+import { inRange } from '../../util'
 
 export class Wizard<T> extends Player<T> {
   constructor(
@@ -13,6 +15,35 @@ export class Wizard<T> extends Player<T> {
     connection: T
   ) {
     super(name, race, 'wizard', startingSettings(), wizardProgression, raceProgression, team, id, connection)
+  }
+
+  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+    if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+      // Check the wizard's teleport
+      if (this.specialAbilityX && this.specialAbilityY) {
+        if (
+          level.locationInBounds(this.specialAbilityX, this.specialAbilityY) &&
+          !level.locationIsBlocked(this.specialAbilityX, this.specialAbilityY) &&
+          inRange(this.visibleRange, this.x, this.y, this.specialAbilityX, this.specialAbilityY)
+        ) {
+          notes.notes.push('Teleporting')
+          // Simply teleport the wizard there.
+          this.x = this.specialAbilityX
+          this.y = this.specialAbilityY
+          this.setDestination(this.x, this.y)
+          this.lastSpecialAbilityTick = tick
+          this.specialAbilityX = undefined
+          this.specialAbilityY = undefined
+          this.specialAbilityActivate = false
+          notes.notes.push('Wizard teleporting')
+        } else {
+          notes.notes.push('Teleporting was blocked or out of range')
+          this.specialAbilityX = undefined
+          this.specialAbilityY = undefined
+          this.specialAbilityActivate = false
+        }
+      }
+    }
   }
 }
 

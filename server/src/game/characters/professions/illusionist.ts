@@ -1,7 +1,8 @@
 import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
 import { MeleeWeaponFactory, RangedSpell } from '../../item'
-import { MOBItems, MOBSkills, Player } from '../../mob'
+import { Level } from '../../levels/level'
+import { MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
 
 export class Illusionist<T> extends Player<T> {
   constructor(
@@ -13,6 +14,22 @@ export class Illusionist<T> extends Player<T> {
     connection: T
   ) {
     super(name, race, 'illusionist', startingSettings(), illusionistProgression, raceProgression, team, id, connection)
+  }
+
+  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+    if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+      // The illusionist can turn invisible
+      if (this.specialAbilityActivate) {
+        this.invisible = true
+        this.specialAbilityActivate = false
+        this.lastSpecialAbilityTick = tick
+      }
+    }
+
+    // While invisible, this illusionist can't recharge their invisibility special
+    if (this.invisible) {
+      this.lastSpecialAbilityTick = tick
+    }
   }
 }
 
