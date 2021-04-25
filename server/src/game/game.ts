@@ -79,7 +79,7 @@ export class Game<T> {
         })
 
       // Need to reupdate the map/graph after adding monsters and stairs
-      level.updateGraph()
+      level.updateMaps()
     }
 
     // Players start in town
