@@ -54,7 +54,7 @@ const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
   ticksPerMeleeAction: 10,
   ticksPerRangedAction: 25,
   ticksPerSpellAction: 15,
-  ticksPerSpecialAbility: 30, // 3 seconds per teleport
+  ticksPerSpecialAbility: 2.5, // 2.5 seconds per teleport
   ticksPausedAfterMelee: 12,
   ticksPausedAfterRanged: 15,
   spellDamageBonus: 1,

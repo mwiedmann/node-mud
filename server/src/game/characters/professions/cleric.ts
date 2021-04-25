@@ -42,7 +42,7 @@ const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
   meleeItem: MeleeWeaponFactory('mace', 'Atonement'),
   meleeSpell: new MeleeSpell('divine smite', {}, 'd6'),
   ticksPerRangedAction: 25,
-  ticksPerSpecialAbility: 50, // 5 seconds per Divine Smites
+  ticksPerSpecialAbility: 40, // 4 seconds per Divine Smite
   ticksPausedAfterRanged: 15,
   spellHitBonus: 1,
   meleeDefense: 4,

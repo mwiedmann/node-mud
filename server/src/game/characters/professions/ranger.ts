@@ -52,7 +52,7 @@ const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
   meleeItem: MeleeWeaponFactory('shortsword', 'Needle'),
   rangedItem: RangedWeaponFactory('shortbow', 'Snipe'),
   ticksPerRangedAction: 15,
-  ticksPerSpecialAbility: 50, // 5 seconds per ranged flurry
+  ticksPerSpecialAbility: 40, // 4 seconds per ranged flurry
   ticksPausedAfterMelee: 6,
   ticksPausedAfterRanged: 8,
   rangedHitBonus: 1,

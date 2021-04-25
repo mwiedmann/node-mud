@@ -1,4 +1,4 @@
-import { findOpenSpace, randomConsumables, randomMeleeWeapons, randomMonsters } from './map'
+import { findOpenSpace, randomConsumables, randomGroup, randomMeleeWeapons, randomMonsters } from './map'
 import { MOBUpdateNotes, Player } from './mob'
 import { Level } from './levels/level'
 import { performance } from 'perf_hooks'
@@ -12,7 +12,7 @@ import { randomDungeon } from './dungeonGenerators/standard'
 
 export class Game<T> {
   constructor() {
-    const levelCount = 5
+    const maxLevel = 6
 
     // Create the town level (connected to the stairs on the 1st level)
     const { level: townLevel, stairs: townStairs } = createTownLevel<T>()
@@ -21,7 +21,7 @@ export class Game<T> {
     let lastDownStairs = townStairs
 
     // Create a town with a 5 level dungeon
-    for (let i = 1; i <= levelCount; i++) {
+    for (let i = 2; i <= maxLevel; i++) {
       const level = new Level<T>(nextId())
       this.levels.set(level.id, level)
 
@@ -47,7 +47,7 @@ export class Game<T> {
       lastDownStairs.stairsDown = stairsObjUp.id
 
       // If this is not the last level, create a stairway down
-      if (i < levelCount) {
+      if (i < maxLevel) {
         const stairsObjDown: Stairs = {
           id: nextId(),
           x: stairsDown.x,
@@ -67,7 +67,15 @@ export class Game<T> {
         .filter(([_, value]) => value.level === i)
         .map(([key]) => key as MonsterType)
         .forEach((monsterName) => {
-          randomMonsters(monsterName, 15, level)
+          // randomMonsters(monsterName, 15, level)
+          if (i === 6) {
+            // Legendary level
+            randomGroup(monsterName, 5, 7, level)
+          } else {
+            for (let k = 0; k < 3; k++) {
+              randomGroup(monsterName, 3, 5, level)
+            }
+          }
         })
 
       // Need to reupdate the map/graph after adding monsters and stairs

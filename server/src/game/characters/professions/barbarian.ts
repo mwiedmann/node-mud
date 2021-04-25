@@ -91,7 +91,7 @@ const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
   ticksPerMeleeAction: 5,
   ticksPerRangedAction: 25,
   ticksPerSpellAction: 30,
-  ticksPerSpecialAbility: 50, // 5 seconds per charge
+  ticksPerSpecialAbility: 40, // 4 seconds per charge
   ticksPausedAfterMelee: 4,
   ticksPausedAfterRanged: 20,
   ticksPausedAfterSpell: 20,

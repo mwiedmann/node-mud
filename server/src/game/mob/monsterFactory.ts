@@ -80,15 +80,58 @@ const baseMonsterScores: MOBSkills = {
   isUnholy: 0
 }
 
+export const monsterGroups: Record<MonsterType, MonsterType[]> = {
+  // The level 1 monsters are only minions and don't lead groups
+  slime: ['slime'],
+  bat: ['bat'],
+  snake: ['snake'],
+  orc: ['orc'],
+  skeleton: ['skeleton'],
+  goblin: ['goblin'],
+  // Level 2 and beyond can lead groups
+  zombie: ['skeleton'],
+  kobold: ['orc', 'goblin'],
+  'giant-rat': ['bat', 'slime', 'snake'],
+  spider: ['slime', 'snake', 'skeleton'],
+  lizardman: ['orc', 'goblin'],
+  gnoll: ['orc', 'goblin'],
+  // Level 3
+  ogre: ['gnoll', 'kobold'],
+  ghoul: ['zombie'],
+  harpy: ['lizardman', 'kobold'],
+  'insect-swarm': ['spider', 'giant-rat'],
+  'gelatinous-cube': ['giant-rat', 'zombie'],
+  troll: ['gnoll', 'kobold', 'lizardman'],
+  // Level 4
+  wraith: ['ghoul'],
+  yeti: ['ogre', 'troll'],
+  centaur: ['harpy', 'ogre'],
+  elemental: ['insect-swarm', 'gelatinous-cube'],
+  imp: ['ghoul', 'harpy'],
+  banshee: ['ghoul', 'insect-swarm'],
+  // Level 5
+  demon: ['imp', 'elemental'],
+  giant: ['yeti', 'centaur'],
+  mummy: ['wraith', 'banshee'],
+  griffon: ['centaur', 'elemental'],
+  manticore: ['imp', 'wraith'],
+  minotaur: ['yeti', 'banshee'],
+  // Legendary monsters
+  dragon: ['demon', 'giant'],
+  lich: ['mummy', 'manticore'],
+  vampire: ['mummy', 'griffon'],
+  beholder: ['griffon', 'manticore'],
+  'mind-flayer': ['minotaur', 'giant'],
+  devil: ['demon', 'minotaur']
+}
+
 /*
 HPs: 1-4, 5-8, 9-12, 13-16, 17-20
 DEF: 4-6, 7-9, 10-12, 13-15, 16-18
 ticks: 2=fast, 3=normal, 4=slow
 */
 
-export const monsterSettings: {
-  [K in MonsterType]: Partial<MOBSkills> & Pick<MOBSkills, 'level'> & Partial<MOBItems>
-} = {
+export const monsterSettings: Record<MonsterType, Partial<MOBSkills> & Pick<MOBSkills, 'level'> & Partial<MOBItems>> = {
   // Level 1 - HP: 1-4, DEF: 4-6
   slime: {
     level: 1,

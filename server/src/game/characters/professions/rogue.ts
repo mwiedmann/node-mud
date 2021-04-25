@@ -48,6 +48,7 @@ const startingSettings: () => Partial<MOBSkills> & Partial<MOBItems> = () => ({
   // If not currently spotted, the rogue only needs a second to hide
   ticksPerSpecialAbility: 10,
   ticksPausedAfterRanged: 10,
+  ticksPausedAfterMelee: 8,
   hitBonusWhenInvisible: 4,
   damageBonusWhenInvisible: 2,
   meleeHitBonus: 1,

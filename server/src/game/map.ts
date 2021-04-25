@@ -2,9 +2,9 @@ import { Consumable, ConsumableTypes } from './consumable'
 import { MeleeType, MeleeWeaponFactory } from './item'
 import { Level } from './levels/level'
 import { Monster } from './mob'
-import { monsterFactory, MonsterType } from './mob/monsterFactory'
+import { monsterFactory, monsterGroups, MonsterType } from './mob/monsterFactory'
 import { SquareType } from 'dng-shared'
-import { inRange } from './util'
+import { inRange, randomPick, randomRange } from './util'
 
 export type Moved = {
   fromX: number
@@ -99,6 +99,33 @@ export const randomMonsters = (type: MonsterType, count: number, level: Level<un
     monster.setDestination(location.x, location.y)
 
     level.monsters.set(monster.id, monster)
+  }
+}
+
+export const randomGroup = (type: MonsterType, groupMin: number, groupMax: number, level: Level<unknown>): void => {
+  const stairsUp = level.getStairsUp()
+  const location = findOpenSpace(level, stairsUp && { x: stairsUp.x, y: stairsUp.y, range: 15 })
+
+  const monster = monsterFactory(type)
+  // This helps stagger the movements of all the monsters
+  monster.lastMoveTick = Math.floor(Math.random() * monster.ticksPerMove) + 1
+  monster.setSpawn(location.x, location.y)
+  monster.setDestination(location.x, location.y)
+
+  level.monsters.set(monster.id, monster)
+
+  // Get the types of followers for this monster and get a random group size
+  const followers = monsterGroups[type]
+  const groupSize = randomRange(groupMin, groupMax)
+
+  // Create minions for this monster
+  for (let i = 0; i < groupSize; i++) {
+    const minion = monsterFactory(randomPick(followers))
+
+    const minionLocation = level.getRandomLocation({ range: 8, x: monster.x, y: monster.y })
+    minion.setSpawn(minionLocation.x, minionLocation.y)
+    minion.setDestination(minionLocation.x, minionLocation.y)
+    level.monsters.set(minion.id, minion)
   }
 }
 
