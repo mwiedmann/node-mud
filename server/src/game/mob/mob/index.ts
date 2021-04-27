@@ -1,10 +1,11 @@
-import { MOBType, xpForKill } from './monsterFactory'
-import { Level } from '../levels/level'
-import { rollDice, RollResult } from '../combat'
-import { Moved } from '../map'
-import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon, Weapon } from '../item'
+import { MOBType, xpForKill } from '../monsterFactory'
+import { Level } from '../../levels/level'
+import { rollDice, RollResult } from '../../combat'
+import { Moved } from '../../map'
+import { Item, MajorItemType, MeleeSpell, MeleeWeapon, RangedSpell, RangedWeapon, Weapon } from '../../item'
 import { MOBActivityLog, MOBAttackActivityLog } from 'dng-shared'
-import { MOBSkills } from '.'
+import { MOBSkills } from '..'
+import { bestMeleeSpellWeapon, bestMeleeWeapon, bestRangedSpellWeapon, bestRangedWeapon } from './weapons'
 
 export type MOBUpdateNotes = { notes: string[]; moved: Moved | undefined }
 
@@ -232,18 +233,10 @@ export abstract class MOB implements MOBSkills, MOBItems {
     this.attackActivityLog.push(activity)
   }
 
-  bestMeleeWeapon(): MeleeWeapon {
-    return this.meleeItem || this.defaultMeleeItem
-  }
-  bestRangedWeapon(): RangedWeapon | undefined {
-    return this.rangedItem
-  }
-  bestMeleeSpellWeapon(): MeleeSpell | undefined {
-    return this.meleeSpell
-  }
-  bestRangedSpellWeapon(): RangedSpell | undefined {
-    return this.rangedSpell
-  }
+  bestMeleeWeapon = bestMeleeWeapon
+  bestRangedWeapon = bestRangedWeapon
+  bestMeleeSpellWeapon = bestMeleeSpellWeapon
+  bestRangedSpellWeapon = bestRangedSpellWeapon
 
   invisibleHitBonus(): number {
     return this.invisible ? this.hitBonusWhenInvisible : 0

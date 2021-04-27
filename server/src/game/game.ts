@@ -67,7 +67,6 @@ export class Game<T> {
         .filter(([_, value]) => value.level === i)
         .map(([key]) => key as MonsterType)
         .forEach((monsterName) => {
-          // randomMonsters(monsterName, 15, level)
           if (i === 6) {
             // Legendary level
             randomGroup(monsterName, 5, 7, level)
@@ -91,6 +90,10 @@ export class Game<T> {
   levels = new Map<number, Level<T>>()
   startingLevelId: number
 
+  /**
+   * Run the game simulation one tick
+   * @returns Update notes and performance time
+   */
   update(): { notes: MOBUpdateNotes; time: number }[] {
     const perfList: { notes: MOBUpdateNotes; time: number }[] = []
 
@@ -148,6 +151,11 @@ export class Game<T> {
     return perfList
   }
 
+  /**
+   * Search all levels for this stairs Id
+   * @param stairsId Staris Id to find
+   * @returns Level and stairs
+   */
   findStairs(stairsId: number): { level: Level<T>; stairs: Stairs } {
     const iterator = this.levels[Symbol.iterator]()
     for (const [, level] of iterator) {
@@ -160,7 +168,11 @@ export class Game<T> {
     throw new Error(`Could not find stairs ${stairsId}`)
   }
 
-  getFirstLevel(): Level<T> {
+  /**
+   * Get the starting level for the game
+   * @returns Level
+   */
+  getStartingLevel(): Level<T> {
     const level = this.levels.get(this.startingLevelId)
 
     if (!level) {
@@ -170,13 +182,21 @@ export class Game<T> {
     return level
   }
 
-  login(
+  /**
+   * Register a player with the game
+   * @param name Name
+   * @param race Race
+   * @param profession Profession
+   * @param connection Connection to the player
+   * @returns Player and starting Level
+   */
+  registerPlayer(
     name: string,
     race: PlayerRace,
     profession: PlayerProfession,
     connection: T
   ): { player: Player<T>; level: Level<T> } {
-    const level = this.getFirstLevel()
+    const level = this.getStartingLevel()
     const player = playerFactory(race, profession, name, 1, connection)
 
     const stairsUp = level.getStairsUp()
@@ -191,7 +211,12 @@ export class Game<T> {
     return { player, level }
   }
 
-  logout(connection: T): Player<T> | null {
+  /**
+   * Remove a player from the game
+   * @param connection Player's connection
+   * @returns Removed player
+   */
+  unregisterPlayer(connection: T): Player<T> | null {
     const player = this.players.get(connection)
 
     if (!player) {
@@ -207,7 +232,13 @@ export class Game<T> {
     return player
   }
 
-  setDestination(connection: T, x: number, y: number): void {
+  /**
+   * Set a player's destination
+   * @param connection Player connection
+   * @param x X location
+   * @param y Y location
+   */
+  playerSetDestination(connection: T, x: number, y: number): void {
     const player = this.players.get(connection)
 
     if (!player) {
@@ -218,7 +249,13 @@ export class Game<T> {
     player.setDestination(x, y)
   }
 
-  setSpecialAbilityLocation(connection: T, x: number, y: number): void {
+  /**
+   * Set a player's special ability location
+   * @param connection Player connection
+   * @param x X location
+   * @param y Y location
+   */
+  playerSetSpecialAbilityLocation(connection: T, x: number, y: number): void {
     const player = this.players.get(connection)
 
     if (!player) {
@@ -229,7 +266,13 @@ export class Game<T> {
     player.setSpecialAbility(this.tick, x, y)
   }
 
-  getItem(connection: T, x: number, y: number): void {
+  /**
+   * Have a player attempt to pick up an item
+   * @param connection Player connection
+   * @param x X location of item
+   * @param y Y location of item
+   */
+  playerGetItem(connection: T, x: number, y: number): void {
     const player = this.players.get(connection)
 
     if (!player) {
@@ -244,7 +287,11 @@ export class Game<T> {
     })
   }
 
-  meleeToggle(connection: T): void {
+  /**
+   * Toggle a player's melee attack
+   * @param connection Player connection
+   */
+  playerMeleeToggle(connection: T): void {
     const player = this.players.get(connection)
 
     if (!player) {
@@ -255,7 +302,11 @@ export class Game<T> {
     player.meleeOn = !player.meleeOn
   }
 
-  rangedToggle(connection: T): void {
+  /**
+   * Toggle a player's ranged attack
+   * @param connection Player connection
+   */
+  playerRangedToggle(connection: T): void {
     const player = this.players.get(connection)
 
     if (!player) {
@@ -266,7 +317,11 @@ export class Game<T> {
     player.rangedOn = !player.rangedOn
   }
 
-  spellToggle(connection: T): void {
+  /**
+   * Toggle a player's spell casting
+   * @param connection Player connection
+   */
+  playerSpellToggle(connection: T): void {
     const player = this.players.get(connection)
 
     if (!player) {
@@ -278,6 +333,10 @@ export class Game<T> {
   }
 }
 
+/**
+ * Create a Game
+ * @returns New Game
+ */
 export const createGame = <T>(): Game<T> => {
   return new Game()
 }

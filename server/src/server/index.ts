@@ -175,7 +175,7 @@ const updateGame = () => {
     // Logout any disconnected players
     disconnectedPlayers.forEach((p) => {
       console.log('Logging out disconnected player', p.id)
-      game.logout(p.connection)
+      game.unregisterPlayer(p.connection)
     })
 
     // Check the performance
@@ -254,7 +254,7 @@ type PlayerConnection = {
 }
 
 const loginPlayer = (ws: WebSocket, { name, race, profession }: MessageLogin) => {
-  const { player, level } = game.login(name, race, profession, ws)
+  const { player, level } = game.registerPlayer(name, race, profession, ws)
   console.log(`Logged in player: ${name}, id: ${player.id}`, race, profession)
   ws.send(JSON.stringify({ name, id: player.id })) // TODO: This doesn't do anything. Make a real message.
   ws.send(
@@ -269,7 +269,7 @@ const loginPlayer = (ws: WebSocket, { name, race, profession }: MessageLogin) =>
 }
 
 const logoutPlayer = (ws: WebSocket) => {
-  const player = game.logout(ws)
+  const player = game.unregisterPlayer(ws)
   if (player) {
     console.log(`Logged out player: ${player.name}, id: ${player.id}`)
   } else {
@@ -280,25 +280,25 @@ const logoutPlayer = (ws: WebSocket) => {
 }
 
 const setDestination = (ws: WebSocket, { x, y }: MessageSetDestination) => {
-  game.setDestination(ws, x, y)
+  game.playerSetDestination(ws, x, y)
 }
 
 const setSpecialAbilityLocation = (ws: WebSocket, { x, y }: MessageSetSpecialAbilityLocation) => {
-  game.setSpecialAbilityLocation(ws, x, y)
+  game.playerSetSpecialAbilityLocation(ws, x, y)
 }
 
 const getItem = (ws: WebSocket, { x, y }: MessageGetItem) => {
-  game.getItem(ws, x, y)
+  game.playerGetItem(ws, x, y)
 }
 
 const meleeToggle = (ws: WebSocket) => {
-  game.meleeToggle(ws)
+  game.playerMeleeToggle(ws)
 }
 
 const rangedToggle = (ws: WebSocket) => {
-  game.rangedToggle(ws)
+  game.playerRangedToggle(ws)
 }
 
 const spellToggle = (ws: WebSocket) => {
-  game.spellToggle(ws)
+  game.playerSpellToggle(ws)
 }

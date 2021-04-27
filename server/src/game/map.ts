@@ -106,13 +106,13 @@ export const randomGroup = (type: MonsterType, groupMin: number, groupMax: numbe
   const stairsUp = level.getStairsUp()
   const location = findOpenSpace(level, stairsUp && { x: stairsUp.x, y: stairsUp.y, range: 20 })
 
-  const monster = monsterFactory(type)
+  const leader = monsterFactory(type)
   // This helps stagger the movements of all the monsters
-  monster.lastMoveTick = Math.floor(Math.random() * monster.ticksPerMove) + 1
-  monster.setSpawn(location.x, location.y)
-  monster.setDestination(location.x, location.y)
+  leader.lastMoveTick = Math.floor(Math.random() * leader.ticksPerMove) + 1
+  leader.setSpawn(location.x, location.y)
+  leader.setDestination(location.x, location.y)
 
-  level.monsters.set(monster.id, monster)
+  level.monsters.set(leader.id, leader)
 
   // Get the types of followers for this monster and get a random group size
   const followers = monsterGroups[type]
@@ -124,13 +124,27 @@ export const randomGroup = (type: MonsterType, groupMin: number, groupMax: numbe
 
     const minionLocation = findOpenSpace(level, undefined, {
       range: 4,
-      x: monster.x,
-      y: monster.y
+      x: leader.x,
+      y: leader.y
     })
     minion.setSpawn(minionLocation.x, minionLocation.y)
     minion.setDestination(minionLocation.x, minionLocation.y)
     level.monsters.set(minion.id, minion)
   }
+
+  // Add a healing potion around
+  const c = new Consumable()
+  c.type = 'healing'
+  c.health = leader.level * 3
+  const potionLocation = findOpenSpace(level, undefined, {
+    range: 2,
+    x: leader.x,
+    y: leader.y
+  })
+  c.x = potionLocation.x
+  c.y = potionLocation.y
+
+  level.items.set(c.key(), c)
 }
 
 export const randomConsumables = (type: ConsumableTypes, count: number, level: Level<unknown>): void => {
