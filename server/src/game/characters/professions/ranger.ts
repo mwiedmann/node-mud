@@ -2,45 +2,56 @@ import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
 import { MeleeWeaponFactory, RangedWeaponFactory } from '../../item'
 import { Level } from '../../levels/level'
-import { MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
+import { createPlayer, MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
 
-export class Ranger<T> extends Player<T> {
-  constructor(
-    name: string,
-    race: PlayerRace,
-    raceProgression: LevelProgression[],
-    team: number,
-    id: number,
-    connection: T
-  ) {
-    super(name, race, 'ranger', startingSettings(), rangerProgression, raceProgression, team, id, connection)
-  }
+export function createRanger<T>(
+  name: string,
+  race: PlayerRace,
+  raceProgression: LevelProgression[],
+  team: number,
+  id: number,
+  connection: T
+): Player<T> {
+  const player = createPlayer(
+    name,
+    race,
+    'ranger',
+    startingSettings(),
+    rangerProgression,
+    raceProgression,
+    team,
+    id,
+    connection
+  )
 
-  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
-    if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
-      // The Ranger can shoot an exploding arrow that hits all in range
-      if (this.specialAbilityActivate && this.specialAbilityX && this.specialAbilityY) {
-        const range = this.bestRangedWeapon()?.range || 0
-        const mobsInRange = level.allMobsInRange(
-          level.monsters,
-          this.specialAbilityX,
-          this.specialAbilityY,
-          range,
-          2,
-          true
-        )
+  return {
+    ...player,
+    specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+      if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+        // The Ranger can shoot an exploding arrow that hits all in range
+        if (this.specialAbilityActivate && this.specialAbilityX && this.specialAbilityY) {
+          const range = this.bestRangedWeapon()?.range || 0
+          const mobsInRange = level.allMobsInRange(
+            level.monsters,
+            this.specialAbilityX,
+            this.specialAbilityY,
+            range,
+            2,
+            true
+          )
 
-        // Only activate the ability if there are mobs in range
-        if (mobsInRange.length > 0) {
-          mobsInRange.forEach((m) => {
-            this.makeRangedAttack(m, tick, level, notes, {
-              hasCost: false,
-              fromX: this.specialAbilityX,
-              fromY: this.specialAbilityY
+          // Only activate the ability if there are mobs in range
+          if (mobsInRange.length > 0) {
+            mobsInRange.forEach((m) => {
+              this.makeRangedAttack(m, tick, level, notes, {
+                hasCost: false,
+                fromX: this.specialAbilityX,
+                fromY: this.specialAbilityY
+              })
             })
-          })
-          this.lastSpecialAbilityTick = tick
-          this.specialAbilityActivate = false
+            this.lastSpecialAbilityTick = tick
+            this.specialAbilityActivate = false
+          }
         }
       }
     }

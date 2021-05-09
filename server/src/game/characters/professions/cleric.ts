@@ -2,36 +2,47 @@ import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
 import { MeleeSpell, MeleeWeaponFactory } from '../../item'
 import { Level } from '../../levels/level'
-import { MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
+import { createPlayer, MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
 
-export class Cleric<T> extends Player<T> {
-  constructor(
-    name: string,
-    race: PlayerRace,
-    raceProgression: LevelProgression[],
-    team: number,
-    id: number,
-    connection: T
-  ) {
-    super(name, race, 'cleric', startingSettings(), clericProgression, raceProgression, team, id, connection)
-  }
+export function createCleric<T>(
+  name: string,
+  race: PlayerRace,
+  raceProgression: LevelProgression[],
+  team: number,
+  id: number,
+  connection: T
+): Player<T> {
+  const player = createPlayer(
+    name,
+    race,
+    'cleric',
+    startingSettings(),
+    clericProgression,
+    raceProgression,
+    team,
+    id,
+    connection
+  )
 
-  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
-    if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
-      // A Cleric's Divine Aura smites all enemies he can see.
-      // Unholy enemies are attacked twice at no cost to the Cleric.
-      if (this.specialAbilityActivate) {
-        const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, this.visibleRange, undefined, true)
-        mobsInRange.forEach((m) => {
-          if (m.isUnholy) {
-            this.makeMeleeSpellAttack(m, tick, level, notes, false)
-            this.makeMeleeSpellAttack(m, tick, level, notes, false)
-          } else {
-            this.makeMeleeSpellAttack(m, tick, level, notes)
-          }
-        })
-        this.lastSpecialAbilityTick = tick
-        this.specialAbilityActivate = false
+  return {
+    ...player,
+    specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+      if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+        // A Cleric's Divine Aura smites all enemies he can see.
+        // Unholy enemies are attacked twice at no cost to the Cleric.
+        if (this.specialAbilityActivate) {
+          const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, this.visibleRange, undefined, true)
+          mobsInRange.forEach((m) => {
+            if (m.isUnholy) {
+              this.makeMeleeSpellAttack(m, tick, level, notes, false)
+              this.makeMeleeSpellAttack(m, tick, level, notes, false)
+            } else {
+              this.makeMeleeSpellAttack(m, tick, level, notes)
+            }
+          })
+          this.lastSpecialAbilityTick = tick
+          this.specialAbilityActivate = false
+        }
       }
     }
   }

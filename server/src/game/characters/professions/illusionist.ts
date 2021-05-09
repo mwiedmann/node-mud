@@ -2,33 +2,44 @@ import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
 import { MeleeWeaponFactory, RangedSpell } from '../../item'
 import { Level } from '../../levels/level'
-import { MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
+import { createPlayer, MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
 
-export class Illusionist<T> extends Player<T> {
-  constructor(
-    name: string,
-    race: PlayerRace,
-    raceProgression: LevelProgression[],
-    team: number,
-    id: number,
-    connection: T
-  ) {
-    super(name, race, 'illusionist', startingSettings(), illusionistProgression, raceProgression, team, id, connection)
-  }
+export function createIllusionist<T>(
+  name: string,
+  race: PlayerRace,
+  raceProgression: LevelProgression[],
+  team: number,
+  id: number,
+  connection: T
+): Player<T> {
+  const player = createPlayer(
+    name,
+    race,
+    'illusionist',
+    startingSettings(),
+    illusionistProgression,
+    raceProgression,
+    team,
+    id,
+    connection
+  )
 
-  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
-    if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
-      // The illusionist can turn invisible
-      if (this.specialAbilityActivate) {
-        this.invisible = true
-        this.specialAbilityActivate = false
+  return {
+    ...player,
+    specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+      if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+        // The illusionist can turn invisible
+        if (this.specialAbilityActivate) {
+          this.invisible = true
+          this.specialAbilityActivate = false
+          this.lastSpecialAbilityTick = tick
+        }
+      }
+
+      // While invisible, this illusionist can't recharge their invisibility special
+      if (this.invisible) {
         this.lastSpecialAbilityTick = tick
       }
-    }
-
-    // While invisible, this illusionist can't recharge their invisibility special
-    if (this.invisible) {
-      this.lastSpecialAbilityTick = tick
     }
   }
 }

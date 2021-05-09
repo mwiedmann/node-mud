@@ -2,22 +2,33 @@ import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
 import { MeleeWeaponFactory } from '../../item'
 import { Level } from '../../levels/level'
-import { MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
+import { createPlayer, MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
 
-export class Warrior<T> extends Player<T> {
-  constructor(
-    name: string,
-    race: PlayerRace,
-    raceProgression: LevelProgression[],
-    team: number,
-    id: number,
-    connection: T
-  ) {
-    super(name, race, 'warrior', startingSettings(), warriorProgression, raceProgression, team, id, connection)
-  }
+export function createWarrior<T>(
+  name: string,
+  race: PlayerRace,
+  raceProgression: LevelProgression[],
+  team: number,
+  id: number,
+  connection: T
+): Player<T> {
+  const player = createPlayer(
+    name,
+    race,
+    'warrior',
+    startingSettings(),
+    warriorProgression,
+    raceProgression,
+    team,
+    id,
+    connection
+  )
 
-  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
-    // TODO: The Warrior still needs a special ability
+  return {
+    ...player,
+    specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+      // TODO: The Warrior still needs a special ability
+    }
   }
 }
 

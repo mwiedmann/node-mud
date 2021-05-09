@@ -2,84 +2,95 @@ import { PlayerRace } from 'dng-shared'
 import { LevelProgression } from '..'
 import { MeleeWeaponFactory } from '../../item'
 import { Level } from '../../levels/level'
-import { MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
+import { createPlayer, MOBItems, MOBSkills, MOBUpdateNotes, Player } from '../../mob'
 
-export class Barbarian<T> extends Player<T> {
-  constructor(
-    name: string,
-    race: PlayerRace,
-    raceProgression: LevelProgression[],
-    team: number,
-    id: number,
-    connection: T
-  ) {
-    super(name, race, 'barbarian', startingSettings(), barbarianProgression, raceProgression, team, id, connection)
-  }
+export function createBarbarian<T>(
+  name: string,
+  race: PlayerRace,
+  raceProgression: LevelProgression[],
+  team: number,
+  id: number,
+  connection: T
+): Player<T> {
+  const player = createPlayer(
+    name,
+    race,
+    'barbarian',
+    startingSettings(),
+    barbarianProgression,
+    raceProgression,
+    team,
+    id,
+    connection
+  )
 
-  specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
-    if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
-      if (this.specialAbilityActivate && this.specialAbilityX && this.specialAbilityY) {
-        if (level.locationInBounds(this.specialAbilityX, this.specialAbilityY)) {
-          // Calculate a path towards the spot
-          this.moveGraph = level.findPath(
-            { x: this.x, y: this.y },
-            { x: this.specialAbilityX, y: this.specialAbilityY },
-            this.moveSearchLimit
-          )
-
-          // Limit to a number of steps
-          if (this.moveGraph.length > this.specialAbilityLength) {
-            this.moveGraph = this.moveGraph.slice(0, this.specialAbilityLength)
-          }
-        }
-        this.specialAbilityX = undefined
-        this.specialAbilityY = undefined
-        this.lastSpecialAbilityTick = tick
-      }
-    }
-
-    // Barbarians charge and hit everything in their path
-    if (this.specialAbilityActivate && !this.specialAbilityX && !this.specialAbilityY) {
-      // Still spaces to move?
-      if (this.moveGraph.length > 0) {
-        const moveToX = this.moveGraph[0][0]
-        const moveToY = this.moveGraph[0][1]
-        // Remove the move just made
-        this.moveGraph.shift()
-
-        // Only move if the location is open
-        if (!level.locationIsBlocked(moveToX, moveToY)) {
-          // Set the next x/y from the path
-          this.x = moveToX
-          this.y = moveToY
-          this.destinationX = moveToX
-          this.destinationY = moveToY
-
-          level.grabConsumable(this)
-
-          // Find any monsters in melee range and attack for free
-          const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, 1)
-          mobsInRange.forEach((m) => {
-            this.makeMeleeAttack(m, tick, level, notes, false)
-          })
-        } else {
-          // Blocked. Recalc a new path to the end
-          // If the end spot is unreachable, the charge ends.
-          if (this.moveGraph.length > 0) {
+  return {
+    ...player,
+    specialAbilityAction(tick: number, level: Level<unknown>, notes: MOBUpdateNotes): void {
+      if (tick - this.lastSpecialAbilityTick >= this.ticksPerSpecialAbility) {
+        if (this.specialAbilityActivate && this.specialAbilityX && this.specialAbilityY) {
+          if (level.locationInBounds(this.specialAbilityX, this.specialAbilityY)) {
             // Calculate a path towards the spot
-            const lastSpot = this.moveGraph.pop() as [number, number]
             this.moveGraph = level.findPath(
               { x: this.x, y: this.y },
-              { x: lastSpot[0], y: lastSpot[1] },
+              { x: this.specialAbilityX, y: this.specialAbilityY },
               this.moveSearchLimit
             )
-          } else {
-            this.moveGraph = []
-            this.specialAbilityActivate = false
+
+            // Limit to a number of steps
+            if (this.moveGraph.length > this.specialAbilityLength) {
+              this.moveGraph = this.moveGraph.slice(0, this.specialAbilityLength)
+            }
           }
+          this.specialAbilityX = undefined
+          this.specialAbilityY = undefined
+          this.lastSpecialAbilityTick = tick
         }
-      } else {
-        this.specialAbilityActivate = false
+      }
+
+      // Barbarians charge and hit everything in their path
+      if (this.specialAbilityActivate && !this.specialAbilityX && !this.specialAbilityY) {
+        // Still spaces to move?
+        if (this.moveGraph.length > 0) {
+          const moveToX = this.moveGraph[0][0]
+          const moveToY = this.moveGraph[0][1]
+          // Remove the move just made
+          this.moveGraph.shift()
+
+          // Only move if the location is open
+          if (!level.locationIsBlocked(moveToX, moveToY)) {
+            // Set the next x/y from the path
+            this.x = moveToX
+            this.y = moveToY
+            this.destinationX = moveToX
+            this.destinationY = moveToY
+
+            level.grabConsumable(this)
+
+            // Find any monsters in melee range and attack for free
+            const mobsInRange = level.allMobsInRange(level.monsters, this.x, this.y, 1)
+            mobsInRange.forEach((m) => {
+              this.makeMeleeAttack(m, tick, level, notes, false)
+            })
+          } else {
+            // Blocked. Recalc a new path to the end
+            // If the end spot is unreachable, the charge ends.
+            if (this.moveGraph.length > 0) {
+              // Calculate a path towards the spot
+              const lastSpot = this.moveGraph.pop() as [number, number]
+              this.moveGraph = level.findPath(
+                { x: this.x, y: this.y },
+                { x: lastSpot[0], y: lastSpot[1] },
+                this.moveSearchLimit
+              )
+            } else {
+              this.moveGraph = []
+              this.specialAbilityActivate = false
+            }
+          }
+        } else {
+          this.specialAbilityActivate = false
+        }
       }
     }
   }

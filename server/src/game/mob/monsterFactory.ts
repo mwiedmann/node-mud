@@ -1,6 +1,7 @@
 import { nextId } from '../id'
 import { MeleeWeapon, RangedWeapon, RangedWeaponFactory } from '../item'
 import { MOB, MOBItems, MOBSkills, Monster } from '.'
+import { createMonster } from './monster'
 
 export type MOBType =
   | 'player'
@@ -512,7 +513,7 @@ export const xpForKill = (attackingMobLevel: number, monster: MOB): number => {
 }
 
 export const monsterFactory = (type: MonsterType): Monster => {
-  const monster = new Monster(type, 2, nextId(), type)
+  const monster = createMonster(type, 2, nextId(), type)
   const monsterStartingValues = monsterSettings[type]
 
   const startingSettings: MOBSkills = { ...baseMonsterScores, ...monsterStartingValues }
