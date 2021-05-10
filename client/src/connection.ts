@@ -2,6 +2,7 @@ import * as Phaser from 'phaser'
 import { gameState, gameSettings, resetGameState } from './gameManagement'
 import { Consumable, Item } from './gameManagement/gameTypes'
 import { BaseMessage } from 'dng-shared'
+import { cleanupLevel } from './states/gameStart'
 
 class ConnectionManager {
   connection!: WebSocket
@@ -33,6 +34,10 @@ class ConnectionManager {
           gameState.map = message.data.map
           gameState.mapId = message.data.id
           gameState.mapUpdate = true
+
+          // Need to cleanup immediately because other updates will come in
+          // before the level renders again and we don't want to cleanup the new objects.
+          cleanupLevel()
           break
 
         case 'self':

@@ -121,6 +121,8 @@ const updateGame = () => {
           })
 
           p.movedLevels = false
+          // Make sure player gets all updates based on ticks
+          p.lastTickReceivedState = 0
         }
 
         if (p.dead && !p.deadSent) {

@@ -404,7 +404,7 @@ const cleanup = (scene: Phaser.Scene): void => {
   hudCleanup(scene)
 }
 
-const cleanupLevel = () => {
+export const cleanupLevel = (): void => {
   cleanupFloatingObjects()
   gameState.items.forEach((i) => i.sprite?.destroy())
   gameState.items.clear()
@@ -420,7 +420,6 @@ const cleanupLevel = () => {
 
 const drawMap = (scene: Phaser.Scene): void => {
   console.log('drawMap')
-  cleanupLevel()
 
   // See if we have already created this tileMap/Set/Layer
   // We save it so a player revisiting a level will see areas
