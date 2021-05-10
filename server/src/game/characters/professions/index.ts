@@ -10,9 +10,14 @@ import { createWizard } from './wizard'
 import { PlayerProfession, PlayerRace } from 'dng-shared'
 import { nextId } from '../../id'
 
-export interface PlayerConstruction<T> {
-  (name: string, race: PlayerRace, raceProg: LevelProgression[], team: number, id: number, connection: T): Player<T>
-}
+export type PlayerConstruction<T> = (
+  name: string,
+  race: PlayerRace,
+  raceProg: LevelProgression[],
+  team: number,
+  id: number,
+  connection: T
+) => Player<T>
 
 const professionMap = <T>(): Record<PlayerProfession, PlayerConstruction<T>> => ({
   barbarian: createBarbarian,
