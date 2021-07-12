@@ -393,8 +393,15 @@ const cleanup = (scene: Phaser.Scene): void => {
   star?.destroy()
   star = undefined
 
+  // Cleanup key and mouse listeners
   scene.input.removeListener('pointerup', pointerCallback)
   controls.getItem.removeAllListeners()
+  controls.mapToggle.removeAllListeners()
+  controls.special.removeAllListeners()
+  controls.melee.removeAllListeners()
+  controls.ranged.removeAllListeners()
+  controls.spell.removeAllListeners()
+  controls.quit.removeAllListeners()
 
   if (mapCamera) {
     scene.cameras.remove(mapCamera)
